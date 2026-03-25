@@ -1,0 +1,50 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/app/login"
+  to = "/app/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/admin"
+  to = "/app/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/mentorado"
+  to = "/app/mentorado.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/materiais"
+  to = "/app/materials.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/plano"
+  to = "/app/plano.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/simulados"
+  to = "/app/simulados.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/evolucao"
+  to = "/app/evolucao.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/app/*"
+  [headers.values]
+    Cache-Control = "no-cache"

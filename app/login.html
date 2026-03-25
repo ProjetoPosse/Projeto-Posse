@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Projeto Posse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-page="login">
+  <main class="app-login">
+    <section class="login-card">
+      <div class="brand-mark">PP</div>
+      <div class="eyebrow">Projeto Posse</div>
+      <h1 class="headline">Area do Mentorado</h1>
+      <p class="subhead">Acesse seu plano, materiais, simulados e toda a sua evolucao em um ambiente protegido.</p>
+      <div class="message success" style="margin-bottom:1rem;">
+        Modo demo ativo nesta pasta.<br>
+        Mentorado: <strong>aluno@demo.local</strong><br>
+        Mentor: <strong>mentor@demo.local</strong><br>
+        Senha: <strong>demo</strong>
+      </div>
+
+      <form id="loginForm" class="form-grid">
+        <label>
+          <span class="field-label">E-mail</span>
+          <input id="email" class="input" type="email" autocomplete="email" required>
+        </label>
+        <label>
+          <span class="field-label">Senha</span>
+          <input id="password" class="input" type="password" autocomplete="current-password" required>
+        </label>
+        <button id="loginButton" class="button button-primary" type="submit">Entrar</button>
+        <div id="loginMessage" class="message" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script>
+    (function () {
+      var config = window.PROJETO_POSSE_CONFIG || {};
+      if (!config.demoMode) return;
+
+      var form = document.getElementById("loginForm");
+      var email = document.getElementById("email");
+      var password = document.getElementById("password");
+      var message = document.getElementById("loginMessage");
+      var sessionKey = "projeto_posse_demo_session";
+
+      function setMessage(text, type) {
+        if (!message) return;
+        message.textContent = text;
+        message.className = type ? ("message " + type) : "message";
+      }
+
+      function goTo(role) {
+        var next = role === "mentor" ? "admin.html" : "mentorado.html";
+        window.location.href = new URL("./" + next, window.location.href).href;
+      }
+
+      var existing = localStorage.getItem(sessionKey);
+      if (existing) {
+        try {
+          var parsed = JSON.parse(existing);
+          if (parsed && parsed.role) {
+            goTo(parsed.role);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      if (!form) return;
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var user = (email && email.value || "").trim().toLowerCase();
+        var pass = password && password.value || "";
+
+        if (pass !== "demo") {
+          setMessage("No modo demo, a senha e `demo`.", "error");
+          return;
+        }
+        if (user !== "aluno@demo.local" && user !== "mentor@demo.local") {
+          setMessage("Use `aluno@demo.local` ou `mentor@demo.local`.", "error");
+          return;
+        }
+
+        localStorage.setItem(sessionKey, JSON.stringify({
+          role: user === "mentor@demo.local" ? "mentor" : "mentorado",
+          userId: user === "mentor@demo.local" ? "demo-mentor" : "demo-mentorado-1"
+        }));
+        setMessage("Login demo realizado. Redirecionando...", "success");
+        goTo(user === "mentor@demo.local" ? "mentor" : "mentorado");
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evolucao | Projeto Posse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-page="evolution" data-role="mentorado">
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <a class="sidebar-brand" href="../index.html">
+        <strong>Projeto Posse</strong>
+        <span>Area autenticada do mentorado</span>
+      </a>
+      <div class="sidebar-section">
+        <h3>Navegacao</h3>
+        <nav class="nav-list">
+          <a class="nav-link" data-page="mentorado-dashboard" href="./mentorado.html">Dashboard</a>
+          <a class="nav-link" data-page="materials" href="./materials.html">Materiais</a>
+          <a class="nav-link" data-page="plan" href="./plano.html">Plano de estudos</a>
+          <a class="nav-link" data-page="simulados" href="./simulados.html">Simulados</a>
+          <a class="nav-link" data-page="evolution" href="./evolucao.html">Evolucao</a>
+        </nav>
+      </div>
+      <div class="sidebar-profile">
+        <strong data-profile-name>Carregando...</strong>
+        <span data-profile-role>Mentorado</span>
+      </div>
+    </aside>
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <h1 class="page-title">Evolucao</h1>
+          <p class="page-copy">Registro diario do aluno, metas cumpridas, questoes feitas, acertos e leitura util para o mentor.</p>
+        </div>
+        <button id="logoutButton" class="button button-danger">Sair</button>
+      </header>
+      <div id="appContent"></div>
+    </main>
+  </div>
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
