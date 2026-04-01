@@ -48,6 +48,10 @@ create table if not exists public.daily_checkins (
   unique (mentorado_id, referencia)
 );
 
+alter table public.simulados
+add column if not exists pdf_url text,
+add column if not exists pdf_path text;
+
 alter table public.planos_mensais
 add column if not exists mentorado_id uuid,
 add column if not exists titulo text,

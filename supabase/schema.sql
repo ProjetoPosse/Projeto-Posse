@@ -108,6 +108,8 @@ create table if not exists public.simulados (
   acertos integer not null default 0 check (acertos >= 0),
   total_questoes integer not null default 0 check (total_questoes >= 0),
   observacoes text,
+  pdf_url text,
+  pdf_path text,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
