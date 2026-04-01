@@ -160,6 +160,29 @@ function renderMentorEvolutionCards(mentorKpis) {
   `).join("") || `<div class="empty-state">Os resumos vao aparecer quando os alunos comecarem a preencher o registro diario.</div>`;
 }
 
+function buildObservationRows(checkins, mentorados, concursosMap = new Map()) {
+  const mentoradosMap = new Map((mentorados || []).map((item) => [item.id, item]));
+  return (checkins || [])
+    .filter((item) => String(item?.observacao || "").trim())
+    .map((item) => {
+      const mentorado = mentoradosMap.get(item.mentorado_id) || {};
+      return {
+        ...item,
+        mentoradoNome: mentorado.nome || mentorado.email || "Mentorado",
+        concursoNome: concursosMap.get(mentorado.concurso_id)?.nome || "Sem vinculo"
+      };
+    })
+    .sort((a, b) => dateSortValue(b.referencia) - dateSortValue(a.referencia));
+}
+
+function buildLatestObservationByMentorado(observationRows) {
+  const latestByMentorado = new Map();
+  (observationRows || []).forEach((item) => {
+    if (!latestByMentorado.has(item.mentorado_id)) latestByMentorado.set(item.mentorado_id, item);
+  });
+  return Array.from(latestByMentorado.values());
+}
+
 function setMessage(node, text, type = "") {
   if (!node) return;
   node.textContent = text;
