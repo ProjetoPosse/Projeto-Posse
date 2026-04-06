@@ -62,6 +62,12 @@ function uniqueByDate(rows, dateField = "referencia") {
   return new Set((rows || []).map((row) => row?.[dateField]).filter(Boolean)).size;
 }
 
+function shortDateLabel(value) {
+  if (!value) return "--";
+  const [year, month, day] = String(value).slice(0, 10).split("-");
+  return year && month && day ? `${day}/${month}` : String(value);
+}
+
 function dateSortValue(value) {
   if (!value) return 0;
   const normalized = String(value).length <= 10 ? `${value}T00:00:00` : String(value);
@@ -181,6 +187,126 @@ function buildLatestObservationByMentorado(observationRows) {
     if (!latestByMentorado.has(item.mentorado_id)) latestByMentorado.set(item.mentorado_id, item);
   });
   return Array.from(latestByMentorado.values());
+}
+
+function buildRecentCheckinSeries(checkins, days = 14) {
+  const byDate = new Map();
+  (checkins || []).forEach((item) => {
+    if (item?.referencia) byDate.set(item.referencia, item);
+  });
+
+  const today = new Date(`${isoToday()}T00:00:00`);
+  const series = [];
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const cursor = new Date(today);
+    cursor.setDate(today.getDate() - offset);
+    const referencia = cursor.toISOString().slice(0, 10);
+    const source = byDate.get(referencia);
+    series.push({
+      referencia,
+      label: shortDateLabel(referencia),
+      questoes: Number(source?.questoes_feitas || 0),
+      acertos: Number(source?.questoes_certas || 0),
+      horas: Number(source?.horas_estudo || 0),
+      metas: Number(source?.metas_cumpridas || 0)
+    });
+  }
+  return series;
+}
+
+function buildEvolutionSnapshot(checkins) {
+  const totalQuestoes = sumBy(checkins, "questoes_feitas");
+  const totalAcertos = sumBy(checkins, "questoes_certas");
+  const totalErros = Math.max(0, totalQuestoes - totalAcertos);
+  const totalHoras = sumBy(checkins, "horas_estudo");
+  const totalPomodoros = sumBy(checkins, "pomodoros");
+  const diasAtivos = uniqueByDate((checkins || []).filter((item) => Number(item?.horas_estudo || 0) > 0 || Number(item?.questoes_feitas || 0) > 0 || Number(item?.metas_cumpridas || 0) > 0));
+  const aproveitamento = totalQuestoes ? Math.round((totalAcertos / totalQuestoes) * 100) : 0;
+  const recentSeries = buildRecentCheckinSeries(checkins, 14);
+  const bestDay = recentSeries.reduce((best, item) => (item.questoes > (best?.questoes || 0) ? item : best), null);
+  return {
+    totalQuestoes,
+    totalAcertos,
+    totalErros,
+    totalHoras,
+    totalPomodoros,
+    diasAtivos,
+    aproveitamento,
+    recentSeries,
+    bestDay: bestDay?.questoes ? bestDay : null
+  };
+}
+
+function renderAccuracyDonut(snapshot) {
+  const percent = Math.max(0, Math.min(100, Number(snapshot?.aproveitamento || 0)));
+  const radius = 54;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - (percent / 100));
+
+  return `
+    <svg class="donut-chart" viewBox="0 0 160 160" role="img" aria-label="Grafico de aproveitamento geral">
+      <circle class="donut-track" cx="80" cy="80" r="${radius}"></circle>
+      <circle class="donut-progress" cx="80" cy="80" r="${radius}" style="stroke-dasharray:${circumference};stroke-dashoffset:${offset};"></circle>
+      <text x="80" y="76" text-anchor="middle" class="donut-value">${esc(String(percent))}%</text>
+      <text x="80" y="98" text-anchor="middle" class="donut-label">aproveitamento</text>
+    </svg>
+  `;
+}
+
+function renderRecentPerformanceChart(series) {
+  const safeSeries = series || [];
+  const hasData = safeSeries.some((item) => item.questoes > 0 || item.acertos > 0);
+  if (!hasData) {
+    return `<div class="empty-state">O grafico vai aparecer assim que houver registros diarios de estudo.</div>`;
+  }
+
+  const width = 560;
+  const height = 230;
+  const padding = { top: 18, right: 10, bottom: 36, left: 38 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const maxValue = Math.max(10, ...safeSeries.map((item) => Math.max(item.questoes, item.acertos)));
+  const groupWidth = innerWidth / safeSeries.length;
+  const barWidth = Math.max(5, Math.min(10, (groupWidth - 6) / 2));
+  const gridSteps = [0, 0.25, 0.5, 0.75, 1];
+
+  const grid = gridSteps.map((step) => {
+    const y = padding.top + innerHeight - (innerHeight * step);
+    const label = Math.round(maxValue * step);
+    return `
+      <g>
+        <line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" class="chart-grid-line"></line>
+        <text x="${padding.left - 8}" y="${y + 4}" text-anchor="end" class="chart-axis-label">${esc(String(label))}</text>
+      </g>
+    `;
+  }).join("");
+
+  const bars = safeSeries.map((item, index) => {
+    const baseX = padding.left + (index * groupWidth) + ((groupWidth - ((barWidth * 2) + 3)) / 2);
+    const questoesHeight = innerHeight * (item.questoes / maxValue);
+    const acertosHeight = innerHeight * (item.acertos / maxValue);
+    const xQuestions = baseX;
+    const xHits = baseX + barWidth + 3;
+    const yQuestions = padding.top + innerHeight - questoesHeight;
+    const yHits = padding.top + innerHeight - acertosHeight;
+    const labelX = padding.left + (index * groupWidth) + (groupWidth / 2);
+    const showLabel = index % 2 === 0 || index === safeSeries.length - 1;
+
+    return `
+      <g>
+        <rect x="${xQuestions}" y="${yQuestions}" width="${barWidth}" height="${questoesHeight}" rx="3" class="chart-bar chart-bar-questions"></rect>
+        <rect x="${xHits}" y="${yHits}" width="${barWidth}" height="${acertosHeight}" rx="3" class="chart-bar chart-bar-hits"></rect>
+        ${showLabel ? `<text x="${labelX}" y="${height - 10}" text-anchor="middle" class="chart-axis-label">${esc(item.label)}</text>` : ""}
+      </g>
+    `;
+  }).join("");
+
+  return `
+    <svg class="performance-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Grafico de questoes e acertos dos ultimos 14 dias">
+      ${grid}
+      ${bars}
+    </svg>
+  `;
 }
 
 function setMessage(node, text, type = "") {
@@ -944,8 +1070,15 @@ function renderEvolutionPage(data) {
   const metas7 = (data.monthlyCollection || []).flatMap((plan) => plan.items || []).filter((item) => item.concluida && item.concluida_em && isWithinDays(item.concluida_em.slice(0, 10), 7));
   const today = checkins.find((item) => item.referencia === isoToday());
   const recentGoals = metas7.slice(0, 6);
+  const snapshot = buildEvolutionSnapshot(checkins);
+  const performanceMetrics = [
+    { label: "Questoes resolvidas", value: String(snapshot.totalQuestoes) },
+    { label: "Acertos", value: String(snapshot.totalAcertos), tone: "green" },
+    { label: "Horas acumuladas", value: fmtHours(snapshot.totalHoras) },
+    { label: "Erros", value: String(snapshot.totalErros), tone: "red" }
+  ];
 
-  appContent.innerHTML = `<section class="grid-4"><article class="card stat-card"><div class="stat-value">${esc(String(sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Questoes 7 dias</div><div class="stat-help">Volume recente resolvido.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtPct(sumBy(last7, "questoes_certas"), sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Acerto 7 dias</div><div class="stat-help">Percentual de aproveitamento.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtHours(sumBy(last7, "horas_estudo")))}</div><div class="stat-label">Horas 7 dias</div><div class="stat-help">Horas declaradas pelo aluno.</div></article><article class="card stat-card"><div class="stat-value">${esc(String(metas7.length))}</div><div class="stat-label">Metas cumpridas</div><div class="stat-help">Ultimos 7 dias.</div></article></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Registro do Dia</h2><span class="badge gold">${esc(fmtDate(isoToday()))}</span></div><form class="form-grid" id="dailyCheckinForm"><label><span class="field-label">Data</span><input class="input" name="referencia" type="date" value="${esc(today?.referencia || isoToday())}" required></label><label><span class="field-label">Horas estudadas</span><input class="input" name="horas_estudo" type="number" step="0.5" min="0" value="${esc(String(today?.horas_estudo ?? today?.horas ?? 0))}"></label><label><span class="field-label">Questoes feitas</span><input class="input" name="questoes_feitas" type="number" min="0" value="${esc(String(today?.questoes_feitas ?? today?.questoes ?? 0))}"></label><label><span class="field-label">Questoes certas</span><input class="input" name="questoes_certas" type="number" min="0" value="${esc(String(today?.questoes_certas ?? today?.acertos ?? 0))}"></label><label><span class="field-label">Pomodoros</span><input class="input" name="pomodoros" type="number" min="0" value="${esc(String(today?.pomodoros ?? 0))}"></label><label><span class="field-label">Metas cumpridas</span><input class="input" name="metas_cumpridas" type="number" min="0" value="${esc(String(today?.metas_cumpridas ?? 0))}"></label><label><span class="field-label">Observacao do dia</span><textarea class="textarea" name="observacao" placeholder="Como foi o dia, onde travou, o que funcionou melhor.">${esc(today?.observacao || "")}</textarea></label><button class="button button-primary" type="submit">Salvar meu dia</button><div class="message" data-checkin-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Metas concluidas recentemente</h2></div><div class="list">${recentGoals.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || "Meta concluida no plano mensal.")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge green">${esc(fmtDateTime(item.concluida_em))}</span></div></div>`).join("") || `<div class="empty-state">Nenhuma meta concluida nos ultimos 7 dias.</div>`}</div></article></section><section class="card" style="margin-top:1rem;"><div class="card-head"><h2 class="card-title">Historico diario</h2><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Horas</th><th>Questoes</th><th>Acertos</th><th>%</th><th>Pomodoros</th><th>Metas</th></tr></thead><tbody>${checkins.map((item) => `<tr><td>${esc(fmtDate(item.referencia))}</td><td>${esc(fmtHours(item.horas_estudo ?? item.horas))}</td><td>${esc(String(item.questoes_feitas ?? item.questoes ?? 0))}</td><td>${esc(String(item.questoes_certas ?? item.acertos ?? 0))}</td><td>${esc(fmtPct(item.questoes_certas ?? item.acertos, item.questoes_feitas ?? item.questoes))}</td><td>${esc(String(item.pomodoros ?? 0))}</td><td>${esc(String(item.metas_cumpridas ?? 0))}</td></tr>`).join("") || `<tr><td colspan="7" class="empty-state">Nenhum registro diario encontrado.</td></tr>`}</tbody></table></div></section>`;
+  appContent.innerHTML = `<section class="card performance-overview"><div class="card-head"><div><h2 class="card-title">Desempenho Geral</h2><p class="page-copy">Painel consolidado para acompanhar volume, aproveitamento e constancia ao longo da preparacao.</p></div><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="performance-grid"><div class="performance-metrics">${performanceMetrics.map((item) => `<article class="performance-stat"><span class="performance-stat-label">${esc(item.label)}</span><strong class="performance-stat-value${item.tone ? ` is-${item.tone}` : ""}">${esc(item.value)}</strong></article>`).join("")}</div><article class="chart-panel"><div class="chart-panel-head"><strong>Aproveitamento geral</strong><span>${esc(`${snapshot.aproveitamento}%`)}</span></div><div class="chart-panel-body donut-panel">${renderAccuracyDonut(snapshot)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-green"></i>${esc(`${snapshot.totalAcertos} acertos`)}</span><span class="legend-item"><i class="legend-dot is-red"></i>${esc(`${snapshot.totalErros} erros`)}</span><span class="legend-item"><i class="legend-dot is-gold"></i>${esc(`${snapshot.diasAtivos} dias ativos`)}</span></div></article><article class="chart-panel chart-panel-wide"><div class="chart-panel-head"><strong>Evolucao recente</strong><span>ultimos 14 dias</span></div><div class="chart-panel-body">${renderRecentPerformanceChart(snapshot.recentSeries)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-gold"></i>Questoes feitas</span><span class="legend-item"><i class="legend-dot is-green"></i>Questoes certas</span><span class="legend-item">${esc(snapshot.bestDay ? `Melhor dia: ${snapshot.bestDay.questoes} questoes em ${shortDateLabel(snapshot.bestDay.referencia)}` : "Sem pico de questoes ainda")}</span><span class="legend-item">${esc(`${snapshot.totalPomodoros} pomodoros acumulados`)}</span></div></article></div></section><section class="grid-4" style="margin-top:1rem;"><article class="card stat-card"><div class="stat-value">${esc(String(sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Questoes 7 dias</div><div class="stat-help">Volume recente resolvido.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtPct(sumBy(last7, "questoes_certas"), sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Acerto 7 dias</div><div class="stat-help">Percentual de aproveitamento.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtHours(sumBy(last7, "horas_estudo")))}</div><div class="stat-label">Horas 7 dias</div><div class="stat-help">Horas declaradas pelo aluno.</div></article><article class="card stat-card"><div class="stat-value">${esc(String(metas7.length))}</div><div class="stat-label">Metas cumpridas</div><div class="stat-help">Ultimos 7 dias.</div></article></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Registro do Dia</h2><span class="badge gold">${esc(fmtDate(isoToday()))}</span></div><form class="form-grid" id="dailyCheckinForm"><label><span class="field-label">Data</span><input class="input" name="referencia" type="date" value="${esc(today?.referencia || isoToday())}" required></label><label><span class="field-label">Horas estudadas</span><input class="input" name="horas_estudo" type="number" step="0.5" min="0" value="${esc(String(today?.horas_estudo ?? today?.horas ?? 0))}"></label><label><span class="field-label">Questoes feitas</span><input class="input" name="questoes_feitas" type="number" min="0" value="${esc(String(today?.questoes_feitas ?? today?.questoes ?? 0))}"></label><label><span class="field-label">Questoes certas</span><input class="input" name="questoes_certas" type="number" min="0" value="${esc(String(today?.questoes_certas ?? today?.acertos ?? 0))}"></label><label><span class="field-label">Pomodoros</span><input class="input" name="pomodoros" type="number" min="0" value="${esc(String(today?.pomodoros ?? 0))}"></label><label><span class="field-label">Metas cumpridas</span><input class="input" name="metas_cumpridas" type="number" min="0" value="${esc(String(today?.metas_cumpridas ?? 0))}"></label><label><span class="field-label">Observacao do dia</span><textarea class="textarea" name="observacao" placeholder="Como foi o dia, onde travou, o que funcionou melhor.">${esc(today?.observacao || "")}</textarea></label><button class="button button-primary" type="submit">Salvar meu dia</button><div class="message" data-checkin-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Metas concluidas recentemente</h2></div><div class="list">${recentGoals.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || "Meta concluida no plano mensal.")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge green">${esc(fmtDateTime(item.concluida_em))}</span></div></div>`).join("") || `<div class="empty-state">Nenhuma meta concluida nos ultimos 7 dias.</div>`}</div></article></section><section class="card" style="margin-top:1rem;"><div class="card-head"><h2 class="card-title">Historico diario</h2><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Horas</th><th>Questoes</th><th>Acertos</th><th>%</th><th>Pomodoros</th><th>Metas</th></tr></thead><tbody>${checkins.map((item) => `<tr><td>${esc(fmtDate(item.referencia))}</td><td>${esc(fmtHours(item.horas_estudo ?? item.horas))}</td><td>${esc(String(item.questoes_feitas ?? item.questoes ?? 0))}</td><td>${esc(String(item.questoes_certas ?? item.acertos ?? 0))}</td><td>${esc(fmtPct(item.questoes_certas ?? item.acertos, item.questoes_feitas ?? item.questoes))}</td><td>${esc(String(item.pomodoros ?? 0))}</td><td>${esc(String(item.metas_cumpridas ?? 0))}</td></tr>`).join("") || `<tr><td colspan="7" class="empty-state">Nenhum registro diario encontrado.</td></tr>`}</tbody></table></div></section>`;
 
   document.getElementById("dailyCheckinForm")?.addEventListener("submit", handleDailyCheckinSubmit);
 }
