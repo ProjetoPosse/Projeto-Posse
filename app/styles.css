@@ -428,6 +428,72 @@ button, input, select, textarea { font: inherit; }
 .chart-bar-hits {
   fill: var(--green);
 }
+.mentor-pulse-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.mentor-pulse-card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(32, 38, 53, 0.48) 0%, rgba(21, 24, 33, 0.92) 100%);
+  padding: 1rem;
+}
+.mentor-pulse-chart {
+  margin-top: 0.8rem;
+}
+.mentor-pulse-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+.mentor-pulse-metrics span {
+  display: block;
+  padding: 0.7rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.mentor-pulse-metrics strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+}
+.mentor-pulse-metrics small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.mentor-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+  min-height: 3.1em;
+}
+.mini-activity-chart {
+  width: 100%;
+  height: auto;
+}
+.mini-chart-bar {
+  fill: var(--gold);
+  opacity: 0.95;
+}
+.mini-chart-label {
+  fill: var(--muted);
+  font-size: 9px;
+  font-family: "Outfit", sans-serif;
+}
+.mentor-mini-empty {
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.84rem;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
 .week-strip-row { display: grid; gap: 0.45rem; }
 .week-strip-row header { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; }
 .anchor-section { scroll-margin-top: 1.5rem; }
@@ -438,6 +504,9 @@ button, input, select, textarea { font: inherit; }
   .performance-grid {
     grid-template-columns: 1fr;
   }
+  .mentor-pulse-grid {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 720px) {
   .app-main, .app-sidebar, .login-card { padding: 1.1rem; }
@@ -445,5 +514,8 @@ button, input, select, textarea { font: inherit; }
   .app-topbar { flex-direction: column; align-items: flex-start; }
   .performance-metrics {
     grid-template-columns: 1fr;
+  }
+  .mentor-pulse-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
