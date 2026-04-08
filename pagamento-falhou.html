@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento nao aprovado | Projeto Posse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#07070b; --card:rgba(20,20,30,.92); --border:rgba(255,255,255,.08); --text:#f3f4f9; --muted:#b8b9c7; --gold:#c9a84c; --success:#78d68b; --pending:#f3d173; --failure:#ff8d8d; --shadow:0 28px 90px rgba(0,0,0,.38); }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:'Outfit',sans-serif; background:radial-gradient(circle at top, rgba(201,168,76,.12), transparent 30%), linear-gradient(180deg, #11121d 0%, var(--bg) 65%); color:var(--text); }
+    body[data-visual-state="success"] { --accent:var(--success); --accent-soft:rgba(120,214,139,.14); }
+    body[data-visual-state="pending"] { --accent:var(--pending); --accent-soft:rgba(243,209,115,.14); }
+    body[data-visual-state="failure"] { --accent:var(--failure); --accent-soft:rgba(255,141,141,.14); }
+    .status-shell { width:min(900px, calc(100% - 2rem)); margin:0 auto; padding:2rem 0 4rem; }
+    .brand { display:flex; justify-content:space-between; align-items:center; gap:1rem; color:var(--muted); font-size:.92rem; margin-bottom:1.5rem; }
+    .brand a { color:var(--text); text-decoration:none; font-weight:700; letter-spacing:.03em; }
+    .status-card { background:var(--card); border:1px solid var(--border); border-radius:28px; padding:2.6rem; box-shadow:var(--shadow); backdrop-filter:blur(18px); }
+    .status-icon { width:84px; height:84px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-soft, rgba(201,168,76,.14)); border:1px solid color-mix(in srgb, var(--accent, var(--gold)) 40%, transparent); color:var(--accent, var(--gold)); font-size:2rem; font-weight:700; margin-bottom:1.25rem; }
+    .status-badge { display:inline-flex; align-items:center; gap:.45rem; padding:.5rem .9rem; border-radius:999px; font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; font-weight:700; background:rgba(201,168,76,.12); color:var(--gold); border:1px solid rgba(201,168,76,.22); margin-bottom:1rem; }
+    .status-badge.is-success { background:rgba(120,214,139,.14); color:var(--success); border-color:rgba(120,214,139,.25); }
+    .status-badge.is-pending { background:rgba(243,209,115,.14); color:var(--pending); border-color:rgba(243,209,115,.25); }
+    .status-badge.is-failure { background:rgba(255,141,141,.14); color:var(--failure); border-color:rgba(255,141,141,.25); }
+    h1 { margin:0 0 .8rem; font-size:clamp(2rem,4vw,3rem); line-height:1.04; }
+    #paymentMessage { margin:0; color:var(--muted); font-size:1rem; line-height:1.7; max-width:60ch; }
+    .details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin:2rem 0; }
+    .detail-item { margin:0; padding:1rem 1.1rem; border-radius:18px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05); }
+    .detail-item dt { margin:0 0 .35rem; font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); }
+    .detail-item dd { margin:0; font-size:.98rem; color:var(--text); line-height:1.5; word-break:break-word; }
+    .actions { display:flex; gap:1rem; flex-wrap:wrap; margin-top:2rem; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; padding:.95rem 1.25rem; border-radius:14px; font-weight:700; text-decoration:none; transition:transform .2s ease, box-shadow .2s ease; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg, var(--gold), #f4d581); color:#11121d; box-shadow:0 12px 30px rgba(201,168,76,.22); }
+    .btn-secondary { border:1px solid rgba(255,255,255,.12); color:var(--text); background:rgba(255,255,255,.02); }
+    .helper { margin:1rem 0 0; color:var(--muted); font-size:.9rem; line-height:1.65; }
+    @media (max-width:720px) { .status-shell { width:min(100% - 1rem, 900px); padding-top:1rem; } .brand { align-items:flex-start; flex-direction:column; } .status-card { padding:1.5rem; border-radius:22px; } .details { grid-template-columns:1fr; } .actions { flex-direction:column; } .btn { width:100%; } }
+  </style>
+</head>
+<body data-payment-state="failure" data-visual-state="failure">
+  <div class="status-shell">
+    <div class="brand">
+      <a href="/">Projeto Posse</a>
+      <span>Validacao do pagamento via Mercado Pago</span>
+    </div>
+    <div class="status-card">
+      <div class="status-icon" id="paymentIcon">...</div>
+      <div class="status-badge" id="paymentBadge">Pagamento nao aprovado</div>
+      <h1 id="paymentTitle">Nao identificamos aprovacao</h1>
+      <p id="paymentMessage">Voce pode revisar o pagamento e tentar novamente quando quiser.</p>
+      <dl class="details" id="paymentDetails"></dl>
+      <div class="actions">
+        <a href="/" class="btn btn-primary">Voltar ao site</a>
+        <a href="https://wa.me/5567992306627" class="btn btn-secondary" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
+      </div>
+      <p class="helper" id="paymentHelper">Esta pagina consulta o status diretamente pelo nosso backend antes de exibir a confirmacao final.</p>
+    </div>
+  </div>
+  <script src="/assets/payment-status.js"></script>
+</body>
+</html>

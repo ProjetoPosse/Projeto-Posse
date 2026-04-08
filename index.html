@@ -165,6 +165,169 @@ footer a{color:var(--gold);text-decoration:none}
   .about-card{padding:1.4rem}
   .about-media{height:300px}
 }
+.checkout-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(6, 7, 11, 0.68);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 1200;
+}
+.checkout-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+body.checkout-open {
+  overflow: hidden;
+}
+.checkout-modal__dialog {
+  width: min(560px, 100%);
+  background: linear-gradient(180deg, rgba(20,20,30,.98), rgba(10,10,15,.98));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 26px;
+  padding: 1.8rem;
+  box-shadow: 0 30px 90px rgba(0,0,0,.38);
+  position: relative;
+}
+.checkout-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  color: var(--txt);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.checkout-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  background: rgba(201,168,76,.12);
+  border: 1px solid rgba(201,168,76,.22);
+  color: var(--gold);
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.checkout-modal h3 {
+  margin: 0 0 .6rem;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
+  line-height: 1.05;
+}
+.checkout-modal p {
+  margin: 0;
+  color: var(--txt2);
+  line-height: 1.7;
+}
+.checkout-plan {
+  margin: 1.35rem 0 1.1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.checkout-plan strong {
+  display: block;
+  color: var(--txt);
+  font-size: 1rem;
+  margin-bottom: .35rem;
+}
+.checkout-plan span {
+  display: block;
+  color: var(--gold);
+  font-size: .94rem;
+}
+.checkout-form {
+  display: grid;
+  gap: .95rem;
+  margin-top: 1.2rem;
+}
+.checkout-form label {
+  display: block;
+  font-size: .75rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: .45rem;
+}
+.checkout-form input {
+  width: 100%;
+  padding: .8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+  color: var(--txt);
+  font-size: .96rem;
+  font-family: inherit;
+  outline: none;
+}
+.checkout-form input:focus {
+  border-color: rgba(201,168,76,.5);
+  box-shadow: 0 0 0 3px rgba(201,168,76,.08);
+}
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .9rem;
+}
+.checkout-submit {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--gold), #f4d581);
+  color: var(--bg);
+  padding: .95rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s ease, opacity .2s ease;
+}
+.checkout-submit:hover {
+  transform: translateY(-1px);
+}
+.checkout-submit:disabled {
+  cursor: wait;
+  opacity: .72;
+  transform: none;
+}
+.checkout-error {
+  display: none;
+  padding: .8rem .95rem;
+  border-radius: 12px;
+  background: rgba(255,114,114,.08);
+  border: 1px solid rgba(255,114,114,.18);
+  color: #ffb0b0;
+  font-size: .88rem;
+}
+.checkout-note {
+  font-size: .8rem;
+  color: var(--txt3);
+}
+@media (max-width: 700px) {
+  .checkout-modal__dialog {
+    padding: 1.3rem;
+    border-radius: 22px;
+  }
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -270,7 +433,7 @@ footer a{color:var(--gold);text-decoration:none}
           <li>Metas mensais e individualizadas para o seu foco</li>
           <li>Direcionamento prático para ganhar ritmo</li>
         </ul>
-        <a href="https://wa.me/5567992306627?text=Olá!%20Tenho%20interesse%20na%20Preparação%20com%20Metas" class="pc-btn pc-btn-gold" target="_blank">Começar Agora</a>
+        <a href="#checkout" class="pc-btn pc-btn-gold" onclick="return openCheckoutModal('preparacao_metas', this)">Começar Agora</a>
       </div>
 
       <!-- MENTORIA -->
@@ -291,12 +454,52 @@ footer a{color:var(--gold);text-decoration:none}
           <li>Suporte direto para ajustes de rota</li>
           <li>Acompanhamento da evolução ao longo da preparação</li>
         </ul>
-        <a href="https://wa.me/5567992306627?text=Olá!%20Tenho%20interesse%20na%20Mentoria%20Individual" class="pc-btn pc-btn-outline" target="_blank">Quero a Mentoria</a>
+        <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('mentoria_individual', this)">Quero a Mentoria</a>
       </div>
 
     </div>
   </div>
 </section>
+
+<!-- CHECKOUT -->
+<div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+  <div class="checkout-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button type="button" class="checkout-close" onclick="return closeCheckoutModal()" aria-label="Fechar">x</button>
+    <div class="checkout-kicker">Pagamento seguro via Mercado Pago</div>
+    <h3 id="checkoutTitle">Finalize seu plano</h3>
+    <p>Preencha os dados abaixo para seguir para Pix, cartao ou boleto dentro do ambiente seguro do Mercado Pago.</p>
+
+    <div class="checkout-plan" id="checkoutPlanSummary">
+      <strong>Selecione um plano</strong>
+      <span>Os detalhes do checkout aparecem aqui.</span>
+    </div>
+
+    <form id="checkoutForm" class="checkout-form">
+      <input type="hidden" id="checkoutPlanCode">
+      <div>
+        <label for="checkoutName">Nome completo *</label>
+        <input type="text" id="checkoutName" required maxlength="120" placeholder="Seu nome completo">
+      </div>
+      <div class="checkout-grid">
+        <div>
+          <label for="checkoutPhone">WhatsApp *</label>
+          <input type="tel" id="checkoutPhone" required maxlength="16" placeholder="(67) 99999-9999">
+        </div>
+        <div>
+          <label for="checkoutEmail">E-mail</label>
+          <input type="email" id="checkoutEmail" maxlength="160" placeholder="seu@email.com">
+        </div>
+      </div>
+      <div>
+        <label for="checkoutTarget">Concurso-alvo</label>
+        <input type="text" id="checkoutTarget" maxlength="160" placeholder="Ex.: TJ-MS Analista, TRF-3, MPU...">
+      </div>
+      <div class="checkout-error" id="checkoutError"></div>
+      <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
+      <p class="checkout-note">Voce sera redirecionado para concluir o pagamento com Pix, cartao ou boleto. O Combo de Simulados continua sob consulta personalizada.</p>
+    </form>
+  </div>
+</div>
 
 <!-- MÉTODO -->
 <section id="metodo" style="background:var(--bg2)">
@@ -536,6 +739,172 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if(t){ t.scrollIntoView({behavior:'smooth'}); document.getElementById('navLinks').classList.remove('active'); }
   });
 });
+const CHECKOUT_PLANS = {
+  preparacao_metas: {
+    title: 'Preparacao com Metas',
+    price: 'R$ 249,00',
+    description: 'Encontro inicial + direcionamento de estudos'
+  },
+  mentoria_individual: {
+    title: 'Mentoria Individual',
+    price: 'R$ 749,00',
+    description: 'Sessoes individuais on-line com acompanhamento personalizado'
+  }
+};
+
+const checkoutModal = document.getElementById('checkoutModal');
+const checkoutForm = document.getElementById('checkoutForm');
+const checkoutError = document.getElementById('checkoutError');
+const checkoutSubmit = document.getElementById('checkoutSubmit');
+const checkoutPlanInput = document.getElementById('checkoutPlanCode');
+const checkoutPlanSummary = document.getElementById('checkoutPlanSummary');
+const checkoutNameInput = document.getElementById('checkoutName');
+const checkoutPhoneInput = document.getElementById('checkoutPhone');
+let checkoutTrigger = null;
+
+function renderCheckoutSummary(plan) {
+  checkoutPlanSummary.innerHTML = '<strong>' + plan.title + '</strong><span>' + plan.price + ' - ' + plan.description + '</span>';
+}
+
+function showCheckoutError(message) {
+  checkoutError.textContent = message;
+  checkoutError.style.display = 'block';
+}
+
+function hideCheckoutError() {
+  checkoutError.textContent = '';
+  checkoutError.style.display = 'none';
+}
+
+function openCheckoutModal(planCode, trigger) {
+  const plan = CHECKOUT_PLANS[planCode];
+  if (!plan || !checkoutModal) return false;
+  checkoutTrigger = trigger || null;
+  checkoutPlanInput.value = planCode;
+  renderCheckoutSummary(plan);
+  hideCheckoutError();
+  checkoutModal.classList.add('active');
+  checkoutModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('checkout-open');
+  setTimeout(function () {
+    checkoutNameInput.focus();
+  }, 60);
+  return false;
+}
+
+function closeCheckoutModal() {
+  if (!checkoutModal) return false;
+  checkoutModal.classList.remove('active');
+  checkoutModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('checkout-open');
+  hideCheckoutError();
+  if (checkoutTrigger && typeof checkoutTrigger.focus === 'function') {
+    checkoutTrigger.focus();
+  }
+  return false;
+}
+
+function maskPhone(value) {
+  const digits = value.replace(/\D+/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
+  if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+  return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+if (checkoutPhoneInput) {
+  checkoutPhoneInput.addEventListener('input', function () {
+    checkoutPhoneInput.value = maskPhone(checkoutPhoneInput.value);
+  });
+}
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && checkoutModal && checkoutModal.classList.contains('active')) {
+    closeCheckoutModal();
+  }
+});
+
+if (checkoutModal) {
+  checkoutModal.addEventListener('click', function (event) {
+    if (event.target === checkoutModal) {
+      closeCheckoutModal();
+    }
+  });
+}
+
+async function handleCheckoutSubmit(event) {
+  event.preventDefault();
+  hideCheckoutError();
+
+  const planCode = checkoutPlanInput.value;
+  const customerName = checkoutNameInput.value.trim();
+  const customerPhone = checkoutPhoneInput.value.replace(/\D+/g, '');
+  const customerEmail = document.getElementById('checkoutEmail').value.trim();
+  const concursoTarget = document.getElementById('checkoutTarget').value.trim();
+
+  if (!CHECKOUT_PLANS[planCode]) {
+    showCheckoutError('Selecione um plano valido para continuar.');
+    return;
+  }
+  if (customerName.length < 3) {
+    showCheckoutError('Informe seu nome completo.');
+    checkoutNameInput.focus();
+    return;
+  }
+  if (customerPhone.length < 10) {
+    showCheckoutError('Informe um WhatsApp valido com DDD.');
+    checkoutPhoneInput.focus();
+    return;
+  }
+  if (customerEmail && !isValidEmail(customerEmail)) {
+    showCheckoutError('Informe um e-mail valido ou deixe o campo em branco.');
+    document.getElementById('checkoutEmail').focus();
+    return;
+  }
+
+  checkoutSubmit.disabled = true;
+  checkoutSubmit.textContent = 'Abrindo checkout...';
+
+  try {
+    const response = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        planCode,
+        customerName,
+        customerPhone,
+        customerEmail,
+        concursoTarget
+      })
+    });
+
+    const data = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      throw new Error(data.error || 'Nao foi possivel iniciar o pagamento agora.');
+    }
+    if (!data.initPoint) {
+      throw new Error('O Mercado Pago nao retornou um link de checkout valido.');
+    }
+
+    window.location.href = data.initPoint;
+  } catch (error) {
+    showCheckoutError(error.message || 'Nao foi possivel iniciar o pagamento agora.');
+  } finally {
+    checkoutSubmit.disabled = false;
+    checkoutSubmit.textContent = 'Ir para o Mercado Pago';
+  }
+}
+
+if (checkoutForm) {
+  checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+}
 function sendInterest() {
   var n = document.getElementById('fi_name').value;
   var p = document.getElementById('fi_phone').value;
