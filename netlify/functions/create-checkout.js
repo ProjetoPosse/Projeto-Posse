@@ -122,7 +122,7 @@ exports.handler = async function handler(event) {
   const successUrl = buildAbsoluteUrl(process.env.MERCADO_PAGO_SUCCESS_URL, appBaseUrl ? `${appBaseUrl}/pagamento-sucesso.html` : "");
   const pendingUrl = buildAbsoluteUrl(process.env.MERCADO_PAGO_PENDING_URL, appBaseUrl ? `${appBaseUrl}/pagamento-pendente.html` : "");
   const failureUrl = buildAbsoluteUrl(process.env.MERCADO_PAGO_FAILURE_URL, appBaseUrl ? `${appBaseUrl}/pagamento-falhou.html` : "");
-  const notificationUrl = buildAbsoluteUrl(process.env.MERCADO_PAGO_WEBHOOK_URL, "");
+  const notificationUrl = buildAbsoluteUrl(process.env.MERCADO_PAGO_WEBHOOK_URL, appBaseUrl ? `${appBaseUrl}/.netlify/functions/mercadopago-webhook` : "");
 
   if (!successUrl || !pendingUrl || !failureUrl) {
     return json(500, { error: "As URLs de retorno do Mercado Pago nao estao configuradas corretamente." });
