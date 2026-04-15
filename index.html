@@ -103,15 +103,29 @@ section{padding:6rem 2rem}
 .pc-kicker::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.75}
 .pc-features{list-style:none;margin-bottom:2rem}
 .pc-features li{padding:.5rem 0;font-size:.85rem;color:var(--txt2);border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:.6rem;font-weight:400}
-.pc-features li::before{content:'✓';color:var(--gold);font-weight:700;font-size:.75rem}
-.pc-btn{display:block;text-align:center;padding:.9rem;border-radius:8px;font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;transition:all .3s}
-.pc-btn-gold{background:var(--gold);color:var(--bg)}
-.pc-btn-gold:hover{background:var(--gold-l);box-shadow:0 8px 30px rgba(201,168,76,.25)}
-.pc-btn-outline{border:1px solid var(--border2);color:var(--gold)}
-.pc-btn-outline:hover{background:var(--gold-g)}
-
-/* ABOUT */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
+  .pc-features li::before{content:'✓';color:var(--gold);font-weight:700;font-size:.75rem}
+  .pc-btn{display:block;text-align:center;padding:.9rem;border-radius:8px;font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;transition:all .3s}
+  .pc-btn-gold{background:var(--gold);color:var(--bg)}
+  .pc-btn-gold:hover{background:var(--gold-l);box-shadow:0 8px 30px rgba(201,168,76,.25)}
+  .pc-btn-outline{border:1px solid var(--border2);color:var(--gold)}
+  .pc-btn-outline:hover{background:var(--gold-g)}
+  .deliveries-stack{display:grid;gap:1.8rem;margin-top:3rem}
+  .delivery-group{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid var(--border);border-radius:24px;padding:2.2rem}
+  .delivery-kicker{display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .72rem;border-radius:999px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  .delivery-kicker::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.75}
+  .delivery-title{font-size:1.9rem;font-weight:700;margin-bottom:.7rem}
+  .delivery-sub{max-width:760px;color:var(--txt2);font-size:.95rem;line-height:1.8;font-weight:300}
+  .delivery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:1.8rem}
+  .delivery-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:1.5rem;min-height:220px;transition:all .35s}
+  .delivery-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+  .delivery-card.highlight{border-color:rgba(201,168,76,.22);box-shadow:inset 0 0 0 1px rgba(201,168,76,.06)}
+  .delivery-step{display:inline-flex;align-items:center;gap:.45rem;padding:.42rem .78rem;border-radius:999px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.14);font-size:.66rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  .delivery-step::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .delivery-card h4{font-size:1.08rem;line-height:1.35;margin-bottom:.8rem}
+  .delivery-card p{color:var(--txt2);font-size:.88rem;line-height:1.72;font-weight:300}
+  
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
 .about-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;transition:all .4s}
 .about-card:hover{border-color:var(--border2)}
 .about-media{position:relative;height:340px;border-radius:14px;overflow:hidden;margin-bottom:1.5rem;background:linear-gradient(180deg,rgba(201,168,76,.12),rgba(20,20,30,.15));border:1px solid rgba(201,168,76,.12)}
@@ -200,21 +214,25 @@ footer{text-align:center;padding:2rem;border-top:1px solid var(--border);font-si
 footer a{color:var(--gold);text-decoration:none}
 
 /* RESPONSIVE */
-@media(max-width:900px){
-  .pricing-grid,.method-grid{grid-template-columns:1fr}
-  .about-grid{grid-template-columns:1fr}
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
-}
-@media(max-width:700px){
-  .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(7,7,11,.97);flex-direction:column;justify-content:center;align-items:center;gap:2rem;backdrop-filter:blur(20px)}
+  @media(max-width:900px){
+    .pricing-grid,.method-grid{grid-template-columns:1fr}
+    .delivery-grid{grid-template-columns:repeat(2,1fr)}
+    .about-grid{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
+  }
+  @media(max-width:700px){
+    .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(7,7,11,.97);flex-direction:column;justify-content:center;align-items:center;gap:2rem;backdrop-filter:blur(20px)}
   .nav-links.active{display:flex}
-  .hamburger{display:flex}
-  .hero h1{font-size:2.4rem}
-  section{padding:4rem 1.5rem}
-  .pricing-grid{gap:1.2rem}
-  .about-card{padding:1.4rem}
-  .about-media{height:300px}
-}
+    .hamburger{display:flex}
+    .hero h1{font-size:2.4rem}
+    section{padding:4rem 1.5rem}
+    .pricing-grid{gap:1.2rem}
+    .delivery-group{padding:1.5rem}
+    .delivery-title{font-size:1.5rem}
+    .delivery-grid{grid-template-columns:1fr}
+    .about-card{padding:1.4rem}
+    .about-media{height:300px}
+  }
 .checkout-modal {
   position: fixed;
   inset: 0;
@@ -468,56 +486,126 @@ body.checkout-open {
       </div>
 
       <!-- PREPARAÇÃO -->
-      <div class="price-card featured fade">
-        <div class="pc-icon">📊</div>
-        <div class="pc-kicker">Programa de entrada</div>
-        <div class="pc-name">Programa Preparação com Metas</div>
-        <div class="pc-desc">Para quem precisa sair do estudo solto e entrar em uma rotina inteligente, com direção clara já nas primeiras semanas.</div>
+        <div class="price-card featured fade">
+          <div class="pc-icon">📊</div>
+          <div class="pc-kicker">Programa de entrada</div>
+          <div class="pc-name">Programa Preparação com Metas</div>
+          <div class="pc-desc">Para quem precisa sair do estudo solto e entrar em uma rotina inteligente, com direção clara já nas primeiras semanas.</div>
         <div class="pc-price">
           <span class="pc-currency">R$</span>
           <span class="pc-value">249</span>
           <span class="pc-currency">,00</span>
         </div>
-        <div class="pc-period">primeiros 30 dias: diagnóstico, organização da rotina e metas mensais viáveis</div>
-        <ul class="pc-features">
-          <li>Briefing inicial com leitura do seu momento</li>
-          <li>Plano mensal com metas realistas e cobrança inteligente</li>
-          <li>Prioridade de disciplinas e sequência de estudo</li>
-          <li>Direcionamento prático para ganhar ritmo sem desperdício</li>
-          <li>Clareza sobre o que fazer nas próximas semanas</li>
-        </ul>
-        <a href="#checkout" class="pc-btn pc-btn-gold" onclick="return openCheckoutModal('preparacao_metas', this)">Quero organizar meus estudos</a>
-      </div>
+          <div class="pc-period">primeiros 30 dias: Raio-X inicial, metas viáveis, suporte próximo e correção de rota</div>
+          <ul class="pc-features">
+            <li>1º encontro individual (Raio-X)</li>
+            <li>Plano personalizado com metas</li>
+            <li>Suporte via WhatsApp</li>
+            <li>Feedback periódico da sua evolução</li>
+            <li>Direção clara para as próximas semanas</li>
+          </ul>
+          <a href="#checkout" class="pc-btn pc-btn-gold" onclick="return openCheckoutModal('preparacao_metas', this)">Quero organizar meus estudos</a>
+        </div>
 
       <!-- MENTORIA -->
-      <div class="price-card fade">
-        <div class="pc-icon">🎯</div>
-        <div class="pc-kicker">Programa premium</div>
-        <div class="pc-name">Programa Mentoria Individual</div>
-        <div class="pc-desc">Para quem quer acompanhamento próximo, tomada de decisão estratégica e correção de rota até a prova.</div>
+        <div class="price-card fade">
+          <div class="pc-icon">🎯</div>
+          <div class="pc-kicker">Programa premium</div>
+          <div class="pc-name">Programa Mentoria Individual</div>
+          <div class="pc-desc">Para quem quer acompanhamento próximo, tomada de decisão estratégica e correção de rota até a prova.</div>
         <div class="pc-price">
           <span class="pc-currency">R$</span>
           <span class="pc-value">749</span>
           <span class="pc-currency">,00</span>
         </div>
-        <div class="pc-period">primeiros 30 dias: diagnóstico profundo, plano sob medida e cronograma de acompanhamento</div>
-        <ul class="pc-features">
-          <li>Diagnóstico estratégico e plano sob medida</li>
-          <li>Sessões individuais com revisão de desempenho</li>
-          <li>Ajustes de rota conforme edital, banca e rendimento</li>
-          <li>Suporte direto para decisões críticas da preparação</li>
-          <li>Acompanhamento da evolução até a reta final</li>
-          <li>Mentoria conduzida por quem atua nas áreas orientadas</li>
-        </ul>
-        <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('mentoria_individual', this)">Quero acompanhamento premium</a>
+          <div class="pc-period">primeiros 30 dias: Raio-X aprofundado, plano sob medida, suporte direto e feedback recorrente</div>
+          <ul class="pc-features">
+            <li>1º encontro individual (Raio-X)</li>
+            <li>Plano estratégico personalizado</li>
+            <li>Suporte próximo via WhatsApp</li>
+            <li>Feedback periódico da sua evolução</li>
+            <li>Ajustes de rota conforme edital, banca e rendimento</li>
+            <li>Mentoria conduzida por quem vive as áreas orientadas</li>
+          </ul>
+          <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('mentoria_individual', this)">Quero acompanhamento premium</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="fade">
+        <div class="stag">Entregáveis</div>
+        <div class="stitle">O que você recebe na prática</div>
+        <p class="ssub">Sem promessa vazia e sem inflar com bônus. A mentoria é apresentada pelo que ela realmente entrega: diagnóstico, plano, suporte e feedback.</p>
       </div>
 
-    </div>
-  </div>
-</section>
+      <div class="deliveries-stack">
+        <div class="delivery-group fade">
+          <div class="delivery-kicker">Preparação com Metas</div>
+          <div class="delivery-title">Organização, constância e correção de rota.</div>
+          <p class="delivery-sub">Para sair do estudo desorganizado e entrar em uma preparação com direção, metas viáveis e acompanhamento prático no dia a dia.</p>
 
-<!-- CHECKOUT -->
-<div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+          <div class="delivery-grid">
+            <div class="delivery-card highlight">
+              <div class="delivery-step">Etapa 01</div>
+              <h4>1º Encontro Individual (Raio-X)</h4>
+              <p>Diagnóstico inicial para entender sua rotina, sua bagagem, seus pontos fortes e os gargalos que hoje travam sua evolução.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 02</div>
+              <h4>Plano Personalizado com Metas</h4>
+              <p>Organização do estudo com prioridades claras, metas objetivas e direcionamento compatível com o seu concurso e com a sua realidade.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 03</div>
+              <h4>Suporte via WhatsApp</h4>
+              <p>Canal direto para tirar dúvidas, ajustar a execução e evitar desperdício de tempo com decisões erradas ao longo da preparação.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 04</div>
+              <h4>Feedback Periódico da Sua Evolução</h4>
+              <p>Acompanhamento do seu desempenho para identificar falhas, reforçar acertos e manter consistência no que realmente importa.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="delivery-group fade">
+          <div class="delivery-kicker">Mentoria Individual</div>
+          <div class="delivery-title">Estratégia personalizada com acompanhamento mais próximo.</div>
+          <p class="delivery-sub">Um modelo mais aprofundado para quem precisa de leitura de prova, tomada de decisão e correção de rota até a prova.</p>
+
+          <div class="delivery-grid">
+            <div class="delivery-card highlight">
+              <div class="delivery-step">Etapa 01</div>
+              <h4>1º Encontro Individual (Raio-X)</h4>
+              <p>Leitura aprofundada do seu perfil para definir uma estratégia personalizada, considerando seu momento, rotina e objetivo.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 02</div>
+              <h4>Plano Estratégico Personalizado</h4>
+              <p>Direcionamento mais refinado sobre prioridades, materiais, método de estudo e decisões importantes ao longo da preparação.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 03</div>
+              <h4>Suporte Próximo via WhatsApp</h4>
+              <p>Acesso direto para ajustes, dúvidas e decisões estratégicas sem perder tempo nem seguir no escuro.</p>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-step">Etapa 04</div>
+              <h4>Feedback Periódico da Sua Evolução</h4>
+              <p>Análise recorrente da sua execução e do seu progresso para corrigir rota, manter constância e aumentar sua competitividade.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CHECKOUT -->
+  <div id="checkoutModal" class="checkout-modal" aria-hidden="true">
   <div class="checkout-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
     <button type="button" class="checkout-close" onclick="return closeCheckoutModal()" aria-label="Fechar">x</button>
     <div class="checkout-kicker">Pagamento seguro via Mercado Pago</div>
@@ -635,7 +723,7 @@ body.checkout-open {
         <p>O problema quase nunca é esforço. O problema costuma ser estudar sem prioridade clara, sem meta viável e sem correção de rota.</p>
       </div>
       <div class="proof-card fade">
-        <div class="proof-kicker">Amanda em destaque</div>
+          <div class="proof-kicker">Vivência real em tribunais</div>
         <h4>Tribunais e carreiras jurídicas com orientação de quem vive esse jogo por dentro.</h4>
         <p>Analista do TJ-MS, 2º lugar no TRF-3 e 8 anos de atividade no sistema de justiça. Isso traz profundidade onde a maioria das mentorias generalistas falha.</p>
       </div>
@@ -747,7 +835,7 @@ body.checkout-open {
       </div>
       <div class="faq-item fade">
         <button class="faq-q" onclick="toggleFaq(this)">Qual a diferença entre a Mentoria e a Preparação com Metas?<span>+</span></button>
-        <div class="faq-a"><p>A Mentoria inclui sessões ao vivo individuais + todo o acompanhamento. A Preparação com Metas é o plano de estudos personalizado com acompanhamento assíncrono (mensagens e relatórios), sem sessões ao vivo.</p></div>
+        <div class="faq-a"><p>A Mentoria Individual inclui Raio-X aprofundado, plano estratégico personalizado, suporte próximo via WhatsApp e feedback periódico da evolução. A Preparação com Metas foca no diagnóstico inicial, no plano com metas viáveis, no suporte e na correção de rota com uma estrutura mais enxuta.</p></div>
       </div>
       <div class="faq-item fade">
         <button class="faq-q" onclick="toggleFaq(this)">Posso contratar apenas um serviço?<span>+</span></button>
@@ -898,12 +986,12 @@ const CHECKOUT_PLANS = {
   preparacao_metas: {
     title: 'Preparacao com Metas',
     price: 'R$ 249,00',
-    description: 'Encontro inicial + direcionamento de estudos'
+    description: 'Raio-X inicial + plano com metas + suporte via WhatsApp'
   },
   mentoria_individual: {
     title: 'Mentoria Individual',
     price: 'R$ 749,00',
-    description: 'Sessoes individuais on-line com acompanhamento personalizado'
+    description: 'Raio-X aprofundado + plano estrategico + feedback recorrente'
   }
 };
 

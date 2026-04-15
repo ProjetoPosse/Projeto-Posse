@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - Modelo de Mentoria</title>
+  <style>
+    :root{
+      --bg:#07070b;
+      --bg-soft:#101018;
+      --card:#14141d;
+      --card-2:#181825;
+      --txt:#f5f1e8;
+      --txt-2:#bbb6ad;
+      --gold:#c9a84c;
+      --gold-soft:rgba(201,168,76,.14);
+      --border:rgba(255,255,255,.08);
+      --border-2:rgba(201,168,76,.25);
+      --green:#73d69d;
+      --shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top, rgba(201,168,76,.08), transparent 28%),
+        linear-gradient(180deg, #0b0b11 0%, #07070b 100%);
+      color:var(--txt);
+    }
+
+    .page{
+      width:min(1180px, calc(100% - 32px));
+      margin:0 auto;
+      padding:64px 0 90px;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:52px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding:.55rem 1rem;
+      border-radius:999px;
+      border:1px solid var(--border-2);
+      background:rgba(255,255,255,.02);
+      color:var(--gold);
+      font:700 12px/1.2 Arial, sans-serif;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--green);
+    }
+
+    h1{
+      margin:20px auto 16px;
+      max-width:980px;
+      font-size:clamp(2.5rem, 6vw, 5rem);
+      line-height:1.02;
+      font-weight:700;
+    }
+
+    h1 em{
+      color:var(--gold);
+      font-style:italic;
+    }
+
+    .hero p{
+      margin:0 auto;
+      max-width:760px;
+      color:var(--txt-2);
+      font:300 1.1rem/1.8 Arial, sans-serif;
+    }
+
+    .section{
+      margin-top:44px;
+      padding:34px;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+    }
+
+    .section-head{
+      margin-bottom:28px;
+    }
+
+    .kicker{
+      color:var(--gold);
+      font:700 12px/1.2 Arial, sans-serif;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+
+    h2{
+      margin:0 0 10px;
+      font-size:clamp(1.8rem, 3vw, 2.6rem);
+      line-height:1.1;
+    }
+
+    .section-head p{
+      margin:0;
+      max-width:760px;
+      color:var(--txt-2);
+      font:300 1rem/1.8 Arial, sans-serif;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:18px;
+    }
+
+    .card{
+      min-height:230px;
+      padding:22px;
+      border-radius:18px;
+      background:linear-gradient(180deg, var(--card-2), var(--card));
+      border:1px solid var(--border);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      margin-bottom:16px;
+      padding:.45rem .8rem;
+      border-radius:999px;
+      background:var(--gold-soft);
+      border:1px solid rgba(201,168,76,.18);
+      color:var(--gold);
+      font:700 11px/1.2 Arial, sans-serif;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .pill::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--gold);
+    }
+
+    .card h3{
+      margin:0 0 12px;
+      font-size:1.45rem;
+      line-height:1.2;
+    }
+
+    .card p{
+      margin:0;
+      color:var(--txt-2);
+      font:300 1rem/1.7 Arial, sans-serif;
+    }
+
+    .card.highlight{
+      border-color:var(--border-2);
+      box-shadow:inset 0 0 0 1px rgba(201,168,76,.08);
+    }
+
+    .footnote{
+      margin-top:18px;
+      color:var(--txt-2);
+      font:300 .92rem/1.7 Arial, sans-serif;
+    }
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:repeat(2, 1fr)}
+    }
+
+    @media (max-width: 640px){
+      .page{width:min(100% - 24px, 100%); padding:42px 0 70px}
+      .section{padding:24px}
+      .grid{grid-template-columns:1fr}
+      h1{font-size:2.35rem}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Preview de modelo</div>
+      <h1>Como a mentoria pode parecer mais <em>concreta e premium</em></h1>
+      <p>Sem copiar ninguém, a ideia aqui é transformar a entrega em algo mais tangível: diagnóstico, plano, suporte e feedback. Isso aumenta valor percebido sem prometer o que vocês não oferecem.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="kicker">Preparação com Metas</div>
+        <h2>O que você recebe na prática</h2>
+        <p>Para sair do estudo desorganizado e entrar em uma preparação com direção, constância e correção de rota.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card highlight">
+          <div class="pill">Etapa 01</div>
+          <h3>1º Encontro Individual (Raio-X)</h3>
+          <p>Diagnóstico inicial para entender sua rotina, sua bagagem, seus pontos fortes e os gargalos que hoje travam sua evolução.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 02</div>
+          <h3>Plano Personalizado com Metas</h3>
+          <p>Organização do estudo com prioridades claras, metas objetivas e direcionamento compatível com o seu concurso e com a sua realidade.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 03</div>
+          <h3>Suporte via WhatsApp</h3>
+          <p>Canal direto para tirar dúvidas, ajustar a execução e evitar desperdício de tempo com decisões erradas ao longo da preparação.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 04</div>
+          <h3>Feedback Periódico da Sua Evolução</h3>
+          <p>Acompanhamento do seu desempenho para identificar falhas, reforçar acertos e manter consistência no que realmente importa.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div class="kicker">Mentoria Individual</div>
+        <h2>O que você recebe na Mentoria Individual</h2>
+        <p>Um acompanhamento mais próximo para quem precisa de estratégia personalizada, leitura de prova e correção de rota até a prova.</p>
+      </div>
+
+      <div class="grid">
+        <article class="card highlight">
+          <div class="pill">Etapa 01</div>
+          <h3>1º Encontro Individual (Raio-X)</h3>
+          <p>Leitura aprofundada do seu perfil para definir uma estratégia personalizada, considerando seu momento, rotina e objetivo.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 02</div>
+          <h3>Plano Estratégico Personalizado</h3>
+          <p>Direcionamento mais refinado sobre prioridades, materiais, método de estudo e decisões importantes ao longo da preparação.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 03</div>
+          <h3>Suporte Próximo via WhatsApp</h3>
+          <p>Acesso direto para ajustes, dúvidas e decisões estratégicas sem perder tempo nem seguir no escuro.</p>
+        </article>
+
+        <article class="card">
+          <div class="pill">Etapa 04</div>
+          <h3>Feedback Periódico da Sua Evolução</h3>
+          <p>Análise recorrente da sua execução e do seu progresso para corrigir rota, manter constância e aumentar sua competitividade.</p>
+        </article>
+      </div>
+
+      <p class="footnote">Leitura estratégica: nesta versão, o valor percebido vem da clareza do acompanhamento, não de "bônus". Isso tende a transmitir mais seriedade e mais proximidade.</p>
+    </section>
+  </main>
+</body>
+</html>
