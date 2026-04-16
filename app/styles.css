@@ -497,9 +497,57 @@ button, input, select, textarea { font: inherit; }
 .week-strip-row { display: grid; gap: 0.45rem; }
 .week-strip-row header { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; }
 .anchor-section { scroll-margin-top: 1.5rem; }
+/* ── Hamburger button (visível apenas em mobile) ── */
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+.hamburger-btn:hover { background: rgba(201, 168, 76, 0.2); }
+.hamburger-btn svg { width: 20px; height: 20px; }
+
+/* ── Overlay que cobre o conteúdo quando sidebar está aberta ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.is-open { display: block; }
+
 @media (max-width: 1100px) {
   .app-shell { grid-template-columns: 1fr; }
-  .app-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+
+  /* Sidebar vira drawer lateral fixo */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid var(--border-strong);
+    border-bottom: none;
+  }
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .hamburger-btn { display: flex; }
+
   .grid-4, .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .performance-grid {
     grid-template-columns: 1fr;

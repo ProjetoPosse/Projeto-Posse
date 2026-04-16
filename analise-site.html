@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análise do Projeto Posse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08090d;
+      --bg-soft: #11131a;
+      --panel: #151821;
+      --panel-2: #1a1f2b;
+      --border: rgba(201,168,76,0.14);
+      --border-strong: rgba(201,168,76,0.26);
+      --gold: #c9a84c;
+      --gold-soft: rgba(201,168,76,0.12);
+      --text: #efe8d7;
+      --muted: #a49d8d;
+      --muted-2: #726b5d;
+      --green: #4ade80;
+      --red: #f87171;
+      --blue: #60a5fa;
+      --orange: #fb923c;
+      --shadow: 0 24px 80px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Outfit", sans-serif;
+      background: radial-gradient(circle at top, rgba(201,168,76,0.07), transparent 30%),
+                  linear-gradient(180deg, #06070a 0%, #0b0d13 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+      background: rgba(10,12,18,0.92); backdrop-filter: blur(24px);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1.2rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+      z-index: 100; overflow-y: auto;
+    }
+    .sidebar-brand { color: var(--gold); font-weight: 800; font-size: 1.1rem; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .sidebar-brand span { display: block; color: var(--muted); font-size: 0.82rem; font-weight: 400; margin-top: 0.2rem; }
+    .nav-section { margin-top: 1rem; }
+    .nav-section h4 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted-2); margin-bottom: 0.5rem; }
+    .nav-section a {
+      display: block; padding: 0.6rem 0.8rem; border-radius: 12px;
+      color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-section a:hover { background: var(--gold-soft); color: var(--text); }
+    .main { margin-left: 260px; padding: 2.5rem 2rem; max-width: 1100px; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 3.5rem; scroll-margin-top: 2rem; }
+    .section-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--gold); font-weight: 700; margin-bottom: 0.5rem; }
+    .section-title { font-family: "Playfair Display", serif; font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 0.5rem; }
+    .section-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+    /* ── Cards ── */
+    .grid { display: grid; gap: 1rem; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .card {
+      background: rgba(21,24,33,0.9); border: 1px solid var(--border);
+      border-radius: 22px; padding: 1.2rem; box-shadow: var(--shadow);
+    }
+    .card.highlight { border-color: var(--border-strong); background: rgba(21,24,33,0.98); }
+    .card-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; }
+
+    /* ── Status indicators ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.65rem; border-radius: 999px;
+      font-size: 0.73rem; font-weight: 700; border: 1px solid;
+    }
+    .badge.green { color: var(--green); border-color: rgba(74,222,128,0.25); background: rgba(74,222,128,0.07); }
+    .badge.red { color: var(--red); border-color: rgba(248,113,113,0.25); background: rgba(248,113,113,0.07); }
+    .badge.orange { color: var(--orange); border-color: rgba(251,146,60,0.25); background: rgba(251,146,60,0.07); }
+    .badge.blue { color: var(--blue); border-color: rgba(96,165,250,0.25); background: rgba(96,165,250,0.07); }
+    .badge.gold { color: var(--gold); border-color: var(--border-strong); background: var(--gold-soft); }
+
+    /* ── Issue items ── */
+    .issue {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px; padding: 1rem 1.1rem;
+      background: rgba(32,38,53,0.32);
+      margin-bottom: 0.7rem;
+    }
+    .issue-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+    .issue-title { font-weight: 700; font-size: 0.97rem; }
+    .issue-body { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+    .issue.critical { border-left: 3px solid var(--red); }
+    .issue.medium { border-left: 3px solid var(--orange); }
+    .issue.low { border-left: 3px solid var(--blue); }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(8,9,13,0.9); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 1rem 1.1rem; margin-top: 0.7rem;
+      font-family: "Courier New", monospace; font-size: 0.82rem;
+      color: #a8d8a8; line-height: 1.6; overflow-x: auto; white-space: pre;
+    }
+    .code-block .comment { color: var(--muted-2); }
+    .code-block .tag { color: #60a5fa; }
+    .code-block .attr { color: #c9a84c; }
+    .code-block .val { color: #f87171; }
+
+    /* ── Color palette ── */
+    .palette { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .swatch {
+      width: 60px; height: 60px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: flex-end; padding: 0.3rem;
+    }
+    .swatch span { font-size: 0.6rem; color: rgba(255,255,255,0.6); font-weight: 700; }
+
+    /* ── Page map ── */
+    .page-map { display: grid; gap: 0.6rem; }
+    .page-node {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0.8rem 1rem; border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(32,38,53,0.28);
+    }
+    .page-node-icon {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: var(--gold-soft); border: 1px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .page-node strong { display: block; font-size: 0.9rem; }
+    .page-node span { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── Score ── */
+    .score-ring {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 1.5rem;
+    }
+    .score-number { font-size: 3.5rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    .score-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; }
+    .score-bar { width: 100%; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.06); margin-top: 1rem; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #dfc36d, #c9a84c); }
+
+    /* ── Typography demo ── */
+    .typo-sample { padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .typo-sample:last-child { border-bottom: none; }
+    .typo-sample .label { font-size: 0.7rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+
+    /* ── Component preview ── */
+    .component-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 0.6rem; }
+    .btn {
+      border: none; border-radius: 12px; padding: 0.7rem 1.1rem;
+      font-weight: 800; font-size: 0.85rem; cursor: pointer; font-family: inherit;
+    }
+    .btn-primary { background: linear-gradient(135deg, #dfc36d, #c9a84c); color: #090a0e; }
+    .btn-secondary { background: transparent; color: var(--gold); border: 1px solid var(--border-strong); }
+    .btn-danger { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.22); }
+
+    /* ── Stat cards demo ── */
+    .stat-demo { text-align: center; padding: 1rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--gold); }
+    .stat-label-sm { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── Suggestion cards ── */
+    .suggestion {
+      background: rgba(21,24,33,0.95); border: 1px solid var(--border);
+      border-radius: 22px; padding: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    .suggestion-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.6rem; }
+    .suggestion-title { font-weight: 700; font-size: 1rem; }
+    .suggestion-body { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .suggestion-impact { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 1.5rem 1rem; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-brand">Projeto Posse <span>Análise técnica · Abril 2026</span></div>
+  <div class="nav-section">
+    <h4>Visão geral</h4>
+    <a href="#overview">Panorama do projeto</a>
+    <a href="#pagemap">Mapa de páginas</a>
+    <a href="#design">Sistema de design</a>
+  </div>
+  <div class="nav-section">
+    <h4>Diagnóstico</h4>
+    <a href="#pontos-fortes">✅ Pontos fortes</a>
+    <a href="#issues">⚠️ Problemas encontrados</a>
+  </div>
+  <div class="nav-section">
+    <h4>Melhorias</h4>
+    <a href="#quick-wins">🚀 Quick wins</a>
+    <a href="#medio-prazo">📅 Médio prazo</a>
+    <a href="#futuro">🔭 Futuro</a>
+  </div>
+</nav>
+
+<!-- Main content -->
+<main class="main">
+
+  <!-- Hero -->
+  <div class="section" id="overview">
+    <div class="section-label">Análise técnica · Abril 2026</div>
+    <h1 class="section-title">Projeto Posse — Estado do Site</h1>
+    <p class="section-sub">Diagnóstico completo da estrutura, design e qualidade de código. Inclui problemas detectados e sugestões de melhoria priorizadas.</p>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="score-ring">
+          <div class="score-number">8.1</div>
+          <div class="score-label">Design / UI</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:81%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="score-ring">
+          <div class="score-number">7.4</div>
+          <div class="score-label">Código / DX</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:74%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="score-ring">
+          <div class="score-number">6.8</div>
+          <div class="score-label">UX / Acessibilidade</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:68%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;" class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Stack técnica</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.3rem;">
+          <span class="badge gold">HTML / CSS / JS Vanilla</span>
+          <span class="badge gold">Supabase (Auth + DB)</span>
+          <span class="badge gold">Outfit + Playfair Display</span>
+          <span class="badge gold">Modo demo local</span>
+          <span class="badge gold">Git</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Páginas do app</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.3rem;">
+          <span class="badge blue">login.html</span>
+          <span class="badge blue">mentorado.html</span>
+          <span class="badge blue">admin.html</span>
+          <span class="badge blue">plano.html</span>
+          <span class="badge blue">simulados.html</span>
+          <span class="badge blue">evolucao.html</span>
+          <span class="badge blue">materials.html</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Page map -->
+  <div class="section" id="pagemap">
+    <div class="section-label">Estrutura</div>
+    <h2 class="section-title">Mapa de Páginas</h2>
+    <p class="section-sub">Hierarquia de navegação e roles de acesso.</p>
+
+    <div class="page-map">
+      <div class="page-node" style="border-color:var(--border-strong);">
+        <div class="page-node-icon">🔐</div>
+        <div><strong>/app/login.html</strong><span>Pública — autenticação Supabase + modo demo</span></div>
+        <span class="badge green" style="margin-left:auto;">Pública</span>
+      </div>
+      <div style="padding-left:2.5rem;" class="page-map">
+        <div class="page-node">
+          <div class="page-node-icon">🎓</div>
+          <div><strong>/app/mentorado.html</strong><span>Dashboard do mentorado — visão geral de progresso</span></div>
+          <span class="badge blue" style="margin-left:auto;">Mentorado</span>
+        </div>
+        <div class="page-node">
+          <div class="page-node-icon">📚</div>
+          <div><strong>/app/materials.html</strong><span>Materiais de estudo vinculados ao concurso</span></div>
+          <span class="badge blue" style="margin-left:auto;">Mentorado</span>
+        </div>
+        <div class="page-node">
+          <div class="page-node-icon">📋</div>
+          <div><strong>/app/plano.html</strong><span>Plano mensal — metas, PDF, links TEC</span></div>
+          <span class="badge blue" style="margin-left:auto;">Mentorado</span>
+        </div>
+        <div class="page-node">
+          <div class="page-node-icon">🧪</div>
+          <div><strong>/app/simulados.html</strong><span>Registro de simulados e desempenho</span></div>
+          <span class="badge blue" style="margin-left:auto;">Mentorado</span>
+        </div>
+        <div class="page-node">
+          <div class="page-node-icon">📈</div>
+          <div><strong>/app/evolucao.html</strong><span>Diário de estudos — horas, questões, metas</span></div>
+          <span class="badge blue" style="margin-left:auto;">Mentorado</span>
+        </div>
+        <div class="page-node" style="border-color:rgba(201,168,76,0.3);">
+          <div class="page-node-icon">⚙️</div>
+          <div><strong>/app/admin.html</strong><span>Painel do mentor — gestão completa de mentorados</span></div>
+          <span class="badge gold" style="margin-left:auto;">Mentor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Design system -->
+  <div class="section" id="design">
+    <div class="section-label">Sistema de Design</div>
+    <h2 class="section-title">Paleta, Tipografia e Componentes</h2>
+    <p class="section-sub">O visual atual usa um tema dark elegante com acentos dourados — consistente e bem executado.</p>
+
+    <div class="grid grid-2">
+      <!-- Colors -->
+      <div class="card">
+        <div class="card-title">Paleta de cores</div>
+        <div class="palette">
+          <div class="swatch" style="background:#08090d;"><span>--bg</span></div>
+          <div class="swatch" style="background:#151821;"><span>--panel</span></div>
+          <div class="swatch" style="background:#1a1f2b;"><span>--panel-2</span></div>
+          <div class="swatch" style="background:#c9a84c;"><span>--gold</span></div>
+          <div class="swatch" style="background:#efe8d7;"><span>--text</span></div>
+          <div class="swatch" style="background:#a49d8d;"><span>--muted</span></div>
+          <div class="swatch" style="background:#4ade80;"><span>--green</span></div>
+          <div class="swatch" style="background:#f87171;"><span>--red</span></div>
+          <div class="swatch" style="background:#60a5fa;"><span>--blue</span></div>
+        </div>
+      </div>
+
+      <!-- Typography -->
+      <div class="card">
+        <div class="card-title">Tipografia</div>
+        <div class="typo-sample">
+          <div class="label">Playfair Display — Títulos</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;line-height:1.1;">Título da Página</div>
+        </div>
+        <div class="typo-sample">
+          <div class="label">Outfit 800 — Valores de stat</div>
+          <div style="font-weight:800;font-size:1.5rem;color:var(--gold);">2.4h · 87%</div>
+        </div>
+        <div class="typo-sample">
+          <div class="label">Outfit 400 — Corpo de texto</div>
+          <div style="color:var(--muted);font-size:0.9rem;">Plano mensal do aluno, com metas individualizadas e links.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="card" style="margin-top:1rem;">
+      <div class="card-title">Botões</div>
+      <div class="component-row">
+        <button class="btn btn-primary">Entrar</button>
+        <button class="btn btn-secondary">Cancelar</button>
+        <button class="btn btn-danger">Sair</button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="card" style="margin-top:1rem;">
+      <div class="card-title">Badges</div>
+      <div class="component-row">
+        <span class="badge green">✓ Ativo</span>
+        <span class="badge red">✗ Arquivado</span>
+        <span class="badge blue">7 dias ativos</span>
+        <span class="badge gold">Ritmo forte</span>
+        <span class="badge orange">Pendente</span>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="grid grid-3" style="margin-top:1rem;">
+      <div class="card stat-demo">
+        <div class="stat-value">142</div>
+        <div class="stat-label-sm">Questões feitas</div>
+      </div>
+      <div class="card stat-demo">
+        <div class="stat-value" style="color:var(--green);">78%</div>
+        <div class="stat-label-sm">Aproveitamento</div>
+      </div>
+      <div class="card stat-demo">
+        <div class="stat-value">18.5h</div>
+        <div class="stat-label-sm">Horas de estudo</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pontos fortes -->
+  <div class="section" id="pontos-fortes">
+    <div class="section-label">Diagnóstico</div>
+    <h2 class="section-title">✅ Pontos Fortes</h2>
+    <p class="section-sub">O que está bem feito e deve ser mantido.</p>
+
+    <div class="grid grid-2">
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">🎨 Visual premium consistente</div></div>
+        <div class="issue-body">Tema dark com dourado funciona muito bem para o contexto de preparação para concurso. Transmite seriedade e exclusividade. As variáveis CSS estão bem organizadas e facilitam manutenção.</div>
+      </div>
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">📱 Responsividade implementada</div></div>
+        <div class="issue-body">Dois breakpoints bem definidos (1100px e 720px). O grid colapsa corretamente e a sidebar passa para layout estático no mobile. Base sólida para melhorar.</div>
+      </div>
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">🔐 Segurança bem pensada</div></div>
+        <div class="issue-body">O role de mentor é validado no backend (Supabase RLS), não no front. A decisão de não confiar em user_metadata é tecnicamente correta e está documentada no DEPLOY.md.</div>
+      </div>
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">🧪 Modo demo funcional</div></div>
+        <div class="issue-body">O modo demo com dados locais é ótimo para apresentar o produto sem precisar de credenciais reais. Facilita onboarding de novos mentorados e demonstrações.</div>
+      </div>
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">📊 Componentes de dados ricos</div></div>
+        <div class="issue-body">Charts SVG nativos (donut, barras, mini-sparklines) sem dependência de biblioteca externa. O sistema de KPIs do mentor (ritmo, dias ativos, metas 7d) é bem elaborado.</div>
+      </div>
+      <div class="issue low" style="border-left-color:var(--green);">
+        <div class="issue-header"><div class="issue-title">📝 DEPLOY.md completo</div></div>
+        <div class="issue-body">Documentação de deploy clara com checklist do Supabase, checklist de publicação, revisão de segurança e riscos residuais. Facilita onboarding de qualquer dev futuro.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Issues -->
+  <div class="section" id="issues">
+    <div class="section-label">Diagnóstico</div>
+    <h2 class="section-title">⚠️ Problemas Encontrados</h2>
+    <p class="section-sub">Ordenados por impacto. Críticos primeiro.</p>
+
+    <!-- Critical -->
+    <h3 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--red);margin-bottom:0.7rem;margin-top:1.5rem;">🔴 Críticos</h3>
+
+    <div class="issue critical">
+      <div class="issue-header">
+        <span class="badge red">Crítico</span>
+        <div class="issue-title">Acentos ausentes em todo o HTML</div>
+      </div>
+      <div class="issue-body">
+        Palavras em português aparecem sem acentos em títulos, menus e labels. Afeta profissionalismo e pode gerar problemas com leitores de tela e SEO.
+        <div class="code-block"><span class="comment"><!-- Atual (errado) --></span>
+<span class="tag">&lt;span&gt;</span>Area autenticada do mentorado<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;h3&gt;</span>Navegacao<span class="tag">&lt;/h3&gt;</span>
+<span class="tag">&lt;a&gt;</span>Evolucao<span class="tag">&lt;/a&gt;</span>
+
+<span class="comment"><!-- Correto --></span>
+<span class="tag">&lt;span&gt;</span>Área autenticada do mentorado<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;h3&gt;</span>Navegação<span class="tag">&lt;/h3&gt;</span>
+<span class="tag">&lt;a&gt;</span>Evolução<span class="tag">&lt;/a&gt;</span></div>
+        <div style="margin-top:0.6rem;color:var(--muted);font-size:0.85rem;">Afeta: <em>todos os 7 arquivos HTML</em></div>
+      </div>
+    </div>
+
+    <div class="issue critical">
+      <div class="issue-header">
+        <span class="badge red">Crítico</span>
+        <div class="issue-title">Active state da nav não é aplicado automaticamente</div>
+      </div>
+      <div class="issue-body">
+        O CSS define <code style="color:var(--gold)">.nav-link.is-active</code> mas nenhum HTML ou JavaScript adiciona essa classe. O usuário nunca vê qual página está ativa na sidebar.
+        <div class="code-block"><span class="comment">// Adicionar no início do app.js</span>
+document.querySelectorAll(".nav-link[data-page]").forEach(link => {
+  if (link.dataset.page === page) {
+    link.classList.add("is-active");
+  }
+});</div>
+      </div>
+    </div>
+
+    <!-- Medium -->
+    <h3 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);margin-bottom:0.7rem;margin-top:1.5rem;">🟠 Médio impacto</h3>
+
+    <div class="issue medium">
+      <div class="issue-header">
+        <span class="badge orange">Médio</span>
+        <div class="issue-title">Mobile: sidebar sem colapso / hamburger</div>
+      </div>
+      <div class="issue-body">
+        Em telas pequenas, a sidebar aparece inteira empilhada acima do conteúdo, ocupando espaço precioso antes mesmo do usuário ver o dashboard. Não há botão para esconder/mostrar.
+        <div class="code-block"><span class="comment">/* Sugestão CSS */</span>
+<span class="attr">@media</span> (max-width: 1100px) {
+  .app-sidebar { display: none; }
+  .app-sidebar.is-open { display: flex; }
+  .hamburger-btn { display: block; } <span class="comment">/* botão no topbar */</span>
+}</div>
+      </div>
+    </div>
+
+    <div class="issue medium">
+      <div class="issue-header">
+        <span class="badge orange">Médio</span>
+        <div class="issue-title">Sidebar duplicada em todos os HTMLs</div>
+      </div>
+      <div class="issue-body">
+        O HTML da sidebar (brand, nav, profile) é copiado e colado em 6 arquivos. Qualquer mudança precisa ser replicada manualmente em todos. Alto risco de inconsistência.
+        <div class="code-block"><span class="comment">// Solução simples: carregar sidebar via JS</span>
+<span class="comment">// sidebar.html → fragment</span>
+fetch('/app/sidebar.html')
+  .then(r => r.text())
+  .then(html => {
+    document.querySelector('.app-sidebar').innerHTML = html;
+  });</div>
+      </div>
+    </div>
+
+    <div class="issue medium">
+      <div class="issue-header">
+        <span class="badge orange">Médio</span>
+        <div class="issue-title">Nenhum favicon definido</div>
+      </div>
+      <div class="issue-body">
+        Sem favicon, o browser mostra ícone genérico na aba. Pequeno detalhe que impacta percepção de qualidade profissional.
+        <div class="code-block"><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"icon"</span> <span class="attr">href</span>=<span class="val">"data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;⚖️&lt;/text&gt;&lt;/svg&gt;"</span><span class="tag">&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="issue medium">
+      <div class="issue-header">
+        <span class="badge orange">Médio</span>
+        <div class="issue-title">Meta description ausente em todas as páginas</div>
+      </div>
+      <div class="issue-body">
+        Nenhuma página tem <code style="color:var(--gold)">&lt;meta name="description"&gt;</code>. Não impacta o app interno, mas afeta a página pública (index.html) no SEO e compartilhamento em redes sociais.
+        <div class="code-block"><span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"description"</span> <span class="attr">content</span>=<span class="val">"Projeto Posse — Plataforma de mentoria para concursos públicos."</span><span class="tag">&gt;</span>
+<span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="val">"og:title"</span> <span class="attr">content</span>=<span class="val">"Projeto Posse"</span><span class="tag">&gt;</span></div>
+      </div>
+    </div>
+
+    <!-- Low -->
+    <h3 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--blue);margin-bottom:0.7rem;margin-top:1.5rem;">🔵 Baixo impacto (polimento)</h3>
+
+    <div class="issue low">
+      <div class="issue-header">
+        <span class="badge blue">Baixo</span>
+        <div class="issue-title">Acessibilidade: role e aria-label nos ícones/botões</div>
+      </div>
+      <div class="issue-body">O botão "Sair" não tem <code style="color:var(--gold)">aria-label</code> descritivo. Links de nav sem texto alternativo para leitores de tela. Fácil de corrigir.</div>
+    </div>
+
+    <div class="issue low">
+      <div class="issue-header">
+        <span class="badge blue">Baixo</span>
+        <div class="issue-title">links.html extremamente grande</div>
+      </div>
+      <div class="issue-body">O arquivo <code style="color:var(--gold)">links.html</code> tem mais de 90.000 tokens — provavelmente gerado ou muito verboso. Pode impactar tempo de carregamento inicial se for uma página pública.</div>
+    </div>
+
+    <div class="issue low">
+      <div class="issue-header">
+        <span class="badge blue">Baixo</span>
+        <div class="issue-title">supabase.js × módulo inline no app.js</div>
+      </div>
+      <div class="issue-body">Existe um <code style="color:var(--gold)">supabase.js</code> separado e também carregamento do cliente Supabase como módulo dentro do <code style="color:var(--gold)">app.js</code>. Vale verificar se há redundância ou conflito de versão.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Quick wins -->
+  <div class="section" id="quick-wins">
+    <div class="section-label">Melhorias</div>
+    <h2 class="section-title">🚀 Quick Wins — Pode fazer hoje</h2>
+    <p class="section-sub">Correções de alto impacto, baixo esforço. Cada uma leva menos de 30 minutos.</p>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">1. Corrigir todos os acentos nos HTMLs</div>
+        <span class="badge red">Alto impacto</span>
+      </div>
+      <div class="suggestion-body">
+        Fazer busca e substituição em todos os 7 arquivos HTML. Principais palavras: Navegação, Evolução, Área, Seções, Concluído, Informações, Gestão, Sessão, Autenticação.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge green">~15 min</span>
+        <span class="badge orange">Impacto: profissionalismo</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">2. Ativar o active state da navegação</div>
+        <span class="badge red">Alto impacto</span>
+      </div>
+      <div class="suggestion-body">
+        Adicionar 3 linhas de JS no <code style="color:var(--gold)">app.js</code> (logo após a declaração de <code style="color:var(--gold)">page</code>) para marcar o link ativo com <code style="color:var(--gold)">is-active</code>. O CSS já está pronto — só falta o trigger.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge green">~5 min</span>
+        <span class="badge orange">Impacto: UX de navegação</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">3. Adicionar favicon SVG inline</div>
+        <span class="badge orange">Médio impacto</span>
+      </div>
+      <div class="suggestion-body">
+        Uma linha no <code style="color:var(--gold)">&lt;head&gt;</code> de cada HTML (ou só no login.html). Use emoji de balança ⚖️ ou as iniciais "PP" em SVG simples — sem necessidade de arquivo externo.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge green">~5 min</span>
+        <span class="badge blue">Impacto: percepção de qualidade</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">4. Adicionar &lt;meta description&gt; na página pública</div>
+        <span class="badge orange">Médio impacto</span>
+      </div>
+      <div class="suggestion-body">
+        Adicionar meta tags de Open Graph e description no <code style="color:var(--gold)">index.html</code> e <code style="color:var(--gold)">login.html</code>. Melhora aparência em links compartilhados no WhatsApp e Google.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge green">~10 min</span>
+        <span class="badge blue">Impacto: SEO + compartilhamento</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Médio prazo -->
+  <div class="section" id="medio-prazo">
+    <div class="section-label">Melhorias</div>
+    <h2 class="section-title">📅 Médio Prazo — Próximas sprints</h2>
+    <p class="section-sub">Melhorias estruturais que valem o esforço mas precisam de mais planejamento.</p>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">5. Hamburger menu para mobile</div>
+        <span class="badge orange">Médio esforço</span>
+      </div>
+      <div class="suggestion-body">
+        Criar um botão ☰ no topbar mobile que abre/fecha a sidebar como um drawer sobreposto. O padrão atual (sidebar empilhada) funciona mas não é ideal em telas pequenas. Um slide-in lateral com overlay seria muito mais confortável.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge orange">~2h</span>
+        <span class="badge orange">Impacto: UX mobile</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">6. Componentizar a sidebar via fetch ou Web Components</div>
+        <span class="badge orange">Médio esforço</span>
+      </div>
+      <div class="suggestion-body">
+        Extrair o HTML da sidebar para um arquivo <code style="color:var(--gold)">sidebar.html</code> e carregá-lo via <code style="color:var(--gold)">fetch()</code> em todos os arquivos. Elimina a duplicação atual de 6 cópias idênticas e facilita manutenção.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge orange">~1.5h</span>
+        <span class="badge blue">Impacto: manutenibilidade</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">7. Upload de arquivos no painel admin</div>
+        <span class="badge red">Alto valor</span>
+      </div>
+      <div class="suggestion-body">
+        O DEPLOY.md já identifica isso como próximo passo. Implementar upload direto para o bucket <code style="color:var(--gold)">materiais</code> do Supabase Storage via interface do admin, eliminando a necessidade de usar o dashboard do Supabase para cada novo PDF.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge orange">~4h</span>
+        <span class="badge red">Impacto: produtividade do mentor</span>
+      </div>
+    </div>
+
+    <div class="suggestion">
+      <div class="suggestion-header">
+        <div class="suggestion-title">8. Convite por e-mail para novos mentorados</div>
+        <span class="badge red">Alto valor</span>
+      </div>
+      <div class="suggestion-body">
+        Atualmente o mentor precisa criar o usuário manualmente no painel do Supabase. Implementar convite via link (Supabase tem suporte nativo via <code style="color:var(--gold)">supabase.auth.admin.inviteUserByEmail()</code> em Edge Function) tornaria o onboarding muito mais fluido.
+      </div>
+      <div class="suggestion-impact">
+        <span class="badge orange">~3h</span>
+        <span class="badge red">Impacto: onboarding</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Futuro -->
+  <div class="section" id="futuro">
+    <div class="section-label">Melhorias</div>
+    <h2 class="section-title">🔭 Futuro — Visão de longo prazo</h2>
+    <p class="section-sub">Ideias para quando o produto estiver mais maduro.</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">📱 App nativo / PWA</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Transformar em PWA com service worker para uso offline. Mentorados poderiam registrar check-ins mesmo sem internet e sincronizar depois.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">🔔 Notificações push</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Lembrete diário para o mentorado preencher o diário de estudos. Supabase Edge Functions + serviço de push (OneSignal ou similar).</p>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Analytics de desempenho</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Gráfico de evolução de aproveitamento em simulados por matéria/banca ao longo do tempo. Já existe base de dados — é só visualizar melhor.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 Canal mentor ↔ mentorado</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Sistema de comentários ou mensagens dentro do plano/evolução para o mentor dar feedback diretamente na plataforma, sem precisar usar WhatsApp.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">🤖 Diagnóstico automático</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Usar a API da Anthropic para gerar análises automáticas dos dados de evolução — "Você está fraco em Direito Administrativo nos últimos 7 dias".</p>
+      </div>
+      <div class="card">
+        <div class="card-title">🏆 Sistema de metas gamificado</div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.4rem;">Streaks, conquistas e marcos visuais para engajar o mentorado na consistência. O tema dourado do design já combina perfeitamente com uma estética de conquistas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:2rem 0 3rem;color:var(--muted-2);font-size:0.82rem;">
+    Análise gerada em Abril 2026 · Projeto Posse
+  </div>
+
+</main>
+</body>
+</html>
