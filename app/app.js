@@ -389,80 +389,228 @@ function calcStreak(checkins) {
 }
 
 function initPomodoroTimer(initialSessions = 0) {
-  const display = document.getElementById("pomodoroDisplay");
-  const startBtn = document.getElementById("pomodoroStart");
-  const resetBtn = document.getElementById("pomodoroReset");
-  const modeLabel = document.getElementById("pomodoroMode");
+  const display    = document.getElementById("pomodoroDisplay");
+  const startBtn   = document.getElementById("pomodoroStart");
+  const resetBtn   = document.getElementById("pomodoroReset");
+  const skipBtn    = document.getElementById("pomodoroSkip");
+  const modeLabel  = document.getElementById("pomodoroMode");
   const sessionCount = document.getElementById("pomodoroSessionCount");
-  const dots = document.querySelectorAll(".pomo-dot");
+  const cycleEl    = document.getElementById("pomodoroCycle");
+  const statusEl   = document.getElementById("pomodoroStatus");
+  const dots       = document.querySelectorAll(".pomo-dot");
   if (!display || !startBtn) return;
 
-  const FOCUS = 25 * 60;
-  const BREAK = 5 * 60;
-  let sessions = initialSessions;
-  let mode = "focus";
+  const FOCUS      = 25 * 60;
+  const BREAK      = 5 * 60;
+  const LONG_BREAK = 15 * 60;
+  const LS_KEY     = "pomo_sessions_today";
+  const LS_DATE    = "pomo_sessions_date";
+
+  // Persist sessions across refreshes (reset at midnight)
+  function loadSessions() {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      if (localStorage.getItem(LS_DATE) === today) {
+        return parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+      }
+    } catch (_) {}
+    return initialSessions;
+  }
+  function saveSessions(n) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      localStorage.setItem(LS_KEY, String(n));
+      localStorage.setItem(LS_DATE, today);
+    } catch (_) {}
+  }
+
+  let sessions  = loadSessions();
+  let mode      = "focus";
   let remaining = FOCUS;
-  let interval = null;
-  let running = false;
+  let interval  = null;
+  let running   = false;
+  const originalTitle = document.title;
 
   function fmt(s) {
     return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   }
+
+  // ── Audio: pleasant 3-note bell chord ──────────────────────────────
+  function playBell(type) {
+    try {
+      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+      const now  = ctx.currentTime;
+      // notes: focus-end = ascending major chord (C5 E5 G5), break-end = descending (G4 E4)
+      const notes = type === "focus"
+        ? [523.25, 659.25, 783.99]   // C5 E5 G5
+        : type === "long"
+        ? [523.25, 659.25, 783.99, 1046.5]  // C5 E5 G5 C6
+        : [659.25, 523.25];          // E5 C5
+      notes.forEach((freq, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        const t0 = now + i * 0.18;
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(0.22, t0 + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 1.1);
+        osc.start(t0);
+        osc.stop(t0 + 1.2);
+      });
+    } catch (_) { /* sem suporte a audio */ }
+  }
+
+  // ── Tick sound (optional subtle click) ─────────────────────────────
+  function playTick() {
+    try {
+      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+      const buf  = ctx.createBuffer(1, 512, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < 512; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / 512) * 0.15;
+      const src  = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start();
+    } catch (_) {}
+  }
+
+  // ── UI Update ───────────────────────────────────────────────────────
   function updateDots() {
     const filled = sessions % 4;
     dots.forEach((d, i) => d.classList.toggle("is-filled", i < filled));
   }
+
+  const STATUS = {
+    focus:      "🎯 Foco em andamento — sem distrações!",
+    break:      "☕ Pausa curta — respire, mova o corpo.",
+    long_break: "🌿 Pausa longa — você merece descansar!",
+    idle:       "Pronto para começar",
+    paused:     "⏸ Pausado",
+    done_focus: "✅ Sessão concluída! Hora de descansar.",
+    done_break: "🔔 Pausa encerrada! Bora focar.",
+  };
+
+  function cycleLabel() {
+    const inCycle = (sessions % 4) + (mode === "focus" ? 1 : 0);
+    return `Sessão ${Math.min(inCycle, 4)} de 4`;
+  }
+
   function updateUI() {
-    display.textContent = fmt(remaining);
+    const timeStr = fmt(remaining);
+    display.textContent = timeStr;
     sessionCount.textContent = String(sessions);
-    modeLabel.textContent = mode === "focus" ? "Foco 25min" : "Pausa 5min";
-    modeLabel.className = `badge ${mode === "focus" ? "blue" : "green"}`;
-    display.className = `pomodoro-display${mode === "break" ? " is-break" : ""}`;
+    saveSessions(sessions);
+
+    const isLong = sessions > 0 && sessions % 4 === 0 && mode === "break";
+    if (mode === "focus") {
+      modeLabel.textContent = "Foco 25min";
+      modeLabel.className = "badge blue";
+      display.className = "pomodoro-display" + (running ? " is-running" : "");
+    } else if (isLong) {
+      modeLabel.textContent = "Pausa longa 15min";
+      modeLabel.className = "badge green";
+      display.className = "pomodoro-display is-break";
+    } else {
+      modeLabel.textContent = "Pausa 5min";
+      modeLabel.className = "badge green";
+      display.className = "pomodoro-display is-break";
+    }
+
+    if (cycleEl) cycleEl.textContent = cycleLabel();
+    if (running) document.title = `${timeStr} ${mode === "focus" ? "🎯" : "☕"} Pomodoro`;
+    else document.title = originalTitle;
+
     updateDots();
   }
-  function beep() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = mode === "focus" ? 880 : 660;
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.7);
-    } catch (e) { /* silencioso */ }
-  }
+
   function complete() {
     clearInterval(interval);
     running = false;
     startBtn.textContent = "▶ Iniciar";
-    beep();
-    if (mode === "focus") { sessions++; mode = "break"; remaining = BREAK; }
-    else { mode = "focus"; remaining = FOCUS; }
+    display.classList.remove("is-running");
+
+    if (mode === "focus") {
+      sessions++;
+      saveSessions(sessions);
+      const isLong = sessions % 4 === 0;
+      playBell(isLong ? "long" : "focus");
+      if (statusEl) statusEl.textContent = STATUS.done_focus;
+      mode = "break";
+      remaining = isLong ? LONG_BREAK : BREAK;
+    } else {
+      playBell("break");
+      if (statusEl) statusEl.textContent = STATUS.done_break;
+      mode = "focus";
+      remaining = FOCUS;
+    }
+    document.title = originalTitle;
     updateUI();
   }
+
   startBtn.addEventListener("click", () => {
     if (running) {
       clearInterval(interval);
       running = false;
       startBtn.textContent = "▶ Iniciar";
+      display.classList.remove("is-running");
+      if (statusEl) statusEl.textContent = STATUS.paused;
+      document.title = originalTitle;
     } else {
-      interval = setInterval(() => { if (--remaining <= 0) complete(); else updateUI(); }, 1000);
+      interval = setInterval(() => {
+        if (--remaining <= 0) complete();
+        else {
+          if (remaining === 60) playTick();  // aviso de 1 min restante
+          updateUI();
+        }
+      }, 1000);
       running = true;
       startBtn.textContent = "⏸ Pausar";
+      const isLong = sessions > 0 && sessions % 4 === 0 && mode === "break";
+      if (statusEl) statusEl.textContent = isLong ? STATUS.long_break : STATUS[mode];
     }
+    updateUI();
   });
+
+  if (skipBtn) {
+    skipBtn.addEventListener("click", () => {
+      clearInterval(interval);
+      running = false;
+      startBtn.textContent = "▶ Iniciar";
+      if (mode === "focus") {
+        sessions++;
+        saveSessions(sessions);
+        mode = "break";
+        remaining = sessions % 4 === 0 ? LONG_BREAK : BREAK;
+      } else {
+        mode = "focus";
+        remaining = FOCUS;
+      }
+      if (statusEl) statusEl.textContent = STATUS.idle;
+      document.title = originalTitle;
+      updateUI();
+    });
+  }
+
   resetBtn.addEventListener("click", () => {
     clearInterval(interval);
     running = false;
     mode = "focus";
     remaining = FOCUS;
     startBtn.textContent = "▶ Iniciar";
+    display.classList.remove("is-running");
+    if (statusEl) statusEl.textContent = STATUS.idle;
+    document.title = originalTitle;
     updateUI();
   });
+
+  // cleanup on page navigation
+  window.addEventListener("beforeunload", () => { document.title = originalTitle; });
+
   updateUI();
+  if (statusEl) statusEl.textContent = STATUS.idle;
 }
 
 function renderAccuracyDonut(snapshot) {
@@ -1393,15 +1541,20 @@ function renderMentoradoDashboard(profile, data) {
         </div>
         <div class="pomodoro-timer">
           <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
-          <div class="pomodoro-sessions"><span id="pomodoroSessionCount">0</span> <small>sessões hoje</small></div>
+          <div class="pomodoro-cycle" id="pomodoroCycle">Sessão 1 de 4</div>
         </div>
-        <div class="pomodoro-controls">
-          <button class="button button-primary" id="pomodoroStart">▶ Iniciar</button>
-          <button class="button button-secondary" id="pomodoroReset">↺ Resetar</button>
-        </div>
+        <p class="pomodoro-status" id="pomodoroStatus">Pronto para começar</p>
         <div class="pomodoro-dots" id="pomodoroDots">
           <span class="pomo-dot"></span><span class="pomo-dot"></span>
           <span class="pomo-dot"></span><span class="pomo-dot"></span>
+        </div>
+        <div class="pomodoro-controls">
+          <button class="button button-primary" id="pomodoroStart">▶ Iniciar</button>
+          <button class="button button-secondary" id="pomodoroSkip">⏭ Pular</button>
+          <button class="button button-secondary" id="pomodoroReset">↺ Zerar</button>
+        </div>
+        <div class="pomodoro-footer">
+          <span id="pomodoroSessionCount">0</span> sessões hoje
         </div>
       </article>
     </section>

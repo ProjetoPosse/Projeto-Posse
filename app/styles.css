@@ -749,3 +749,38 @@ body.nav-open { overflow: hidden; }
   min-height: 1.2em;
   text-align: center;
 }
+
+/* ── Pomodoro melhorado ─────────────────────────────────────────── */
+.pomodoro-cycle {
+  font-size: .75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-top: .15rem;
+}
+.pomodoro-status {
+  font-size: .82rem;
+  color: var(--muted);
+  text-align: center;
+  margin: .4rem 0 .5rem;
+  min-height: 1.3em;
+  transition: color .3s;
+}
+.pomodoro-footer {
+  font-size: .8rem;
+  color: var(--muted-2);
+  text-align: center;
+  margin-top: .6rem;
+}
+
+/* Pulso animado enquanto o timer roda */
+@keyframes pomo-pulse {
+  0%, 100% { text-shadow: 0 0 0px var(--gold); opacity: 1; }
+  50% { text-shadow: 0 0 18px rgba(201,168,76,.55); opacity: .88; }
+}
+.pomodoro-display.is-running {
+  animation: pomo-pulse 2s ease-in-out infinite;
+}
+.pomodoro-display.is-break.is-running {
+  animation: pomo-pulse 3s ease-in-out infinite;
+}
