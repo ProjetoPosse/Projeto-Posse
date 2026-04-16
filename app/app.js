@@ -1,58 +1,61 @@
 const body = document.body;
 const page = body.dataset.page || "";
+document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
+  if (link.dataset.page === page) link.classList.add("is-active");
+});
+
 const requiredRole = body.dataset.role || "";
 const appContent = document.getElementById("appContent");
 const logoutButton = document.getElementById("logoutButton");
 
-// Marca o link ativo na sidebar com base na página atual
-document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
-  if (link.dataset.page === page) {
-    link.classList.add("is-active");
-  }
-});
-
-// Hamburger menu para mobile
-(function initMobileNav() {
+function initMobileNav() {
   const sidebar = document.querySelector(".app-sidebar");
   const topbar = document.querySelector(".app-topbar");
-  if (!sidebar || !topbar) return;
+  if (!sidebar || !topbar || topbar.querySelector(".mobile-nav-toggle")) return;
 
-  // Cria overlay
+  const navId = sidebar.id || "appSidebar";
+  sidebar.id = navId;
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "button button-secondary mobile-nav-toggle";
+  toggle.setAttribute("aria-controls", navId);
+
   const overlay = document.createElement("div");
-  overlay.className = "sidebar-overlay";
-  document.body.appendChild(overlay);
+  overlay.className = "app-nav-overlay";
+  overlay.setAttribute("aria-hidden", "true");
 
-  // Cria botão hamburger
-  const btn = document.createElement("button");
-  btn.className = "hamburger-btn";
-  btn.setAttribute("aria-label", "Abrir menu de navegação");
-  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
-  topbar.insertBefore(btn, topbar.firstChild);
+  const setNavOpen = (isOpen) => {
+    sidebar.classList.toggle("is-open", isOpen);
+    overlay.classList.toggle("is-open", isOpen);
+    body.classList.toggle("nav-open", isOpen);
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Fechar navegação" : "Abrir navegação");
+    toggle.textContent = isOpen ? "✕" : "☰";
+  };
 
-  function openSidebar() {
-    sidebar.classList.add("is-open");
-    overlay.classList.add("is-open");
-    btn.setAttribute("aria-label", "Fechar menu de navegação");
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-  }
+  setNavOpen(false);
 
-  function closeSidebar() {
-    sidebar.classList.remove("is-open");
-    overlay.classList.remove("is-open");
-    btn.setAttribute("aria-label", "Abrir menu de navegação");
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
-  }
-
-  btn.addEventListener("click", () => {
-    sidebar.classList.contains("is-open") ? closeSidebar() : openSidebar();
+  toggle.addEventListener("click", () => {
+    setNavOpen(!sidebar.classList.contains("is-open"));
   });
-  overlay.addEventListener("click", closeSidebar);
 
-  // Fecha ao navegar (clicar em link)
+  overlay.addEventListener("click", () => setNavOpen(false));
   sidebar.querySelectorAll(".nav-link").forEach((link) => {
-    link.addEventListener("click", closeSidebar);
+    link.addEventListener("click", () => setNavOpen(false));
   });
-})();
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setNavOpen(false);
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1100) setNavOpen(false);
+  });
+
+  topbar.prepend(toggle);
+  body.append(overlay);
+}
 const dayLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 const monthFmt = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" });
 const state = { user: null, profile: null };
@@ -470,13 +473,10 @@ function setMessage(node, text, type = "") {
 
 function setProfileUi(profile) {
   document.querySelectorAll("[data-profile-name]").forEach((node) => {
-    node.textContent = profile?.nome || "Usuario";
+    node.textContent = profile?.nome || "Usuário";
   });
   document.querySelectorAll("[data-profile-role]").forEach((node) => {
     node.textContent = profile?.role === "mentor" ? "Mentor" : "Mentorado";
-  });
-  document.querySelectorAll(".nav-link[data-page]").forEach((node) => {
-    node.classList.toggle("is-active", node.dataset.page === page);
   });
 }
 
@@ -1780,6 +1780,7 @@ async function requireProtectedPage() {
 
 async function initProtectedPage() {
   if (!await requireProtectedPage()) return;
+  initMobileNav();
 
   if (state.profile.role === "mentor") {
     await renderAdminPage();
