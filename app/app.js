@@ -357,6 +357,114 @@ function buildEvolutionSnapshot(checkins) {
   };
 }
 
+function calcStreak(checkins) {
+  const activeDates = new Set(
+    (checkins || [])
+      .filter((c) => Number(c.horas_estudo || 0) > 0 || Number(c.questoes_feitas || 0) > 0 || Number(c.metas_cumpridas || 0) > 0)
+      .map((c) => c.referencia)
+      .filter(Boolean)
+  );
+  if (!activeDates.size) return { current: 0, best: 0 };
+
+  // Sequência atual (de hoje ou ontem para trás)
+  let current = 0;
+  const cursor = new Date(`${isoToday()}T00:00:00`);
+  if (!activeDates.has(isoToday())) cursor.setDate(cursor.getDate() - 1);
+  while (activeDates.has(cursor.toISOString().slice(0, 10))) {
+    current++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  // Melhor sequência histórica
+  const sorted = [...activeDates].sort();
+  let best = 0;
+  let temp = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = Math.round((new Date(sorted[i] + "T00:00:00") - new Date(sorted[i - 1] + "T00:00:00")) / 86400000);
+    temp = diff === 1 ? temp + 1 : 1;
+    best = Math.max(best, temp);
+  }
+  best = Math.max(best, current, sorted.length > 0 ? 1 : 0);
+  return { current, best };
+}
+
+function initPomodoroTimer(initialSessions = 0) {
+  const display = document.getElementById("pomodoroDisplay");
+  const startBtn = document.getElementById("pomodoroStart");
+  const resetBtn = document.getElementById("pomodoroReset");
+  const modeLabel = document.getElementById("pomodoroMode");
+  const sessionCount = document.getElementById("pomodoroSessionCount");
+  const dots = document.querySelectorAll(".pomo-dot");
+  if (!display || !startBtn) return;
+
+  const FOCUS = 25 * 60;
+  const BREAK = 5 * 60;
+  let sessions = initialSessions;
+  let mode = "focus";
+  let remaining = FOCUS;
+  let interval = null;
+  let running = false;
+
+  function fmt(s) {
+    return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  }
+  function updateDots() {
+    const filled = sessions % 4;
+    dots.forEach((d, i) => d.classList.toggle("is-filled", i < filled));
+  }
+  function updateUI() {
+    display.textContent = fmt(remaining);
+    sessionCount.textContent = String(sessions);
+    modeLabel.textContent = mode === "focus" ? "Foco 25min" : "Pausa 5min";
+    modeLabel.className = `badge ${mode === "focus" ? "blue" : "green"}`;
+    display.className = `pomodoro-display${mode === "break" ? " is-break" : ""}`;
+    updateDots();
+  }
+  function beep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = mode === "focus" ? 880 : 660;
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.7);
+    } catch (e) { /* silencioso */ }
+  }
+  function complete() {
+    clearInterval(interval);
+    running = false;
+    startBtn.textContent = "▶ Iniciar";
+    beep();
+    if (mode === "focus") { sessions++; mode = "break"; remaining = BREAK; }
+    else { mode = "focus"; remaining = FOCUS; }
+    updateUI();
+  }
+  startBtn.addEventListener("click", () => {
+    if (running) {
+      clearInterval(interval);
+      running = false;
+      startBtn.textContent = "▶ Iniciar";
+    } else {
+      interval = setInterval(() => { if (--remaining <= 0) complete(); else updateUI(); }, 1000);
+      running = true;
+      startBtn.textContent = "⏸ Pausar";
+    }
+  });
+  resetBtn.addEventListener("click", () => {
+    clearInterval(interval);
+    running = false;
+    mode = "focus";
+    remaining = FOCUS;
+    startBtn.textContent = "▶ Iniciar";
+    updateUI();
+  });
+  updateUI();
+}
+
 function renderAccuracyDonut(snapshot) {
   const percent = Math.max(0, Math.min(100, Number(snapshot?.aproveitamento || 0)));
   const radius = 54;
@@ -1181,9 +1289,138 @@ function renderMentoradoDashboard(profile, data) {
   const totalAcertos = data.weekly.reduce((sum, item) => sum + Number(item.acertos || 0), 0);
   const totalPomodoros = data.pomodoro.reduce((sum, item) => sum + Number(item.sessoes || 0), 0);
   const currentPlan = data.monthlyCollection[0];
-  const concursoNome = profile?.concursos?.nome || "Concurso nao informado";
+  const concursoNome = profile?.concursos?.nome || "Concurso não informado";
+  const checkins = data.dailyCheckins || [];
+  const todayCheckin = checkins.find((c) => c.referencia === isoToday());
+  const streak = calcStreak(checkins);
 
-  appContent.innerHTML = `<section class="grid-4"><article class="card stat-card"><div class="stat-value">${esc(fmtHours(totalHoras))}</div><div class="stat-label">Horas</div></article><article class="card stat-card"><div class="stat-value">${esc(String(totalQuestoes))}</div><div class="stat-label">Questoes</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtPct(totalAcertos, totalQuestoes))}</div><div class="stat-label">Acerto</div></article><article class="card stat-card"><div class="stat-value">${esc(String(totalPomodoros))}</div><div class="stat-label">Pomodoros</div></article></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Seu foco principal</h2><span class="badge gold">${esc(concursoNome)}</span></div><p class="page-copy">Tudo nesta area e filtrado pelo seu concurso e pelas liberacoes individuais feitas pelos mentores.</p><div class="badge-row" style="margin-top:1rem;"><a class="button button-secondary" href="./materials.html">Ver materiais</a><a class="button button-secondary" href="./plano.html">Abrir plano</a></div></article><article class="card"><div class="card-head"><h2 class="card-title">Plano mensal</h2></div>${currentPlan ? `<strong>${esc(currentPlan.titulo)}</strong><p class="page-copy">${esc(fmtMonth(currentPlan.mes_referencia))}</p><div class="metric-bar" style="margin-top:1rem;"><span style="width:${esc(String(currentPlan.progress))}%"></span></div><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(`${currentPlan.completed}/${currentPlan.items.length} metas`)}</span><span class="badge ${badgeClass(currentPlan.status)}">${esc(currentPlan.status)}</span></div>${currentPlan.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:1rem;"><a class="button button-secondary" href="${esc(currentPlan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : ""}` : `<div class="empty-state">Nenhum plano mensal ativo ainda.</div>`}</article></section>`;
+  const todayHtml = todayCheckin
+    ? `<div class="today-metrics">
+        <span><strong>${esc(fmtHours(todayCheckin.horas_estudo))}</strong><small>Horas</small></span>
+        <span><strong>${esc(String(todayCheckin.questoes_feitas))}</strong><small>Questões</small></span>
+        <span><strong>${esc(fmtPct(todayCheckin.questoes_certas, todayCheckin.questoes_feitas))}</strong><small>Acerto</small></span>
+        <span><strong>${esc(String(todayCheckin.pomodoros))}</strong><small>Pomodoros</small></span>
+      </div>
+      ${todayCheckin.observacao ? `<p class="mentor-note" style="margin-top:.8rem;">${esc(truncateText(todayCheckin.observacao, 100))}</p>` : ""}
+      <div class="inline-actions" style="margin-top:1rem;">
+        <a class="button button-secondary" href="./evolucao.html">Ver evolução</a>
+      </div>`
+    : `<p class="page-copy" style="margin-top:.6rem;">Você ainda não registrou o dia de hoje. Mantenha seu histórico atualizado!</p>
+       <div class="inline-actions" style="margin-top:1rem;">
+         <a class="button button-primary" href="./evolucao.html">Fazer check-in agora</a>
+       </div>`;
+
+  const streakMsg = streak.current === 0
+    ? "Comece hoje para iniciar sua sequência."
+    : streak.current >= streak.best
+      ? "🏆 Você está no seu recorde pessoal!"
+      : `Continue para bater seu recorde de ${esc(String(streak.best))} dias.`;
+
+  const planHtml = currentPlan
+    ? `<strong>${esc(currentPlan.titulo)}</strong>
+       <p class="page-copy">${esc(fmtMonth(currentPlan.mes_referencia))}</p>
+       <div class="plan-progress-row" style="margin-top:1rem;">
+         <div class="metric-bar"><span style="width:${esc(String(currentPlan.progress))}%"></span></div>
+         <span class="plan-progress-pct">${esc(String(currentPlan.progress))}%</span>
+       </div>
+       <div class="badge-row" style="margin-top:.8rem;">
+         <span class="badge gold">${esc(`${currentPlan.completed}/${currentPlan.items.length} metas`)}</span>
+         <span class="badge ${badgeClass(currentPlan.status)}">${esc(currentPlan.status)}</span>
+       </div>
+       <div class="inline-actions" style="margin-top:1rem;">
+         <a class="button button-secondary" href="./plano.html">Ver plano completo</a>
+         ${currentPlan.resolved_pdf_url ? `<a class="button button-secondary" href="${esc(currentPlan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">PDF</a>` : ""}
+       </div>`
+    : `<div class="empty-state">Nenhum plano mensal ativo ainda.</div>`;
+
+  appContent.innerHTML = `
+    <section class="grid-4">
+      <article class="card stat-card">
+        <div class="stat-value">${esc(fmtHours(totalHoras))}</div>
+        <div class="stat-label">Horas</div>
+      </article>
+      <article class="card stat-card">
+        <div class="stat-value">${esc(String(totalQuestoes))}</div>
+        <div class="stat-label">Questões</div>
+      </article>
+      <article class="card stat-card">
+        <div class="stat-value">${esc(fmtPct(totalAcertos, totalQuestoes))}</div>
+        <div class="stat-label">Acerto</div>
+      </article>
+      <article class="card stat-card">
+        <div class="stat-value">${esc(String(totalPomodoros))}</div>
+        <div class="stat-label">Pomodoros</div>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top:1rem;">
+      <article class="card">
+        <div class="card-head">
+          <h2 class="card-title">Hoje — ${esc(fmtDate(isoToday()))}</h2>
+          <span class="badge ${todayCheckin ? "green" : "orange"}">${todayCheckin ? "✓ Check-in feito" : "◌ Sem check-in"}</span>
+        </div>
+        ${todayHtml}
+      </article>
+      <article class="card">
+        <div class="card-head">
+          <h2 class="card-title">Sequência de estudos</h2>
+          <span class="badge gold">🔥 Streak</span>
+        </div>
+        <div class="streak-display">
+          <div class="streak-current">
+            <span class="streak-number">${esc(String(streak.current))}</span>
+            <span class="streak-label">dias seguidos</span>
+          </div>
+          <div>
+            <span class="badge blue">Recorde: ${esc(String(streak.best))} dias</span>
+          </div>
+        </div>
+        <p class="page-copy" style="margin-top:.8rem;">${streakMsg}</p>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top:1rem;">
+      <article class="card">
+        <div class="card-head">
+          <h2 class="card-title">Plano mensal</h2>
+        </div>
+        ${planHtml}
+      </article>
+      <article class="card">
+        <div class="card-head">
+          <h2 class="card-title">Pomodoro</h2>
+          <span class="badge blue" id="pomodoroMode">Foco 25min</span>
+        </div>
+        <div class="pomodoro-timer">
+          <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+          <div class="pomodoro-sessions"><span id="pomodoroSessionCount">0</span> <small>sessões hoje</small></div>
+        </div>
+        <div class="pomodoro-controls">
+          <button class="button button-primary" id="pomodoroStart">▶ Iniciar</button>
+          <button class="button button-secondary" id="pomodoroReset">↺ Resetar</button>
+        </div>
+        <div class="pomodoro-dots" id="pomodoroDots">
+          <span class="pomo-dot"></span><span class="pomo-dot"></span>
+          <span class="pomo-dot"></span><span class="pomo-dot"></span>
+        </div>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <div class="card-head">
+        <h2 class="card-title">Seu foco principal</h2>
+        <span class="badge gold">${esc(concursoNome)}</span>
+      </div>
+      <p class="page-copy">Tudo nesta área é filtrado pelo seu concurso e pelas liberações individuais feitas pelos mentores.</p>
+      <div class="badge-row" style="margin-top:1rem;">
+        <a class="button button-secondary" href="./materials.html">Ver materiais</a>
+        <a class="button button-secondary" href="./plano.html">Abrir plano</a>
+        <a class="button button-secondary" href="./simulados.html">Simulados</a>
+      </div>
+    </section>
+  `;
+
+  initPomodoroTimer(todayCheckin?.pomodoros || 0);
 }
 
 function renderMaterialsPage(data) {

@@ -573,3 +573,179 @@ body.nav-open { overflow: hidden; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ═══════════════════════════════════════════════
+   TODAY CARD — check-in metrics grid
+═══════════════════════════════════════════════ */
+.today-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .75rem;
+  margin-top: .75rem;
+}
+.today-metrics > span {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .75rem .5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+}
+.today-metrics > span > strong {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+}
+.today-metrics > span > small {
+  font-size: .7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+@media (max-width: 900px) {
+  .today-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ═══════════════════════════════════════════════
+   STREAK DISPLAY
+═══════════════════════════════════════════════ */
+.streak-display {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: .5rem;
+}
+.streak-current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--gold-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: .85rem 1.25rem;
+  min-width: 90px;
+}
+.streak-number {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+.streak-label {
+  font-size: .72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-top: .2rem;
+}
+.streak-best {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: .6rem 1rem;
+  border-radius: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+.streak-best .streak-number {
+  font-size: 1.6rem;
+  color: var(--muted);
+}
+
+/* ═══════════════════════════════════════════════
+   PLAN PROGRESS ROW
+═══════════════════════════════════════════════ */
+.plan-progress-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.plan-progress-row .metric-bar {
+  flex: 1;
+}
+.plan-progress-pct {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+  min-width: 2.8rem;
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════════════
+   POMODORO TIMER CARD
+═══════════════════════════════════════════════ */
+.pomodoro-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .85rem;
+  padding-top: .25rem;
+}
+.pomodoro-display {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: color .3s;
+}
+.pomodoro-display.is-break {
+  color: var(--green);
+}
+.pomodoro-mode-label {
+  font-size: .75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-top: -.4rem;
+}
+.pomodoro-sessions {
+  font-size: .85rem;
+  color: var(--muted);
+}
+.pomodoro-sessions strong {
+  color: var(--text);
+}
+.pomodoro-dots {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pomo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--panel-3);
+  border: 1.5px solid var(--border-strong);
+  transition: background .2s, transform .2s;
+}
+.pomo-dot.is-filled {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.15);
+}
+.pomodoro-controls {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pomodoro-controls .button {
+  min-width: 5.5rem;
+  font-size: .85rem;
+  padding: .45rem .9rem;
+}
+.pomo-status {
+  font-size: .8rem;
+  color: var(--muted);
+  min-height: 1.2em;
+  text-align: center;
+}
