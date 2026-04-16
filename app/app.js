@@ -1880,41 +1880,600 @@ async function handleAdminSubmit(event) {
 async function renderAdminPage() {
   showLoading("Carregando painel do mentor...");
   const data = await fetchAdminData();
-  const mentoradosMap = new Map(data.mentorados.map((item) => [item.id, item]));
-  const concursosMap = new Map(data.concursos.map((item) => [item.id, item]));
-  const plans = buildPlans(data.monthlyPlans, data.monthlyItems);
-  const mentorKpis = buildMentorKpis(data, data.mentorados, plans, concursosMap);
+  const mentoradosMap = new Map(data.mentorados.map((m) => [m.id, m]));
+  const concursosMap  = new Map(data.concursos.map((c)  => [c.id, c]));
+  const plans         = buildPlans(data.monthlyPlans, data.monthlyItems);
+  const mentorKpis    = buildMentorKpis(data, data.mentorados, plans, concursosMap);
   const mentorSnapshot = buildMentorDashboardSnapshot(data, mentorKpis);
-  const observationRows = buildObservationRows(data.dailyCheckins, data.mentorados, concursosMap);
+  const observationRows    = buildObservationRows(data.dailyCheckins, data.mentorados, concursosMap);
   const latestObservations = buildLatestObservationByMentorado(observationRows);
+
+  // ── Today's check-ins per student ─────────────────────────────
+  const todayIso        = isoToday();
+  const todayCheckinMap = new Map(
+    data.dailyCheckins.filter((c) => c.referencia === todayIso).map((c) => [c.mentorado_id, c])
+  );
+
+  const todayStudentCards = data.mentorados.map((m) => {
+    const kpi     = mentorKpis.find((k) => k.mentoradoId === m.id);
+    const checkin = todayCheckinMap.get(m.id);
+    return `<article class="card mentor-student-card">
+      <div class="mentor-student-head">
+        <strong>${esc(m.nome || m.email)}</strong>
+        <span class="badge ${checkin ? "green" : "orange"}">${checkin ? "✓ Check-in" : "◌ Sem check-in"}</span>
+      </div>
+      <div class="mentor-student-concurso">${esc(concursosMap.get(m.concurso_id)?.nome || "Sem concurso")}</div>
+      ${checkin ? `
+        <div class="mentor-student-metrics">
+          <span><strong>${esc(fmtHours(checkin.horas_estudo))}</strong><small>horas</small></span>
+          <span><strong>${esc(String(checkin.questoes_feitas || 0))}</strong><small>questões</small></span>
+          <span><strong>${esc(fmtPct(checkin.questoes_certas, checkin.questoes_feitas))}</strong><small>acerto</small></span>
+          <span><strong>${esc(String(checkin.pomodoros || 0))}</strong><small>pomos</small></span>
+        </div>
+        ${checkin.observacao ? `<p class="mentor-student-obs">"${esc(truncateText(checkin.observacao, 90))}"</p>` : ""}
+      ` : `<p class="mentor-student-obs is-muted">Nenhum registro hoje ainda.</p>`}
+      ${kpi ? `<div class="badge-row" style="margin-top:.5rem;"><span class="badge ${kpi.rhythm.tone}">${esc(kpi.rhythm.label)}</span></div>` : ""}
+    </article>`;
+  }).join("") || `<div class="empty-state">Nenhum aluno cadastrado.</div>`;
+
+  // ── Observations feeds ─────────────────────────────────────────
+  const observationsFeedHtml = observationRows.slice(0, 10).map((item) =>
+    `<div class="list-item">
+      <strong>${esc(item.mentoradoNome)}</strong>
+      <span>${esc(`${fmtDate(item.referencia)} · ${item.concursoNome}`)}</span>
+      <p class="page-copy">${esc(item.observacao)}</p>
+      <div class="badge-row" style="margin-top:.6rem;">
+        <span class="badge blue">${esc(fmtHours(item.horas_estudo))}</span>
+        <span class="badge blue">${esc(`${item.questoes_feitas || 0} questões`)}</span>
+        <span class="badge green">${esc(fmtPct(item.questoes_certas, item.questoes_feitas))}</span>
+      </div>
+    </div>`
+  ).join("") || `<div class="empty-state">As observações aparecem aqui quando os alunos salvam o check-in.</div>`;
+
+  const latestObservationsHtml = latestObservations.map((item) =>
+    `<div class="list-item">
+      <strong>${esc(item.mentoradoNome)}</strong>
+      <span>${esc(fmtDate(item.referencia))}</span>
+      <p class="page-copy">${esc(item.observacao)}</p>
+      <div class="badge-row" style="margin-top:.6rem;">
+        <span class="badge gold">${esc(item.concursoNome)}</span>
+        <span class="badge blue">${esc(`${item.metas_cumpridas || 0} metas`)}</span>
+      </div>
+    </div>`
+  ).join("") || `<div class="empty-state">Nenhum aluno enviou observação ainda.</div>`;
+
+  // ── Evolution table ────────────────────────────────────────────
   const evolutionTableRows = mentorKpis.map((item) => {
-    const planLabel = item.activePlan
-      ? `${item.activePlan.completed}/${item.activePlan.items.length || 0} metas`
-      : "Sem plano";
-    const simuladoLabel = item.latestSimulado
-      ? `${item.latestSimulado.acertos || 0}/${item.latestSimulado.total_questoes || 0}`
-      : "--";
-    return `<tr><td><strong>${esc(item.nome)}</strong></td><td>${esc(item.concursoNome)}</td><td>${esc(item.lastCheckinAt ? fmtDate(item.lastCheckinAt) : "--")}</td><td>${esc(fmtHours(item.horas7d))}</td><td>${esc(String(item.questoes7d))}</td><td>${esc(fmtPct(item.acertos7d, item.questoes7d))}</td><td>${esc(String(item.metas7d))}</td><td>${esc(planLabel)}</td><td>${esc(simuladoLabel)}</td><td><span class="badge ${item.rhythm.tone}">${esc(item.rhythm.label)}</span></td></tr>`;
-  }).join("") || `<tr><td colspan="10" class="empty-state">Sem check-ins diarios ainda.</td></tr>`;
-  const evolutionCardsHtml = renderMentorEvolutionCards(mentorKpis);
+    const planLabel     = item.activePlan ? `${item.activePlan.completed}/${item.activePlan.items.length || 0} metas` : "Sem plano";
+    const simuladoLabel = item.latestSimulado ? `${item.latestSimulado.acertos || 0}/${item.latestSimulado.total_questoes || 0}` : "--";
+    return `<tr>
+      <td><strong>${esc(item.nome)}</strong></td>
+      <td>${esc(item.concursoNome)}</td>
+      <td>${esc(item.lastCheckinAt ? fmtDate(item.lastCheckinAt) : "--")}</td>
+      <td>${esc(fmtHours(item.horas7d))}</td>
+      <td>${esc(String(item.questoes7d))}</td>
+      <td>${esc(fmtPct(item.acertos7d, item.questoes7d))}</td>
+      <td>${esc(String(item.metas7d))}</td>
+      <td>${esc(planLabel)}</td>
+      <td>${esc(simuladoLabel)}</td>
+      <td><span class="badge ${item.rhythm.tone}">${esc(item.rhythm.label)}</span></td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="10" class="empty-state">Sem check-ins ainda.</td></tr>`;
+
+  const evolutionCardsHtml   = renderMentorEvolutionCards(mentorKpis);
   const mentorPulseCardsHtml = renderMentorPulseCards(mentorKpis);
   const mentorOverviewMetrics = [
-    { label: "Mentorados ativos na semana", value: String(mentorSnapshot.mentoradosAtivos) },
-    { label: "Check-ins nos ultimos 7 dias", value: String(mentorSnapshot.checkinsRecentes) },
-    { label: "Questoes do grupo em 7 dias", value: String(mentorSnapshot.recentSnapshot.totalQuestoes) },
-    { label: "Acerto do grupo em 7 dias", value: `${mentorSnapshot.recentSnapshot.aproveitamento}%`, tone: "green" }
+    { label: "Mentorados ativos na semana",   value: String(mentorSnapshot.mentoradosAtivos) },
+    { label: "Check-ins nos últimos 7 dias",  value: String(mentorSnapshot.checkinsRecentes) },
+    { label: "Questões do grupo em 7 dias",   value: String(mentorSnapshot.recentSnapshot.totalQuestoes) },
+    { label: "Acerto do grupo em 7 dias",     value: `${mentorSnapshot.recentSnapshot.aproveitamento}%`, tone: "green" },
   ];
-  const observationsFeedHtml = observationRows.slice(0, 12).map((item) => `<div class="list-item"><strong>${esc(item.mentoradoNome)}</strong><span>${esc(`${fmtDate(item.referencia)} • ${item.concursoNome}`)}</span><p class="page-copy">${esc(item.observacao)}</p><div class="badge-row" style="margin-top:.8rem;"><span class="badge blue">${esc(fmtHours(item.horas_estudo))}</span><span class="badge blue">${esc(`${item.questoes_feitas || 0} questoes`)}</span><span class="badge green">${esc(fmtPct(item.questoes_certas, item.questoes_feitas))}</span></div></div>`).join("") || `<div class="empty-state">As observacoes vao aparecer aqui quando os alunos salvarem o check-in diario.</div>`;
-  const latestObservationsHtml = latestObservations.map((item) => `<div class="list-item"><strong>${esc(item.mentoradoNome)}</strong><span>${esc(fmtDate(item.referencia))}</span><p class="page-copy">${esc(item.observacao)}</p><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.concursoNome)}</span><span class="badge blue">${esc(`${item.metas_cumpridas || 0} metas`)}</span></div></div>`).join("") || `<div class="empty-state">Nenhum mentorado enviou observacao ainda.</div>`;
 
-  appContent.innerHTML = `<section class="grid-4"><article class="card stat-card"><div class="stat-value">${esc(String(data.mentorados.length))}</div><div class="stat-label">Mentorados</div></article><article class="card stat-card"><div class="stat-value">${esc(String(data.concursos.length))}</div><div class="stat-label">Concursos</div></article><article class="card stat-card"><div class="stat-value">${esc(String(data.materiais.length))}</div><div class="stat-label">Materiais recentes</div></article><article class="card stat-card"><div class="stat-value">${esc(String(data.monthlyItems.length))}</div><div class="stat-label">Metas do mes</div></article></section><section id="sec-mentorados" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Ajustar Mentorado</h2></div><form class="form-grid" data-form="mentorado-update"><label><span class="field-label">Mentorado</span><select class="select" name="mentorado_id" required><option value="">Selecione</option>${data.mentorados.map((item) => `<option value="${esc(item.id)}">${esc(item.nome || item.email)}</option>`).join("")}</select></label><label><span class="field-label">Nome</span><input class="input" name="nome" type="text" required></label><label><span class="field-label">Concurso</span><select class="select" name="concurso_id"><option value="">Sem vinculo</option>${data.concursos.map((item) => `<option value="${esc(item.id)}">${esc(item.nome)}</option>`).join("")}</select></label><label><span class="field-label">Ativo</span><select class="select" name="ativo"><option value="true">Sim</option><option value="false">Nao</option></select></label><button class="button button-primary" type="submit">Salvar mentorado</button><div class="message" data-form-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Mentorados cadastrados</h2></div><div class="table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Email</th><th>Concurso</th><th>Status</th></tr></thead><tbody>${data.mentorados.map((item) => `<tr><td>${esc(item.nome || "--")}</td><td>${esc(item.email || "--")}</td><td>${esc(concursosMap.get(item.concurso_id)?.nome || "Nao vinculado")}</td><td>${esc(item.ativo ? "Ativo" : "Inativo")}</td></tr>`).join("") || `<tr><td colspan="4" class="empty-state">Nenhum mentorado encontrado.</td></tr>`}</tbody></table></div></article></section><section id="sec-concursos" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Novo Concurso</h2></div><form class="form-grid" data-form="concurso-create"><label><span class="field-label">Nome</span><input class="input" name="nome" type="text" required></label><label><span class="field-label">Cargo</span><input class="input" name="cargo" type="text"></label><label><span class="field-label">Orgao</span><input class="input" name="orgao" type="text"></label><label><span class="field-label">Status</span><select class="select" name="status"><option value="ativo">Ativo</option><option value="arquivado">Arquivado</option></select></label><label><span class="field-label">Descricao</span><textarea class="textarea" name="descricao"></textarea></label><button class="button button-primary" type="submit">Criar concurso</button><div class="message" data-form-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Concursos recentes</h2></div><div class="list">${data.concursos.map((item) => `<div class="list-item"><strong>${esc(item.nome)}</strong><span>${esc([item.cargo, item.orgao].filter(Boolean).join(" - ") || "Sem detalhes adicionais.")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge ${badgeClass(item.status)}">${esc(item.status)}</span></div></div>`).join("") || `<div class="empty-state">Nenhum concurso cadastrado ainda.</div>`}</div></article></section><section id="sec-materiais" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Novo Material</h2></div><form class="form-grid" data-form="material-create"><label><span class="field-label">Titulo</span><input class="input" name="titulo" type="text" required></label><label><span class="field-label">Tipo</span><input class="input" name="tipo" type="text" placeholder="pdf, video, questoes"></label><label><span class="field-label">Visibilidade</span><select class="select" name="visibilidade"><option value="concurso">Concurso</option><option value="aluno">Aluno</option></select></label><label><span class="field-label">Concurso</span><select class="select" name="concurso_id"><option value="">Opcional</option>${data.concursos.map((item) => `<option value="${esc(item.id)}">${esc(item.nome)}</option>`).join("")}</select></label><label><span class="field-label">Mentorado</span><select class="select" name="mentorado_id"><option value="">Opcional</option>${data.mentorados.map((item) => `<option value="${esc(item.id)}">${esc(item.nome || item.email)}</option>`).join("")}</select></label><label><span class="field-label">URL externa</span><input class="input" name="externo_url" type="url"></label><label><span class="field-label">Storage path</span><input class="input" name="file_path" type="text"></label><label><span class="field-label">Descricao</span><textarea class="textarea" name="descricao"></textarea></label><button class="button button-primary" type="submit">Criar material</button><div class="message" data-form-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Materiais recentes</h2></div><div class="list">${data.materiais.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.tipo || "Material")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.visibilidade)}</span><span class="badge blue">${esc(fmtDate(item.created_at?.slice?.(0, 10) || ""))}</span></div></div>`).join("") || `<div class="empty-state">Nenhum material cadastrado ainda.</div>`}</div></article></section>`;
-  appContent.innerHTML += `<section id="sec-planos" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Novo Plano Mensal</h2></div><form class="form-grid" data-form="plano-mensal-create"><label><span class="field-label">Mentorado</span><select class="select" name="mentorado_id" required><option value="">Selecione</option>${data.mentorados.map((item) => `<option value="${esc(item.id)}">${esc(item.nome || item.email)}</option>`).join("")}</select></label><label><span class="field-label">Titulo</span><input class="input" name="titulo" type="text" placeholder="Plano Abril 2026 - TRF-3" required></label><label><span class="field-label">Mes de referencia</span><input class="input" name="mes_referencia" type="date" required></label><label><span class="field-label">Status</span><select class="select" name="status"><option value="ativo">Ativo</option><option value="rascunho">Rascunho</option><option value="arquivado">Arquivado</option></select></label><label><span class="field-label">URL do PDF</span><input class="input" name="pdf_url" type="url"></label><label><span class="field-label">Storage path do PDF</span><input class="input" name="pdf_path" type="text"></label><label><span class="field-label">Descricao</span><textarea class="textarea" name="descricao"></textarea></label><button class="button button-primary" type="submit">Criar plano mensal</button><div class="message" data-form-message></div></form><div class="card-head" style="margin-top:1.4rem;"><h2 class="card-title">Nova Meta do Plano</h2></div><form class="form-grid" data-form="plano-item-create"><label><span class="field-label">Plano mensal</span><select class="select" name="plano_id" required><option value="">Selecione</option>${data.monthlyPlans.map((item) => `<option value="${esc(item.id)}">${esc(optionLabel(item, mentoradosMap))}</option>`).join("")}</select></label><label><span class="field-label">Titulo</span><input class="input" name="titulo" type="text" required></label><label><span class="field-label">Tipo</span><select class="select" name="tipo"><option value="teoria">Teoria</option><option value="questoes">Questoes</option><option value="revisao">Revisao</option><option value="simulado">Simulado</option><option value="redacao">Redacao</option><option value="meta_mensal">Meta mensal</option></select></label><label><span class="field-label">Data prevista</span><input class="input" name="data_prevista" type="date"></label><label><span class="field-label">Dia da semana</span><select class="select" name="dia_semana"><option value="">Opcional</option>${dayLabels.map((label, index) => `<option value="${index}">${esc(label)}</option>`).join("")}</select></label><label><span class="field-label">Ordem</span><input class="input" name="ordem" type="number" min="0" value="1"></label><label><span class="field-label">Link do TEC</span><input class="input" name="tec_url" type="url"></label><label><span class="field-label">Link complementar ou storage path</span><input class="input" name="material_url" type="text"></label><label><span class="field-label">Descricao</span><textarea class="textarea" name="descricao"></textarea></label><button class="button button-primary" type="submit">Criar meta</button><div class="message" data-form-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Planos Mensais Recentes</h2></div><div class="list">${plans.map((plan) => `<div class="list-item"><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || mentoradosMap.get(plan.mentorado_id)?.email || "Mentorado"} - ${fmtMonth(plan.mes_referencia)}`)}</span><div class="metric-bar" style="margin-top:1rem;"><span style="width:${esc(String(plan.progress))}%"></span></div><div class="badge-row" style="margin-top:.8rem;"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div>${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF</a></div>` : ""}</div>`).join("") || `<div class="empty-state">Nenhum plano mensal cadastrado ainda.</div>`}</div></article></section><section id="sec-simulados" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Novo Simulado</h2></div><form class="form-grid" data-form="simulado-create"><label><span class="field-label">Mentorado</span><select class="select" name="mentorado_id" required><option value="">Selecione</option>${data.mentorados.map((item) => `<option value="${esc(item.id)}">${esc(item.nome || item.email)}</option>`).join("")}</select></label><label><span class="field-label">Concurso</span><select class="select" name="concurso_id"><option value="">Opcional</option>${data.concursos.map((item) => `<option value="${esc(item.id)}">${esc(item.nome)}</option>`).join("")}</select></label><label><span class="field-label">Titulo</span><input class="input" name="titulo" type="text" required></label><label><span class="field-label">Data</span><input class="input" name="data_aplicacao" type="date"></label><label><span class="field-label">Acertos</span><input class="input" name="acertos" type="number" min="0" value="0"></label><label><span class="field-label">Total de questoes</span><input class="input" name="total_questoes" type="number" min="0" value="0"></label><label><span class="field-label">URL do PDF</span><input class="input" name="pdf_url" type="url"></label><label><span class="field-label">Storage path do PDF</span><input class="input" name="pdf_path" type="text"></label><label><span class="field-label">Observacoes</span><textarea class="textarea" name="observacoes"></textarea></label><button class="button button-primary" type="submit">Criar simulado</button><div class="message" data-form-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Simulados recentes</h2></div><div class="list">${data.simulados.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(mentoradosMap.get(item.mentorado_id)?.nome || "Mentorado nao identificado")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(fmtDate(item.data_aplicacao))}</span><span class="badge blue">${esc(`${item.acertos || 0}/${item.total_questoes || 0}`)}</span></div>${item.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:1rem;"><a class="button button-secondary" href="${esc(item.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF</a></div>` : item.pdf_path ? `<div class="message error" style="margin-top:1rem;">PDF privado nao resolvido. Verifique o path <strong>${esc(item.pdf_path)}</strong>.</div>` : ""}</div>`).join("") || `<div class="empty-state">Nenhum simulado cadastrado ainda.</div>`}</div></article></section><section id="sec-evolucao" style="margin-top:1rem;"><section class="card performance-overview"><div class="card-head"><div><h2 class="card-title">Pulso do grupo</h2><p class="page-copy">Visao dinamica do desempenho agregado dos mentorados, com foco em atividade recente, acerto e consistencia.</p></div><span class="badge gold">${esc(String(mentorSnapshot.mentoradosAtivos))} ativos na semana</span></div><div class="performance-grid"><div class="performance-metrics">${mentorOverviewMetrics.map((item) => `<article class="performance-stat"><span class="performance-stat-label">${esc(item.label)}</span><strong class="performance-stat-value${item.tone ? ` is-${item.tone}` : ""}">${esc(item.value)}</strong></article>`).join("")}</div><article class="chart-panel"><div class="chart-panel-head"><strong>Aproveitamento do grupo</strong><span>${esc(`${mentorSnapshot.aproveitamento}%`)}</span></div><div class="chart-panel-body donut-panel">${renderAccuracyDonut(mentorSnapshot)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-green"></i>${esc(`${mentorSnapshot.totalAcertos} acertos`)}</span><span class="legend-item"><i class="legend-dot is-red"></i>${esc(`${mentorSnapshot.totalErros} erros`)}</span><span class="legend-item"><i class="legend-dot is-gold"></i>${esc(`${mentorSnapshot.totalPomodoros} pomodoros`)}</span></div></article><article class="chart-panel chart-panel-wide"><div class="chart-panel-head"><strong>Tendencia do grupo</strong><span>ultimos 14 dias</span></div><div class="chart-panel-body">${renderRecentPerformanceChart(mentorSnapshot.trendSeries)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-gold"></i>Questoes feitas</span><span class="legend-item"><i class="legend-dot is-green"></i>Questoes certas</span><span class="legend-item">${esc(`${mentorSnapshot.recentSnapshot.totalHoras.toFixed(1)}h nas ultimas 2 semanas`)}</span><span class="legend-item">${esc(`${mentorSnapshot.metasRecentes} metas concluidas em 7 dias`)}</span></div></article></div></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><div><h2 class="card-title">Acompanhamento do mentor</h2><p class="page-copy">Tabela consolidada com concurso, ultimo check-in, plano ativo e ultimo simulado por mentorado.</p></div><span class="badge gold">Ultimos 7 dias</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Mentorado</th><th>Concurso</th><th>Ultimo check-in</th><th>Horas 7d</th><th>Questoes 7d</th><th>Acerto 7d</th><th>Metas 7d</th><th>Plano</th><th>Simulado</th><th>Ritmo</th></tr></thead><tbody>${evolutionTableRows}</tbody></table></div></article><article class="card"><div class="card-head"><div><h2 class="card-title">Radar individual</h2><p class="page-copy">Leitura rapida para saber quem esta constante, quem travou e quem precisa de ajuste imediato.</p></div><span class="badge gold">${esc(String(mentorKpis.length))} mentorados</span></div><div class="list">${evolutionCardsHtml}</div></article></section><section class="card" style="margin-top:1rem;"><div class="card-head"><div><h2 class="card-title">Termometro por mentorado</h2><p class="page-copy">Mini historico de atividade para identificar retomadas, quedas de ritmo e ausencia de registro.</p></div><span class="badge gold">${esc(String(mentorKpis.length))} cards</span></div><div class="mentor-pulse-grid">${mentorPulseCardsHtml}</div></section></section><section id="sec-observacoes" class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><div><h2 class="card-title">Observacoes dos mentorados</h2><p class="page-copy">Essas mensagens chegam automaticamente quando o aluno salva o check-in diario na aba Evolucao.</p></div><span class="badge gold">${esc(String(observationRows.length))} observacoes</span></div><div class="list">${observationsFeedHtml}</div></article><article class="card"><div class="card-head"><div><h2 class="card-title">Ultima mensagem de cada aluno</h2><p class="page-copy">Visao limpa para saber o que cada mentorado te contou por ultimo.</p></div><span class="badge gold">${esc(String(latestObservations.length))} alunos</span></div><div class="list">${latestObservationsHtml}</div></article></section>`;
+  // ═══════════════════════════════════════════════════════════════
+  //  RENDER
+  // ═══════════════════════════════════════════════════════════════
+  appContent.innerHTML = `
+    <div class="admin-tabs">
+      <button class="admin-tab is-active" data-tab="overview">📊 Visão Geral</button>
+      <button class="admin-tab" data-tab="alunos">👥 Alunos</button>
+      <button class="admin-tab" data-tab="conteudo">📚 Conteúdo</button>
+      <button class="admin-tab" data-tab="relatorios">📈 Relatórios</button>
+    </div>
+
+    <\!-- ── TAB: VISÃO GERAL ─────────────────────────────────── -->
+    <div class="admin-section is-active" data-section="overview">
+      <section class="grid-4">
+        <article class="card stat-card">
+          <div class="stat-value">${esc(String(data.mentorados.length))}</div>
+          <div class="stat-label">Mentorados</div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-value">${esc(String(mentorSnapshot.mentoradosAtivos))}</div>
+          <div class="stat-label">Ativos esta semana</div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-value">${esc(`${mentorSnapshot.aproveitamento}%`)}</div>
+          <div class="stat-label">Acerto do grupo</div>
+        </article>
+        <article class="card stat-card">
+          <div class="stat-value">${esc(String(mentorSnapshot.checkinsRecentes))}</div>
+          <div class="stat-label">Check-ins (7 dias)</div>
+        </article>
+      </section>
+
+      <section style="margin-top:1.5rem;">
+        <div class="card-head" style="margin-bottom:.8rem;">
+          <h2 class="card-title">Alunos hoje — ${esc(fmtDate(todayIso))}</h2>
+          <span class="badge gold">${esc(String(todayCheckinMap.size))}/${esc(String(data.mentorados.length))} check-ins</span>
+        </div>
+        <div class="mentor-today-grid">${todayStudentCards}</div>
+      </section>
+
+      <section class="grid-2" style="margin-top:1.5rem;">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Últimas mensagens</h2>
+              <p class="page-copy">O que os alunos relataram nos check-ins.</p>
+            </div>
+            <span class="badge gold">${esc(String(observationRows.length))}</span>
+          </div>
+          <div class="list">${observationsFeedHtml}</div>
+        </article>
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Última por aluno</h2>
+              <p class="page-copy">Mensagem mais recente de cada mentorado.</p>
+            </div>
+            <span class="badge gold">${esc(String(latestObservations.length))}</span>
+          </div>
+          <div class="list">${latestObservationsHtml}</div>
+        </article>
+      </section>
+    </div>
+
+    <\!-- ── TAB: ALUNOS ──────────────────────────────────────── -->
+    <div class="admin-section" data-section="alunos">
+      <section class="grid-2">
+        <article class="card">
+          <div class="card-head"><h2 class="card-title">Editar mentorado</h2></div>
+          <form class="form-grid" data-form="mentorado-update">
+            <label>
+              <span class="field-label">Selecionar aluno</span>
+              <select class="select" name="mentorado_id" required>
+                <option value="">— Selecione —</option>
+                ${data.mentorados.map((m) => `<option value="${esc(m.id)}">${esc(m.nome || m.email)}</option>`).join("")}
+              </select>
+            </label>
+            <label><span class="field-label">Nome</span><input class="input" name="nome" type="text" required></label>
+            <label>
+              <span class="field-label">Concurso</span>
+              <select class="select" name="concurso_id">
+                <option value="">Sem vínculo</option>
+                ${data.concursos.map((c) => `<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join("")}
+              </select>
+            </label>
+            <label>
+              <span class="field-label">Ativo</span>
+              <select class="select" name="ativo">
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+              </select>
+            </label>
+            <button class="button button-primary" type="submit">Salvar alterações</button>
+            <div class="message" data-form-message></div>
+          </form>
+        </article>
+        <article class="card">
+          <div class="card-head">
+            <h2 class="card-title">Mentorados</h2>
+            <span class="badge gold">${esc(String(data.mentorados.length))}</span>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Nome</th><th>Email</th><th>Concurso</th><th>Status</th></tr></thead>
+              <tbody>
+                ${data.mentorados.map((m) => `
+                  <tr>
+                    <td><strong>${esc(m.nome || "--")}</strong></td>
+                    <td>${esc(m.email || "--")}</td>
+                    <td>${esc(concursosMap.get(m.concurso_id)?.nome || "Não vinculado")}</td>
+                    <td><span class="badge ${m.ativo ? "green" : "orange"}">${esc(m.ativo ? "Ativo" : "Inativo")}</span></td>
+                  </tr>
+                `).join("") || `<tr><td colspan="4" class="empty-state">Nenhum mentorado.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="grid-2" style="margin-top:1rem;">
+        <article class="card">
+          <div class="card-head"><h2 class="card-title">Novo concurso</h2></div>
+          <form class="form-grid" data-form="concurso-create">
+            <label><span class="field-label">Nome</span><input class="input" name="nome" type="text" required></label>
+            <label><span class="field-label">Cargo</span><input class="input" name="cargo" type="text"></label>
+            <label><span class="field-label">Órgão</span><input class="input" name="orgao" type="text"></label>
+            <label>
+              <span class="field-label">Status</span>
+              <select class="select" name="status">
+                <option value="ativo">Ativo</option>
+                <option value="arquivado">Arquivado</option>
+              </select>
+            </label>
+            <label><span class="field-label">Descrição</span><textarea class="textarea" name="descricao" rows="2"></textarea></label>
+            <button class="button button-primary" type="submit">Criar concurso</button>
+            <div class="message" data-form-message></div>
+          </form>
+        </article>
+        <article class="card">
+          <div class="card-head">
+            <h2 class="card-title">Concursos</h2>
+            <span class="badge gold">${esc(String(data.concursos.length))}</span>
+          </div>
+          <div class="list">
+            ${data.concursos.map((c) => `
+              <div class="list-item">
+                <strong>${esc(c.nome)}</strong>
+                <span>${esc([c.cargo, c.orgao].filter(Boolean).join(" — ") || "Sem detalhes.")}</span>
+                <div class="badge-row" style="margin-top:.5rem;">
+                  <span class="badge ${badgeClass(c.status)}">${esc(c.status)}</span>
+                </div>
+              </div>
+            `).join("") || `<div class="empty-state">Nenhum concurso cadastrado ainda.</div>`}
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <\!-- ── TAB: CONTEÚDO ────────────────────────────────────── -->
+    <div class="admin-section" data-section="conteudo">
+      <div class="admin-subtabs">
+        <button class="admin-subtab is-active" data-subtab="materiais">Materiais</button>
+        <button class="admin-subtab" data-subtab="planos">Planos mensais</button>
+        <button class="admin-subtab" data-subtab="metas">Metas do plano</button>
+        <button class="admin-subtab" data-subtab="simulados">Simulados</button>
+      </div>
+
+      <\!-- Materiais -->
+      <div class="admin-subsection is-active" data-subsection="materiais">
+        <section class="grid-2" style="margin-top:1rem;">
+          <article class="card">
+            <div class="card-head"><h2 class="card-title">Publicar material</h2></div>
+            <form class="form-grid" data-form="material-create">
+              <label><span class="field-label">Título</span><input class="input" name="titulo" type="text" required></label>
+              <label>
+                <span class="field-label">Tipo</span>
+                <input class="input" name="tipo" type="text" placeholder="pdf, vídeo, questões, artigo...">
+              </label>
+              <label>
+                <span class="field-label">Visibilidade</span>
+                <select class="select" name="visibilidade">
+                  <option value="concurso">Por concurso — todos do concurso recebem</option>
+                  <option value="aluno">Por aluno — só um aluno específico</option>
+                </select>
+              </label>
+              <label>
+                <span class="field-label">Concurso</span>
+                <select class="select" name="concurso_id">
+                  <option value="">— Opcional —</option>
+                  ${data.concursos.map((c) => `<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join("")}
+                </select>
+              </label>
+              <label>
+                <span class="field-label">Aluno específico</span>
+                <select class="select" name="mentorado_id">
+                  <option value="">— Opcional —</option>
+                  ${data.mentorados.map((m) => `<option value="${esc(m.id)}">${esc(m.nome || m.email)}</option>`).join("")}
+                </select>
+              </label>
+              <label><span class="field-label">URL do material</span><input class="input" name="externo_url" type="url" placeholder="https://..."></label>
+              <label><span class="field-label">Descrição</span><textarea class="textarea" name="descricao" rows="2"></textarea></label>
+              <button class="button button-primary" type="submit">Publicar material</button>
+              <div class="message" data-form-message></div>
+            </form>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <h2 class="card-title">Materiais publicados</h2>
+              <span class="badge gold">${esc(String(data.materiais.length))}</span>
+            </div>
+            <div class="list">
+              ${data.materiais.map((item) => `
+                <div class="list-item">
+                  <strong>${esc(item.titulo)}</strong>
+                  <span>${esc(item.tipo || "—")}</span>
+                  <div class="badge-row" style="margin-top:.5rem;">
+                    <span class="badge gold">${esc(item.visibilidade)}</span>
+                    <span class="badge blue">${esc(fmtDate(item.created_at?.slice?.(0, 10) || ""))}</span>
+                  </div>
+                </div>
+              `).join("") || `<div class="empty-state">Nenhum material publicado ainda.</div>`}
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <\!-- Planos Mensais -->
+      <div class="admin-subsection" data-subsection="planos">
+        <section class="grid-2" style="margin-top:1rem;">
+          <article class="card">
+            <div class="card-head"><h2 class="card-title">Novo plano mensal</h2></div>
+            <form class="form-grid" data-form="plano-mensal-create">
+              <label>
+                <span class="field-label">Aluno</span>
+                <select class="select" name="mentorado_id" required>
+                  <option value="">— Selecione o aluno —</option>
+                  ${data.mentorados.map((m) => `<option value="${esc(m.id)}">${esc(m.nome || m.email)}</option>`).join("")}
+                </select>
+              </label>
+              <label><span class="field-label">Título</span><input class="input" name="titulo" type="text" placeholder="Plano Maio 2026 — TRF-3" required></label>
+              <label><span class="field-label">Mês de referência</span><input class="input" name="mes_referencia" type="date" required></label>
+              <label>
+                <span class="field-label">Status</span>
+                <select class="select" name="status">
+                  <option value="ativo">Ativo</option>
+                  <option value="rascunho">Rascunho</option>
+                  <option value="arquivado">Arquivado</option>
+                </select>
+              </label>
+              <label><span class="field-label">URL do PDF (opcional)</span><input class="input" name="pdf_url" type="url"></label>
+              <label><span class="field-label">Descrição</span><textarea class="textarea" name="descricao" rows="2"></textarea></label>
+              <button class="button button-primary" type="submit">Criar plano</button>
+              <div class="message" data-form-message></div>
+            </form>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <h2 class="card-title">Planos recentes</h2>
+              <span class="badge gold">${esc(String(plans.length))}</span>
+            </div>
+            <div class="list">
+              ${plans.map((plan) => `
+                <div class="list-item">
+                  <strong>${esc(plan.titulo)}</strong>
+                  <span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} — ${fmtMonth(plan.mes_referencia)}`)}</span>
+                  <div class="metric-bar" style="margin-top:.6rem;">
+                    <span style="width:${esc(String(plan.progress))}%"></span>
+                  </div>
+                  <div class="badge-row" style="margin-top:.5rem;">
+                    <span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span>
+                    <span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span>
+                  </div>
+                  ${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:.8rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF</a></div>` : ""}
+                </div>
+              `).join("") || `<div class="empty-state">Nenhum plano mensal ainda.</div>`}
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <\!-- Metas do plano -->
+      <div class="admin-subsection" data-subsection="metas">
+        <section class="grid-2" style="margin-top:1rem;">
+          <article class="card">
+            <div class="card-head"><h2 class="card-title">Nova meta do plano</h2></div>
+            <form class="form-grid" data-form="plano-item-create">
+              <label>
+                <span class="field-label">Plano mensal</span>
+                <select class="select" name="plano_id" required>
+                  <option value="">— Selecione o plano —</option>
+                  ${data.monthlyPlans.map((item) => `<option value="${esc(item.id)}">${esc(optionLabel(item, mentoradosMap))}</option>`).join("")}
+                </select>
+              </label>
+              <label><span class="field-label">Título da meta</span><input class="input" name="titulo" type="text" required></label>
+              <label>
+                <span class="field-label">Tipo</span>
+                <select class="select" name="tipo">
+                  <option value="teoria">Teoria</option>
+                  <option value="questoes">Questões</option>
+                  <option value="revisao">Revisão</option>
+                  <option value="simulado">Simulado</option>
+                  <option value="redacao">Redação</option>
+                  <option value="meta_mensal">Meta mensal</option>
+                </select>
+              </label>
+              <label><span class="field-label">Data prevista</span><input class="input" name="data_prevista" type="date"></label>
+              <label>
+                <span class="field-label">Dia da semana</span>
+                <select class="select" name="dia_semana">
+                  <option value="">— Opcional —</option>
+                  ${dayLabels.map((label, i) => `<option value="${i}">${esc(label)}</option>`).join("")}
+                </select>
+              </label>
+              <label><span class="field-label">Link TEC (opcional)</span><input class="input" name="tec_url" type="url"></label>
+              <label><span class="field-label">Link complementar</span><input class="input" name="material_url" type="text"></label>
+              <label><span class="field-label">Ordem</span><input class="input" name="ordem" type="number" min="0" value="1"></label>
+              <button class="button button-primary" type="submit">Adicionar meta</button>
+              <div class="message" data-form-message></div>
+            </form>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <h2 class="card-title">Metas recentes</h2>
+              <span class="badge gold">${esc(String(data.monthlyItems.length))}</span>
+            </div>
+            <div class="list">
+              ${data.monthlyItems.slice(0, 15).map((item) => `
+                <div class="list-item">
+                  <strong>${esc(item.titulo)}</strong>
+                  <span>${esc(item.tipo || "—")}</span>
+                  <div class="badge-row" style="margin-top:.4rem;">
+                    <span class="badge ${item.concluido ? "green" : "blue"}">${esc(item.concluido ? "Concluída" : "Pendente")}</span>
+                    ${item.data_prevista ? `<span class="badge gold">${esc(fmtDate(item.data_prevista))}</span>` : ""}
+                  </div>
+                </div>
+              `).join("") || `<div class="empty-state">Nenhuma meta ainda.</div>`}
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <\!-- Simulados -->
+      <div class="admin-subsection" data-subsection="simulados">
+        <section class="grid-2" style="margin-top:1rem;">
+          <article class="card">
+            <div class="card-head"><h2 class="card-title">Registrar simulado</h2></div>
+            <form class="form-grid" data-form="simulado-create">
+              <label>
+                <span class="field-label">Aluno</span>
+                <select class="select" name="mentorado_id" required>
+                  <option value="">— Selecione o aluno —</option>
+                  ${data.mentorados.map((m) => `<option value="${esc(m.id)}">${esc(m.nome || m.email)}</option>`).join("")}
+                </select>
+              </label>
+              <label>
+                <span class="field-label">Concurso</span>
+                <select class="select" name="concurso_id">
+                  <option value="">— Opcional —</option>
+                  ${data.concursos.map((c) => `<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join("")}
+                </select>
+              </label>
+              <label><span class="field-label">Título</span><input class="input" name="titulo" type="text" required></label>
+              <label><span class="field-label">Data de aplicação</span><input class="input" name="data_aplicacao" type="date"></label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                <label><span class="field-label">Acertos</span><input class="input" name="acertos" type="number" min="0" value="0"></label>
+                <label><span class="field-label">Total questões</span><input class="input" name="total_questoes" type="number" min="0" value="0"></label>
+              </div>
+              <label><span class="field-label">URL do PDF (opcional)</span><input class="input" name="pdf_url" type="url"></label>
+              <label><span class="field-label">Observações</span><textarea class="textarea" name="observacoes" rows="2"></textarea></label>
+              <button class="button button-primary" type="submit">Registrar simulado</button>
+              <div class="message" data-form-message></div>
+            </form>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <h2 class="card-title">Simulados recentes</h2>
+              <span class="badge gold">${esc(String(data.simulados.length))}</span>
+            </div>
+            <div class="list">
+              ${data.simulados.map((item) => `
+                <div class="list-item">
+                  <strong>${esc(item.titulo)}</strong>
+                  <span>${esc(mentoradosMap.get(item.mentorado_id)?.nome || "Aluno")}</span>
+                  <div class="badge-row" style="margin-top:.5rem;">
+                    <span class="badge gold">${esc(fmtDate(item.data_aplicacao))}</span>
+                    <span class="badge blue">${esc(`${item.acertos || 0}/${item.total_questoes || 0}`)}</span>
+                  </div>
+                  ${item.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:.8rem;"><a class="button button-secondary" href="${esc(item.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF</a></div>` : ""}
+                </div>
+              `).join("") || `<div class="empty-state">Nenhum simulado ainda.</div>`}
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+
+    <\!-- ── TAB: RELATÓRIOS ──────────────────────────────────── -->
+    <div class="admin-section" data-section="relatorios">
+      <section class="card performance-overview">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Pulso do grupo</h2>
+            <p class="page-copy">Visão dinâmica do desempenho agregado, com foco em atividade recente, acerto e consistência.</p>
+          </div>
+          <span class="badge gold">${esc(String(mentorSnapshot.mentoradosAtivos))} ativos na semana</span>
+        </div>
+        <div class="performance-grid">
+          <div class="performance-metrics">
+            ${mentorOverviewMetrics.map((item) => `
+              <article class="performance-stat">
+                <span class="performance-stat-label">${esc(item.label)}</span>
+                <strong class="performance-stat-value${item.tone ? ` is-${item.tone}` : ""}">${esc(item.value)}</strong>
+              </article>
+            `).join("")}
+          </div>
+          <article class="chart-panel">
+            <div class="chart-panel-head"><strong>Aproveitamento do grupo</strong><span>${esc(`${mentorSnapshot.aproveitamento}%`)}</span></div>
+            <div class="chart-panel-body donut-panel">${renderAccuracyDonut(mentorSnapshot)}</div>
+            <div class="chart-legend">
+              <span class="legend-item"><i class="legend-dot is-green"></i>${esc(`${mentorSnapshot.totalAcertos} acertos`)}</span>
+              <span class="legend-item"><i class="legend-dot is-red"></i>${esc(`${mentorSnapshot.totalErros} erros`)}</span>
+              <span class="legend-item"><i class="legend-dot is-gold"></i>${esc(`${mentorSnapshot.totalPomodoros} pomodoros`)}</span>
+            </div>
+          </article>
+          <article class="chart-panel chart-panel-wide">
+            <div class="chart-panel-head"><strong>Tendência do grupo</strong><span>últimos 14 dias</span></div>
+            <div class="chart-panel-body">${renderRecentPerformanceChart(mentorSnapshot.trendSeries)}</div>
+            <div class="chart-legend">
+              <span class="legend-item"><i class="legend-dot is-gold"></i>Questões feitas</span>
+              <span class="legend-item"><i class="legend-dot is-green"></i>Questões certas</span>
+              <span class="legend-item">${esc(`${mentorSnapshot.recentSnapshot.totalHoras.toFixed(1)}h nas últimas 2 semanas`)}</span>
+              <span class="legend-item">${esc(`${mentorSnapshot.metasRecentes} metas concluídas em 7 dias`)}</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="grid-2" style="margin-top:1rem;">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Acompanhamento por aluno</h2>
+              <p class="page-copy">Check-in, horas, questões, acerto e ritmo nos últimos 7 dias.</p>
+            </div>
+            <span class="badge gold">7 dias</span>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Aluno</th><th>Concurso</th><th>Último check-in</th>
+                  <th>Horas 7d</th><th>Questões 7d</th><th>Acerto 7d</th>
+                  <th>Metas 7d</th><th>Plano</th><th>Simulado</th><th>Ritmo</th>
+                </tr>
+              </thead>
+              <tbody>${evolutionTableRows}</tbody>
+            </table>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Radar individual</h2>
+              <p class="page-copy">Quem está constante, quem travou e quem precisa de ajuste.</p>
+            </div>
+            <span class="badge gold">${esc(String(mentorKpis.length))} alunos</span>
+          </div>
+          <div class="list">${evolutionCardsHtml}</div>
+        </article>
+      </section>
+
+      <section class="card" style="margin-top:1rem;">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Termômetro por aluno</h2>
+            <p class="page-copy">Mini histórico de atividade para identificar retomadas, quedas e ausências.</p>
+          </div>
+          <span class="badge gold">${esc(String(mentorKpis.length))} cards</span>
+        </div>
+        <div class="mentor-pulse-grid">${mentorPulseCardsHtml}</div>
+      </section>
+    </div>
+  `;
+
+  // ── Wire tab switching ────────────────────────────────────────
+  appContent.querySelectorAll(".admin-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      appContent.querySelectorAll(".admin-tab").forEach((t) => t.classList.toggle("is-active", t === tab));
+      appContent.querySelectorAll(".admin-section").forEach((s) => s.classList.toggle("is-active", s.dataset.section === tab.dataset.tab));
+    });
+  });
+
+  // ── Wire subtab switching ─────────────────────────────────────
+  appContent.querySelectorAll(".admin-subtab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const parent = btn.closest(".admin-section");
+      parent.querySelectorAll(".admin-subtab").forEach((t) => t.classList.toggle("is-active", t === btn));
+      parent.querySelectorAll(".admin-subsection").forEach((s) => s.classList.toggle("is-active", s.dataset.subsection === btn.dataset.subtab));
+    });
+  });
 
   appContent.querySelectorAll("form[data-form]").forEach((form) => {
     form.addEventListener("submit", handleAdminSubmit);
   });
   wireAdminMentoradoForm(data.mentorados);
-  syncAdminHashNav();
 }
 
 function wireAdminMentoradoForm(mentorados) {

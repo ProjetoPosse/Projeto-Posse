@@ -784,3 +784,154 @@ body.nav-open { overflow: hidden; }
 .pomodoro-display.is-break.is-running {
   animation: pomo-pulse 3s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — TAB NAVIGATION
+═══════════════════════════════════════════════════════════════ */
+.admin-tabs {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  padding: 1rem 0 .2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.25rem;
+}
+.admin-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 500;
+  padding: .5rem 1.1rem;
+  transition: background .15s, color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.admin-tab:hover {
+  background: var(--gold-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.admin-tab.is-active {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* Sections — hidden unless active */
+.admin-section { display: none; }
+.admin-section.is-active { display: block; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — SUBTAB NAVIGATION (inside Conteúdo)
+═══════════════════════════════════════════════════════════════ */
+.admin-subtabs {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+.admin-subtab {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 500;
+  padding: .4rem .9rem;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.admin-subtab:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.admin-subtab.is-active {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* Subsections — hidden unless active */
+.admin-subsection { display: none; }
+.admin-subsection.is-active { display: block; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN — TODAY STUDENT GRID
+═══════════════════════════════════════════════════════════════ */
+.mentor-today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .85rem;
+}
+.mentor-student-card {
+  padding: .95rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.mentor-student-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.mentor-student-head strong {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.mentor-student-concurso {
+  font-size: .75rem;
+  color: var(--muted);
+  margin-top: -.1rem;
+}
+.mentor-student-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .3rem;
+  margin-top: .3rem;
+}
+.mentor-student-metrics > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: .35rem .2rem;
+  text-align: center;
+}
+.mentor-student-metrics > span > strong {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.mentor-student-metrics > span > small {
+  font-size: .62rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-top: .15rem;
+}
+.mentor-student-obs {
+  font-size: .78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: .2rem 0 0;
+  line-height: 1.4;
+}
+.mentor-student-obs.is-muted {
+  opacity: .6;
+}
+
+@media (max-width: 720px) {
+  .admin-tabs { gap: .3rem; }
+  .admin-tab  { font-size: .78rem; padding: .4rem .8rem; }
+  .mentor-today-grid { grid-template-columns: 1fr; }
+}
