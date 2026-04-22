@@ -1,4 +1,4 @@
-# Projeto Posse - Area do Mentorado
+﻿# Projeto Posse - Area do Mentorado
 
 Esta pasta contem a area autenticada do Projeto Posse, feita para rodar em hospedagem estatica e consumir o Supabase diretamente no front-end.
 

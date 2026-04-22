@@ -39,6 +39,67 @@
   to = "/app/evolucao.html"
   status = 200
 
+
+[[redirects]]
+  from = "/app/metodos-de-estudo"
+  to = "/app/metodos-de-estudo.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/metodos-de-estudo/onenote"
+  to = "/app/metodos-de-estudo-onenote.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/metodos-de-estudo/flashcards"
+  to = "/app/metodos-de-estudo-flashcards.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/metodos-de-estudo/inteligencia-artificial"
+  to = "/app/metodos-de-estudo-inteligencia-artificial.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/metodos-de-estudo/caderno-de-erros"
+  to = "/app/metodos-de-estudo-caderno-de-erros.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/metodos-de-estudo/discursivas"
+  to = "/app/metodos-de-estudo-discursivas.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo"
+  to = "/app/metodos-de-estudo.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/onenote"
+  to = "/app/metodos-de-estudo-onenote.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/flashcards"
+  to = "/app/metodos-de-estudo-flashcards.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/inteligencia-artificial"
+  to = "/app/metodos-de-estudo-inteligencia-artificial.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/caderno-de-erros"
+  to = "/app/metodos-de-estudo-caderno-de-erros.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/discursivas"
+  to = "/app/metodos-de-estudo-discursivas.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -46,6 +107,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
 
 [[headers]]
   for = "/app/*"

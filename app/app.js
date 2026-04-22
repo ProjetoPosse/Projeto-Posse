@@ -1,5 +1,6 @@
-﻿const body = document.body;
+const body = document.body;
 const page = body.dataset.page || "";
+const methodSlug = body.dataset.method || "";
 document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
   if (link.dataset.page === page) link.classList.add("is-active");
 });
@@ -1431,43 +1432,453 @@ async function fetchMentoradoData() {
   };
 }
 
+const STUDY_METHODS = [
+  {
+    slug: "onenote",
+    file: "./metodos-de-estudo-onenote.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/onenote",
+    icon: "ON",
+    tone: "gold",
+    shortTitle: "OneNote",
+    title: "OneNote: como organizar seu estudo de forma inteligente",
+    subtitle: "Aprenda a usar o OneNote para centralizar teoria, revisões, prints de questões, observações e materiais em um único sistema.",
+    summary: "Organização inteligente do estudo",
+    objective: [
+      "entender para que serve o OneNote;",
+      "montar uma estrutura simples e funcional;",
+      "organizar disciplinas e assuntos;",
+      "integrar teoria, revisão, questões e erros em um só lugar."
+    ],
+    intro: [
+      "O OneNote funciona como um centro de organização do estudo. Ele não substitui o plano, as questões ou a revisão, mas ajuda o aluno a manter tudo encontrável e conectado.",
+      "A ideia é criar um sistema leve, em que cada anotação tenha função: revisar melhor, registrar uma dúvida, organizar um erro ou guardar um exemplo importante."
+    ],
+    what: "É um caderno digital dividido em camadas. Você pode criar cadernos, seções, páginas e subpáginas para organizar a preparação sem depender de dezenas de arquivos soltos.",
+    purpose: [
+      "centralizar teoria, revisões, prints de questões e observações;",
+      "evitar perda de anotações importantes;",
+      "criar um histórico de estudo por disciplina e assunto;",
+      "facilitar revisões rápidas antes de simulados e provas."
+    ],
+    howUse: [
+      "Use o OneNote como mapa de estudo, não como depósito infinito de conteúdo.",
+      "Estrutura recomendada: Caderno = concurso ou área; Seções = disciplinas; Páginas = assuntos; Subpáginas = revisão, questões, observações e erros.",
+      "Ao terminar um bloco, registre apenas o que aumenta sua capacidade de revisar ou corrigir erro."
+    ],
+    steps: [
+      "Crie um caderno com o nome do concurso ou da área.",
+      "Crie uma seção para cada disciplina.",
+      "Dentro de cada disciplina, crie páginas para os assuntos do edital.",
+      "Use subpáginas para revisão, questões, observações e erros relevantes.",
+      "Revise semanalmente o que foi registrado e apague excessos que não ajudam."
+    ],
+    mistakes: [
+      "copiar aulas inteiras para dentro do OneNote;",
+      "misturar disciplinas e assuntos sem padrão;",
+      "guardar print de questão sem explicar o motivo do erro;",
+      "gastar mais tempo decorando o caderno do que estudando;",
+      "criar páginas que nunca serão revisadas."
+    ],
+    goldenRule: "Se a anotação não ajuda você a revisar melhor, ela provavelmente está excessiva.",
+    checklist: [
+      "Tenho um caderno por concurso ou área.",
+      "Cada disciplina tem uma seção própria.",
+      "Cada assunto importante tem página separada.",
+      "Meus erros possuem explicação curta do motivo.",
+      "Eu reviso e limpo o caderno periodicamente."
+    ],
+    exercise: {
+      title: "Monte sua primeira estrutura funcional",
+      text: "Escolha uma disciplina do seu plano e crie uma seção com três assuntos prioritários. Em cada assunto, adicione uma subpágina de revisão e outra de erros.",
+      steps: ["Defina a disciplina.", "Crie três páginas de assunto.", "Registre uma anotação útil em cada página.", "Elimine qualquer conteúdo que não ajude na revisão."]
+    },
+    visual: {
+      type: "flow",
+      title: "Fluxo recomendado no OneNote",
+      items: ["Caderno", "Disciplina", "Assunto", "Revisão", "Erros"]
+    },
+    final: "Organização não aprova ninguém sozinha, mas a desorganização reprova muita gente."
+  },
+  {
+    slug: "flashcards",
+    file: "./metodos-de-estudo-flashcards.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/flashcards",
+    icon: "FC",
+    tone: "blue",
+    shortTitle: "Flashcards",
+    title: "Flashcards: como revisar de forma ativa e memorizar o que importa",
+    subtitle: "Aprenda a usar flashcards para reforçar conceitos, revisar com agilidade e melhorar a retenção.",
+    summary: "Revisão ativa e retenção",
+    objective: [
+      "entender o que são flashcards;",
+      "saber quando usar e quando não usar;",
+      "criar cartões curtos e eficientes;",
+      "revisar de forma ativa, sem depender apenas de releitura."
+    ],
+    intro: [
+      "Flashcards são cartões de pergunta e resposta usados para recuperar informação da memória. A força deles está no esforço ativo de lembrar antes de olhar a resposta.",
+      "Eles são excelentes para reforçar pontos objetivos, mas não servem para substituir o estudo inicial de temas densos."
+    ],
+    what: "São cartões curtos, geralmente com uma pergunta na frente e uma resposta objetiva no verso. O aluno lê a pergunta, tenta responder mentalmente e só depois confere.",
+    purpose: [
+      "fixar conceitos curtos;",
+      "revisar prazos, competências e classificações;",
+      "comparar institutos parecidos;",
+      "manter contato frequente com pontos que caem muito."
+    ],
+    howUse: [
+      "Use flashcards para lei seca, conceitos curtos, prazos, competências, classificações e diferenças entre institutos.",
+      "Evite criar flashcards de assuntos que você ainda não compreendeu. Primeiro entenda, depois transforme em cartão.",
+      "Cartões bons são objetivos. Exemplo bom: 'Qual é o prazo X?'. Exemplo ruim: 'Explique toda a teoria sobre X'."
+    ],
+    steps: [
+      "Estude o assunto antes de criar cartões.",
+      "Transforme um ponto importante em pergunta curta.",
+      "Escreva uma resposta objetiva e conferível.",
+      "Revise tentando lembrar antes de olhar a resposta.",
+      "Reescreva cartões confusos ou longos demais."
+    ],
+    mistakes: [
+      "usar flashcard para aprender assunto do zero;",
+      "fazer cartões enormes;",
+      "criar perguntas vagas;",
+      "revisar apenas reconhecendo a resposta;",
+      "acumular cartões demais sem revisar."
+    ],
+    goldenRule: "Flashcard é ferramenta de reforço, não substituto do estudo.",
+    checklist: [
+      "Cada cartão tem uma pergunta clara.",
+      "A resposta é curta e objetiva.",
+      "O cartão cobra um ponto relevante para prova.",
+      "Eu tento responder antes de conferir.",
+      "Cartões ruins são apagados ou reescritos."
+    ],
+    exercise: {
+      title: "Crie cinco cartões úteis",
+      text: "Pegue um assunto já estudado e crie cinco flashcards: dois de conceito, um de prazo, um de diferença entre institutos e um de pegadinha comum.",
+      steps: ["Escolha o assunto.", "Escreva perguntas curtas.", "Responda sem olhar o material.", "Marque os cartões que realmente exigiram memória ativa."]
+    },
+    visual: {
+      type: "flashcard",
+      title: "Modelo frente e verso",
+      front: "Frente: Qual é o conceito central?",
+      back: "Verso: Resposta curta, objetiva e revisável."
+    },
+    final: "Quem apenas relê reconhece; quem revisa ativamente lembra."
+  },
+  {
+    slug: "inteligencia-artificial",
+    file: "./metodos-de-estudo-inteligencia-artificial.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/inteligencia-artificial",
+    icon: "IA",
+    tone: "green",
+    shortTitle: "Inteligência Artificial",
+    title: "Inteligência Artificial nos estudos: como usar Gemini e NotebookLM de forma estratégica",
+    subtitle: "Aprenda a usar IA para entender conteúdos, revisar melhor, criar simulados, gerar flashcards e treinar discursivas.",
+    summary: "Gemini, NotebookLM, simulados, flashcards e discursivas",
+    objective: [
+      "entender o papel da IA na preparação;",
+      "usar IA como apoio, não como atalho;",
+      "aplicar Gemini e NotebookLM em tarefas reais de estudo;",
+      "melhorar revisão, treino e correção sem perder autonomia."
+    ],
+    intro: [
+      "A IA não substitui estudo real. Ela não lê por você, não resolve sua constância e não garante domínio técnico. O papel dela é acelerar entendimento, organizar revisão e criar bons treinos.",
+      "Use IA para explicar temas difíceis, resumir conteúdos, comparar institutos, gerar perguntas, criar flashcards, montar simulados, treinar discursivas e corrigir respostas no estilo da banca."
+    ],
+    what: "É um conjunto de ferramentas que pode apoiar a compreensão, a revisão e a produção de exercícios. O valor está na qualidade do comando que você dá e na crítica que faz da resposta.",
+    purpose: [
+      "explicar temas difíceis em linguagem didática;",
+      "gerar perguntas e flashcards;",
+      "montar simulados por nível de dificuldade;",
+      "treinar questões discursivas;",
+      "comparar institutos e organizar revisões."
+    ],
+    howUse: [
+      "Peça respostas com contexto, nível de profundidade e formato desejado.",
+      "Sempre confira pontos sensíveis em lei, jurisprudência, edital e material confiável.",
+      "Use Gemini para explicação, elaboração e correção. Use NotebookLM para trabalhar com PDFs, resumos, anotações e materiais próprios."
+    ],
+    steps: [
+      "Escolha o assunto e diga seu nível de conhecimento.",
+      "Informe a banca, cargo ou prova quando fizer sentido.",
+      "Peça uma saída objetiva: resumo, quadro comparativo, simulado, flashcards ou correção.",
+      "Revise criticamente a resposta.",
+      "Transforme a resposta em ação de estudo: questão, revisão, caderno de erros ou discursiva."
+    ],
+    mistakes: [
+      "copiar resposta da IA sem checar;",
+      "pedir comandos vagos;",
+      "usar IA para fugir da leitura do material;",
+      "trocar treino real por resumos automáticos;",
+      "aceitar correção sem comparar com edital e padrão da banca."
+    ],
+    goldenRule: "A IA deve tornar seu estudo melhor, nunca mais preguiçoso.",
+    checklist: [
+      "Eu informei o contexto do concurso ou banca.",
+      "O prompt pediu um formato claro de resposta.",
+      "Eu conferi pontos sensíveis em fonte confiável.",
+      "Usei a resposta para gerar treino real.",
+      "Não substituí estudo por automação."
+    ],
+    subblocks: [
+      {
+        title: "Gemini",
+        text: "Use para explicações didáticas, aprofundamento, geração de flashcards, simulados, questões discursivas e correção de discursivas como avaliador da banca.",
+        bullets: [
+          "Explique este tema de forma didática, como se eu fosse iniciante.",
+          "Crie 15 flashcards sobre este assunto.",
+          "Monte um simulado com 10 questões de nível avançado.",
+          "Elabore uma questão discursiva sobre esse tema.",
+          "Corrija minha discursiva como se você fosse avaliador da banca Cebraspe.",
+          "Aponte falhas de estrutura, objetividade e aderência ao enunciado."
+        ]
+      },
+      {
+        title: "NotebookLM",
+        text: "Use para trabalhar com seus próprios materiais: PDFs, resumos, anotações e materiais de aula. Ele ajuda a resumir, localizar informações, gerar perguntas e organizar revisões com base no seu acervo.",
+        bullets: [
+          "Suba PDFs e materiais confiáveis.",
+          "Peça resumos por tópicos.",
+          "Localize informações específicas no material.",
+          "Gere perguntas com base no conteúdo carregado.",
+          "Organize uma revisão a partir do seu próprio acervo."
+        ]
+      }
+    ],
+    exercise: {
+      title: "Transforme IA em treino",
+      text: "Escolha um tema difícil e peça: explicação didática, cinco flashcards, cinco questões e uma discursiva curta. Depois, resolva sem consultar a resposta.",
+      steps: ["Escreva um prompt contextualizado.", "Gere material de treino.", "Responda antes de conferir.", "Registre os erros no seu caderno."]
+    },
+    visual: {
+      type: "compare",
+      title: "Gemini x NotebookLM",
+      items: [
+        { label: "Gemini", value: "explicar, criar, comparar e corrigir" },
+        { label: "NotebookLM", value: "trabalhar com PDFs e materiais próprios" }
+      ]
+    },
+    final: "Tecnologia ajuda muito. Mas aprovação continua sendo resultado de compreensão, treino e constância."
+  },
+  {
+    slug: "caderno-de-erros",
+    file: "./metodos-de-estudo-caderno-de-erros.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/caderno-de-erros",
+    icon: "CE",
+    tone: "red",
+    shortTitle: "Caderno de Erros",
+    title: "Caderno de Erros: como transformar falhas em evolução",
+    subtitle: "Aprenda a usar o Caderno de Erros e as Favoritas do Tec Concursos para registrar, revisar e corrigir os pontos que estão te custando aprovação.",
+    summary: "Gestão de falhas e revisão estratégica",
+    objective: [
+      "entender a importância do caderno de erros;",
+      "saber o que registrar;",
+      "usar as favoritas do Tec Concursos com estratégia;",
+      "transformar erro em plano de correção."
+    ],
+    intro: [
+      "O caderno de erros é o mapa dos pontos que ainda tiram nota do aluno. Ele não é uma lista de fracassos, mas uma ferramenta de inteligência de prova.",
+      "Quando integrado às Favoritas do Tec Concursos, ele ajuda a localizar questões importantes, revisar padrões de erro e repetir o treino certo."
+    ],
+    what: "É um registro organizado dos erros relevantes, com motivo, resposta correta, observação útil e estratégia para não repetir a falha.",
+    purpose: [
+      "identificar padrões de erro;",
+      "priorizar revisões com maior impacto;",
+      "transformar questões erradas em material ativo;",
+      "evitar repetir falhas em simulados e provas."
+    ],
+    howUse: [
+      "Resolva questões, favorite as mais importantes no Tec Concursos, registre o motivo do erro e revise periodicamente.",
+      "Registre disciplina, assunto, banca, motivo do erro, resposta correta, observação útil, como evitar repetir o erro e data de revisão.",
+      "Classifique o erro: não sabia a teoria, confundi conceitos, errei por atenção, interpretação, detalhe, jurisprudência/lei seca ou chute."
+    ],
+    steps: [
+      "Resolva questões no bloco do dia.",
+      "Favorite as questões mais importantes no Tec Concursos.",
+      "Registre o motivo real do erro.",
+      "Escreva a correção em linguagem curta.",
+      "Revise os erros em ciclos semanais."
+    ],
+    mistakes: [
+      "guardar toda questão errada sem critério;",
+      "registrar apenas o gabarito;",
+      "não classificar o motivo do erro;",
+      "nunca voltar para revisar;",
+      "confundir erro pontual com deficiência estrutural."
+    ],
+    goldenRule: "O valor do erro está na análise que você faz dele, não no erro em si.",
+    checklist: [
+      "Registrei disciplina, assunto e banca.",
+      "Expliquei o motivo do erro.",
+      "Anotei a resposta correta de forma curta.",
+      "Defini como evitar a repetição.",
+      "Marquei uma data de revisão."
+    ],
+    exercise: {
+      title: "Auditoria de erros",
+      text: "Pegue as últimas 10 questões erradas e classifique o motivo de cada erro. Depois escolha as três que mais se repetem para revisar primeiro.",
+      steps: ["Separe as questões.", "Classifique o tipo de erro.", "Identifique padrão dominante.", "Crie uma ação de correção para esta semana."]
+    },
+    visual: {
+      type: "flow",
+      title: "Fluxo do erro bem usado",
+      items: ["Questão", "Erro", "Registro", "Revisão", "Evolução"]
+    },
+    final: "Seu maior material de estudo é o mapa daquilo que ainda te faz perder pontos."
+  },
+  {
+    slug: "discursivas",
+    file: "./metodos-de-estudo-discursivas.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/discursivas",
+    icon: "DI",
+    tone: "gold",
+    shortTitle: "Discursivas",
+    title: "Discursivas: como treinar escrita de forma técnica e estratégica",
+    subtitle: "Aprenda a estudar discursivas com foco em banca, estrutura, objetividade e densidade.",
+    summary: "Escrita estratégica por banca",
+    objective: [
+      "entender que discursiva exige treino próprio;",
+      "identificar o perfil da banca;",
+      "estruturar respostas melhores;",
+      "usar IA como apoio para correção e aperfeiçoamento."
+    ],
+    intro: [
+      "Discursiva não é detalhe. Ela mede organização, objetividade, domínio técnico, adequação ao comando e capacidade de síntese.",
+      "Um bom treino precisa considerar banca, estrutura, densidade, gestão de linhas e correção. Escrever sem correção é repetir vícios com mais confiança."
+    ],
+    what: "É uma resposta técnica construída para cumprir o comando da banca com clareza, conteúdo suficiente e organização em tempo limitado.",
+    purpose: [
+      "treinar aderência ao enunciado;",
+      "desenvolver estrutura clara;",
+      "melhorar conteúdo técnico e objetividade;",
+      "aprender a gerir linhas e tempo;",
+      "ganhar densidade sem excesso de generalidade."
+    ],
+    howUse: [
+      "Entenda o perfil da banca antes de treinar. Leia boas respostas, estruture antes de escrever, escreva objetivamente, corrija e reescreva.",
+      "A resposta deve enfrentar os subitens, usar linguagem técnica e evitar rodeios.",
+      "Use IA para simular correção, mas compare a devolutiva com espelhos, editais e padrões reais da banca."
+    ],
+    steps: [
+      "Entender o perfil da banca.",
+      "Ler boas respostas e espelhos.",
+      "Estruturar antes de escrever.",
+      "Escrever com objetividade e densidade.",
+      "Corrigir, reescrever e comparar evolução."
+    ],
+    mistakes: [
+      "ignorar o comando da questão;",
+      "não responder todos os subitens;",
+      "usar introduções longas e genéricas;",
+      "escrever sem estrutura prévia;",
+      "não treinar com tempo e limite de linhas;",
+      "não reescrever após a correção."
+    ],
+    goldenRule: "Discursiva melhora com treino corrigido, não com intenção.",
+    checklist: [
+      "Li o comando com atenção.",
+      "Identifiquei todos os subitens.",
+      "Planejei a estrutura antes de escrever.",
+      "Usei conteúdo técnico suficiente.",
+      "Corrigi e reescrevi a resposta."
+    ],
+    subblocks: [
+      {
+        title: "Perfil das bancas",
+        text: "Cada banca cobra a escrita com ênfases diferentes. Ajuste o treino ao padrão esperado.",
+        bullets: [
+          "Cebraspe: objetividade forte e aderência rigorosa ao comando.",
+          "FGV: maior elaboração argumentativa, eventualmente jurisprudência.",
+          "FCC: perfil técnico e linear.",
+          "Vunesp: resposta mais direta e limpa."
+        ]
+      },
+      {
+        title: "IA na discursiva",
+        text: "Prompt recomendado para correção assistida:",
+        bullets: [
+          "Corrija esta discursiva como se fosse avaliador da banca Cebraspe, apontando falhas de aderência ao comando, conteúdo insuficiente, problemas de estrutura, excesso de generalidade e sugestões de melhoria."
+        ]
+      }
+    ],
+    exercise: {
+      title: "Treino com correção e reescrita",
+      text: "Escolha uma discursiva curta, escreva em tempo limitado, peça correção com foco na banca e reescreva a resposta em versão melhorada.",
+      steps: ["Leia o comando.", "Faça um esqueleto em tópicos.", "Escreva a resposta.", "Corrija e reescreva."]
+    },
+    visual: {
+      type: "flow",
+      title: "Fluxo da discursiva eficiente",
+      items: ["Comando", "Estrutura", "Resposta", "Correção", "Reescrita"]
+    },
+    final: "Na discursiva, quem pensa com método escreve com vantagem."
+  }
+];
+
+const STUDY_METHODS_MAP = new Map(STUDY_METHODS.map((method) => [method.slug, method]));
+
+function renderTextBlock(value) {
+  if (Array.isArray(value)) return value.map((item) => `<p>${esc(item)}</p>`).join("");
+  return `<p>${esc(value)}</p>`;
+}
+
+function renderMethodBullets(items, className = "method-bullet-list") {
+  return `<ul class="${className}">${(items || []).map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+}
+
+function renderMethodSection(id, title, content) {
+  return `<section id="${esc(id)}" class="lesson-block"><span class="lesson-kicker">Aula</span><h2>${esc(title)}</h2>${Array.isArray(content) ? renderMethodBullets(content) : renderTextBlock(content)}</section>`;
+}
+
+function renderSubblocks(method) {
+  if (!method.subblocks?.length) return "";
+  return `<section id="aplicacoes" class="lesson-block lesson-block-accent"><span class="lesson-kicker">Aplicações</span><h2>Blocos práticos</h2><div class="subblock-grid">${method.subblocks.map((block) => `<article class="subblock-card"><h3>${esc(block.title)}</h3><p>${esc(block.text)}</p>${renderMethodBullets(block.bullets || [], "prompt-list")}</article>`).join("")}</div></section>`;
+}
+
+function renderMethodIllustration(method) {
+  const visual = method.visual || {};
+  if (visual.type === "flashcard") {
+    return `<section id="visual" class="lesson-block"><span class="lesson-kicker">Visual</span><h2>${esc(visual.title)}</h2><div class="flashcard-demo"><article><span>Frente</span><strong>${esc(visual.front)}</strong></article><article><span>Verso</span><strong>${esc(visual.back)}</strong></article></div></section>`;
+  }
+  if (visual.type === "compare") {
+    return `<section id="visual" class="lesson-block"><span class="lesson-kicker">Visual</span><h2>${esc(visual.title)}</h2><div class="compare-grid">${(visual.items || []).map((item) => `<article><strong>${esc(item.label)}</strong><span>${esc(item.value)}</span></article>`).join("")}</div></section>`;
+  }
+  return `<section id="visual" class="lesson-block"><span class="lesson-kicker">Visual</span><h2>${esc(visual.title || "Fluxo do método")}</h2><div class="method-flow">${(visual.items || []).map((item, index) => `<div class="flow-step"><span>${esc(String(index + 1).padStart(2, "0"))}</span><strong>${esc(item)}</strong></div>`).join("")}</div></section>`;
+}
+
+function renderStudyMethodsHome() {
+  const cards = STUDY_METHODS.map((method, index) => `<article class="method-index-card method-tone-${esc(method.tone)}"><div class="method-card-icon" aria-hidden="true">${esc(method.icon)}</div><span class="method-card-count">Módulo ${esc(String(index + 1).padStart(2, "0"))}</span><h2>${esc(method.shortTitle)}</h2><p>${esc(method.summary)}</p><a class="button button-secondary" href="${esc(method.file)}" aria-label="Acessar conteúdo de ${esc(method.shortTitle)}">Acessar conteúdo</a></article>`).join("");
+
+  appContent.innerHTML = `<section class="method-home-hero"><div class="method-breadcrumb"><a href="./mentorado.html">Área do aluno</a><span>/</span><strong>Métodos de Estudo</strong></div><p class="eyebrow">Manual do aluno</p><h1>Métodos de Estudo</h1><p>Nesta seção, você aprenderá a usar ferramentas e estratégias que tornam sua preparação mais organizada, ativa e eficiente. Aqui, o foco não é estudar de forma bonita. É estudar de forma funcional, estratégica e competitiva.</p></section><section class="method-index-grid" aria-label="Métodos disponíveis">${cards}</section><section class="method-home-note"><div><span class="lesson-kicker">Como usar</span><h2>Escolha um módulo e aplique no seu plano da semana</h2><p>Os conteúdos foram estruturados como aulas curtas, com objetivo, passo a passo, erros comuns, checklist e exercício prático.</p></div><a class="button button-primary" href="./plano.html">Abrir plano de estudos</a></section>`;
+}
+
+function renderStudyMethodDetail(slug) {
+  const method = STUDY_METHODS_MAP.get(slug) || STUDY_METHODS[0];
+  const moduleIndex = STUDY_METHODS.findIndex((item) => item.slug === method.slug) + 1;
+  const sideLinks = [
+    ["objetivo", "Objetivo"],
+    ["introducao", "Introdução"],
+    ["o-que-e", "O que é"],
+    ["para-que-serve", "Para que serve"],
+    ["como-usar", "Como usar"],
+    ["passo-a-passo", "Passo a passo"],
+    ["erros-comuns", "Erros comuns"],
+    ["regra-de-ouro", "Regra de ouro"],
+    ["checklist", "Checklist"],
+    ["exercicio", "Exercício"],
+    ["visual", "Visual"]
+  ];
+
+  appContent.innerHTML = `<div class="method-breadcrumb"><a href="./mentorado.html">Área do aluno</a><span>/</span><a href="./metodos-de-estudo.html">Métodos de Estudo</a><span>/</span><strong>${esc(method.shortTitle)}</strong></div><section class="method-lesson-hero method-tone-${esc(method.tone)}"><div><span class="method-module-label">Módulo ${esc(String(moduleIndex).padStart(2, "0"))} de ${esc(String(STUDY_METHODS.length).padStart(2, "0"))}</span><h1>${esc(method.title)}</h1><p>${esc(method.subtitle)}</p><div class="inline-actions"><a class="button button-secondary" href="./metodos-de-estudo.html">Voltar aos métodos</a><a class="button button-primary" href="#exercicio">Ir para exercício</a></div></div><div class="method-hero-mark" aria-hidden="true">${esc(method.icon)}</div></section><div class="method-detail-layout"><aside class="method-side-nav" aria-label="Navegação interna da aula"><strong>Nesta aula</strong>${sideLinks.map(([id, label]) => `<a href="#${esc(id)}">${esc(label)}</a>`).join("")}<hr><strong>Outros módulos</strong>${STUDY_METHODS.map((item) => `<a href="${esc(item.file)}" class="${item.slug === method.slug ? "is-current" : ""}">${esc(item.shortTitle)}</a>`).join("")}</aside><article class="method-lesson"><section id="objetivo" class="lesson-block lesson-objective"><span class="lesson-kicker">Objetivo da aula</span><h2>Ao final desta aula, você deverá ser capaz de:</h2>${renderMethodBullets(method.objective, "check-list")}</section><section id="introducao" class="lesson-block"><span class="lesson-kicker">Introdução</span><h2>Antes de aplicar</h2>${renderTextBlock(method.intro)}</section>${renderMethodSection("o-que-e", "O que é", method.what)}${renderMethodSection("para-que-serve", "Para que serve", method.purpose)}${renderMethodSection("como-usar", "Como usar", method.howUse)}${renderMethodSection("passo-a-passo", "Passo a passo", method.steps)}${renderSubblocks(method)}${renderMethodSection("erros-comuns", "Erros comuns", method.mistakes)}<section id="regra-de-ouro" class="golden-rule-card"><span>Regra de ouro</span><strong>${esc(method.goldenRule)}</strong></section><section id="checklist" class="lesson-block"><span class="lesson-kicker">Checklist do aluno</span><h2>Antes de considerar o método aplicado</h2>${renderMethodBullets(method.checklist, "check-list")}</section><section id="exercicio" class="exercise-card"><span class="lesson-kicker">Exercício prático</span><h2>${esc(method.exercise.title)}</h2><p>${esc(method.exercise.text)}</p>${renderMethodBullets(method.exercise.steps, "check-list")}</section>${renderMethodIllustration(method)}<section class="lesson-final"><p>${esc(method.final)}</p><a class="button button-secondary" href="./metodos-de-estudo.html">Escolher outro método</a></section></article></div>`;
+}
+
 function renderMentoradoDashboard(profile, data) {
   const totalHoras = data.weekly.reduce((sum, item) => sum + Number(item.horas || 0), 0);
   const totalQuestoes = data.weekly.reduce((sum, item) => sum + Number(item.questoes || 0), 0);
   const totalAcertos = data.weekly.reduce((sum, item) => sum + Number(item.acertos || 0), 0);
   const totalPomodoros = data.pomodoro.reduce((sum, item) => sum + Number(item.sessoes || 0), 0);
   const currentPlan = data.monthlyCollection[0];
-  const studyMethods = [
-    {
-      step: "01",
-      badgeClass: "gold",
-      badge: "Antes do bloco",
-      title: "Planejamento ativo",
-      copy: "Defina o objetivo do estudo, o material que sera usado e a meta minima antes de iniciar."
-    },
-    {
-      step: "02",
-      badgeClass: "blue",
-      badge: "Durante",
-      title: "Leitura com recupera&ccedil;&atilde;o",
-      copy: "Leia em blocos curtos e feche o material para explicar, de memoria, o que acabou de aprender."
-    },
-    {
-      step: "03",
-      badgeClass: "green",
-      badge: "Aplica&ccedil;&atilde;o",
-      title: "Quest&otilde;es comentadas",
-      copy: "Resolva quest&otilde;es logo apos a teoria e registre o motivo de cada erro, nao apenas o gabarito."
-    },
-    {
-      step: "04",
-      badgeClass: "gold",
-      badge: "Revis&atilde;o",
-      title: "Caderno de erros",
-      copy: "Transforme erros recorrentes em flashcards, mapas pequenos ou listas de revis&atilde;o semanal."
-    }
-  ];
-  const methodsHtml = studyMethods.map((method) => `<article class="method-card"><div class="method-card-top"><span class="method-step">${method.step}</span><span class="badge ${method.badgeClass}">${method.badge}</span></div><h3>${method.title}</h3><p>${method.copy}</p></article>`).join("");
   const concursoNome = profile?.concursos?.nome || "Concurso não informado";
   const checkins = data.dailyCheckins || [];
   const todayCheckin = checkins.find((c) => c.referencia === isoToday());
@@ -1600,28 +2011,6 @@ function renderMentoradoDashboard(profile, data) {
         <a class="button button-secondary" href="./materials.html">Ver materiais</a>
         <a class="button button-secondary" href="./plano.html">Abrir plano</a>
         <a class="button button-secondary" href="./simulados.html">Simulados</a>
-      </div>
-    </section>
-
-    <section id="metodos-estudo" class="card study-methods-section">
-      <div class="card-head">
-        <div>
-          <h2 class="card-title">M&eacute;todos de Estudo</h2>
-          <p class="page-copy">Use estes m&eacute;todos junto com o plano mensal para estudar com mais clareza, revis&atilde;o e corre&ccedil;&atilde;o de rota.</p>
-        </div>
-        <span class="badge gold">Guia do aluno</span>
-      </div>
-      <div class="method-layout">
-        <div class="method-grid">${methodsHtml}</div>
-        <aside class="method-routine">
-          <h3>Ritmo sugerido</h3>
-          <ol>
-            <li>Escolha uma meta do plano.</li>
-            <li>Estude em 2 blocos de foco.</li>
-            <li>Resolva quest&otilde;es do mesmo tema.</li>
-            <li>Revise os erros no fim do dia.</li>
-          </ol>
-        </aside>
       </div>
     </section>
   `;
@@ -2790,6 +3179,13 @@ async function initProtectedPage() {
   }
 
   showLoading();
+
+  if (page === "study-methods") {
+    if (methodSlug) renderStudyMethodDetail(methodSlug);
+    else renderStudyMethodsHome();
+    return;
+  }
+
   const data = await fetchMentoradoData();
 
   if (page === "mentorado-dashboard") renderMentoradoDashboard(state.profile, data);
