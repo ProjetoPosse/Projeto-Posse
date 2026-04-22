@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #08090d;
   --bg-soft: #11131a;
   --panel: #151821;
@@ -181,6 +181,63 @@ button, input, select, textarea { font: inherit; }
 .stat-value { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; color: var(--gold); line-height: 1; }
 .stat-label { margin-top: 0.4rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
 .stat-help { margin-top: 0.75rem; color: var(--muted); font-size: 0.88rem; }
+.study-methods-section {
+  margin-top: 1rem;
+  scroll-margin-top: 1.5rem;
+}
+.study-methods-section .card-head {
+  align-items: flex-start;
+}
+.method-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 1rem;
+  align-items: stretch;
+}
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.method-card,
+.method-routine {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(32, 38, 53, 0.38);
+  border-radius: 18px;
+  padding: 1rem;
+}
+.method-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+.method-step {
+  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.method-card h3,
+.method-routine h3 {
+  margin: 0.9rem 0 0.45rem;
+  font-size: 1rem;
+}
+.method-routine h3 {
+  margin-top: 0;
+}
+.method-card p,
+.method-routine li {
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+.method-card p {
+  margin: 0;
+}
+.method-routine ol {
+  margin: 0.8rem 0 0;
+  padding-left: 1.2rem;
+}
 .list-item {
   border: 1px solid rgba(255, 255, 255, 0.05);
   background: rgba(32, 38, 53, 0.38);
@@ -551,6 +608,7 @@ body.nav-open { overflow: hidden; }
     pointer-events: auto;
   }
   .grid-4, .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .method-layout { grid-template-columns: 1fr; }
   .performance-grid {
     grid-template-columns: 1fr;
   }
@@ -561,6 +619,9 @@ body.nav-open { overflow: hidden; }
 @media (max-width: 720px) {
   .app-main, .app-sidebar, .login-card { padding: 1.1rem; }
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .method-grid { grid-template-columns: 1fr; }
+  .method-card-top { align-items: flex-start; flex-direction: column; }
+  .study-methods-section .card-head { flex-direction: column; }
   .app-topbar { grid-template-columns: auto minmax(0, 1fr); }
   .app-topbar .button-danger {
     grid-column: 1 / -1;

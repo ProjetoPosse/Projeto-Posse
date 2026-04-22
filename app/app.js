@@ -1,4 +1,4 @@
-const body = document.body;
+﻿const body = document.body;
 const page = body.dataset.page || "";
 document.querySelectorAll(".nav-link[data-page]").forEach((link) => {
   if (link.dataset.page === page) link.classList.add("is-active");
@@ -1437,6 +1437,37 @@ function renderMentoradoDashboard(profile, data) {
   const totalAcertos = data.weekly.reduce((sum, item) => sum + Number(item.acertos || 0), 0);
   const totalPomodoros = data.pomodoro.reduce((sum, item) => sum + Number(item.sessoes || 0), 0);
   const currentPlan = data.monthlyCollection[0];
+  const studyMethods = [
+    {
+      step: "01",
+      badgeClass: "gold",
+      badge: "Antes do bloco",
+      title: "Planejamento ativo",
+      copy: "Defina o objetivo do estudo, o material que sera usado e a meta minima antes de iniciar."
+    },
+    {
+      step: "02",
+      badgeClass: "blue",
+      badge: "Durante",
+      title: "Leitura com recupera&ccedil;&atilde;o",
+      copy: "Leia em blocos curtos e feche o material para explicar, de memoria, o que acabou de aprender."
+    },
+    {
+      step: "03",
+      badgeClass: "green",
+      badge: "Aplica&ccedil;&atilde;o",
+      title: "Quest&otilde;es comentadas",
+      copy: "Resolva quest&otilde;es logo apos a teoria e registre o motivo de cada erro, nao apenas o gabarito."
+    },
+    {
+      step: "04",
+      badgeClass: "gold",
+      badge: "Revis&atilde;o",
+      title: "Caderno de erros",
+      copy: "Transforme erros recorrentes em flashcards, mapas pequenos ou listas de revis&atilde;o semanal."
+    }
+  ];
+  const methodsHtml = studyMethods.map((method) => `<article class="method-card"><div class="method-card-top"><span class="method-step">${method.step}</span><span class="badge ${method.badgeClass}">${method.badge}</span></div><h3>${method.title}</h3><p>${method.copy}</p></article>`).join("");
   const concursoNome = profile?.concursos?.nome || "Concurso não informado";
   const checkins = data.dailyCheckins || [];
   const todayCheckin = checkins.find((c) => c.referencia === isoToday());
@@ -1569,6 +1600,28 @@ function renderMentoradoDashboard(profile, data) {
         <a class="button button-secondary" href="./materials.html">Ver materiais</a>
         <a class="button button-secondary" href="./plano.html">Abrir plano</a>
         <a class="button button-secondary" href="./simulados.html">Simulados</a>
+      </div>
+    </section>
+
+    <section id="metodos-estudo" class="card study-methods-section">
+      <div class="card-head">
+        <div>
+          <h2 class="card-title">M&eacute;todos de Estudo</h2>
+          <p class="page-copy">Use estes m&eacute;todos junto com o plano mensal para estudar com mais clareza, revis&atilde;o e corre&ccedil;&atilde;o de rota.</p>
+        </div>
+        <span class="badge gold">Guia do aluno</span>
+      </div>
+      <div class="method-layout">
+        <div class="method-grid">${methodsHtml}</div>
+        <aside class="method-routine">
+          <h3>Ritmo sugerido</h3>
+          <ol>
+            <li>Escolha uma meta do plano.</li>
+            <li>Estude em 2 blocos de foco.</li>
+            <li>Resolva quest&otilde;es do mesmo tema.</li>
+            <li>Revise os erros no fim do dia.</li>
+          </ol>
+        </aside>
       </div>
     </section>
   `;
