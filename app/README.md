@@ -6,6 +6,8 @@ Esta pasta contem a area autenticada do Projeto Posse, feita para rodar em hospe
 
 - `login.html`: autenticação via Supabase Auth
 - `mentorado.html`: dashboard principal do mentorado
+- `metodos-de-estudo.html`: seção premium de métodos de estudo do aluno
+- `metodos-de-estudo-revisao-semanal.html`: módulo de revisão semanal com OneNote, favoritas e erros relevantes
 - `materials.html`: materiais gerais do concurso e materiais especificos do usuario
 - `plano.html`: plano de estudos ativo com checklist
 - `simulados.html`: resultados de simulados por usuario

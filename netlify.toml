@@ -66,6 +66,11 @@
   status = 200
 
 [[redirects]]
+  from = "/app/metodos-de-estudo/revisao-semanal"
+  to = "/app/metodos-de-estudo-revisao-semanal.html"
+  status = 200
+
+[[redirects]]
   from = "/app/metodos-de-estudo/discursivas"
   to = "/app/metodos-de-estudo-discursivas.html"
   status = 200
@@ -93,6 +98,11 @@
 [[redirects]]
   from = "/area-do-aluno/metodos-de-estudo/caderno-de-erros"
   to = "/app/metodos-de-estudo-caderno-de-erros.html"
+  status = 200
+
+[[redirects]]
+  from = "/area-do-aluno/metodos-de-estudo/revisao-semanal"
+  to = "/app/metodos-de-estudo-revisao-semanal.html"
   status = 200
 
 [[redirects]]

@@ -1728,6 +1728,114 @@ const STUDY_METHODS = [
     final: "Seu maior material de estudo é o mapa daquilo que ainda te faz perder pontos."
   },
   {
+    slug: "revisao-semanal",
+    file: "./metodos-de-estudo-revisao-semanal.html",
+    prettyPath: "/area-do-aluno/metodos-de-estudo/revisao-semanal",
+    icon: "RS",
+    tone: "blue",
+    shortTitle: "Revisão Semanal",
+    title: "Revisão Semanal: como consolidar o que você estudou",
+    subtitle: "Aprenda a revisar, uma vez por semana, o material construído no OneNote e as questões favoritas que revelam seus pontos de atenção.",
+    summary: "Consolidação do conteúdo por meio do OneNote e das questões favoritas.",
+    objective: [
+      "entender o papel da revisão semanal;",
+      "usar o OneNote como base de revisão;",
+      "revisitar favoritas e erros relevantes;",
+      "consolidar o conteúdo sem voltar a estudar tudo do zero;",
+      "criar uma rotina periódica de revisão, preferencialmente aos fins de semana."
+    ],
+    intro: [
+      "A revisão semanal é o momento em que você consolida o que estudou ao longo dos últimos dias.",
+      "Aqui, o foco não é voltar à teoria de forma desorganizada, nem tentar reestudar toda a matéria. O objetivo é revisitar o material que você mesmo construiu no OneNote, retomar as questões favoritas e rever os erros que merecem atenção.",
+      "Quando feita com regularidade, essa revisão reduz o esquecimento, melhora a retenção e impede que falhas importantes se repitam."
+    ],
+    what: [
+      "A revisão semanal é um momento fixo, uma vez por semana, para rever o que foi estudado.",
+      "Nela, você relê o essencial, revisa registros do OneNote, retoma favoritas, revisa erros recorrentes ou relevantes e fecha a semana com clareza."
+    ],
+    purpose: [
+      "consolidar conteúdo;",
+      "reduzir esquecimento;",
+      "manter o estudo ativo;",
+      "revisar o que realmente importa;",
+      "impedir repetição de erros;",
+      "preparar melhor o próximo ciclo de estudo."
+    ],
+    howLabel: "Como funciona",
+    howUse: {
+      text: "A lógica é simples: durante a semana você constrói bons registros; no fim de semana, transforma esse material em uma revisão curta, ativa e estratégica.",
+      groups: [
+        {
+          title: "Durante a semana",
+          bullets: [
+            "estude normalmente;",
+            "registre o essencial no OneNote;",
+            "salve questões favoritas;",
+            "identifique erros importantes."
+          ]
+        },
+        {
+          title: "No sábado ou domingo",
+          bullets: [
+            "abra o OneNote;",
+            "revise os assuntos estudados;",
+            "relembre comparativos, conceitos-chave e observações;",
+            "revisite as favoritas;",
+            "volte aos erros relevantes;",
+            "identifique o que ainda precisa reaparecer no próximo ciclo."
+          ]
+        }
+      ]
+    },
+    steps: {
+      type: "steps",
+      items: [
+        { title: "Passo 1 - Abra o OneNote", text: "Revise os assuntos estudados na semana." },
+        { title: "Passo 2 - Releia apenas o essencial", text: "Foque em comparativos, observações, conceitos-chave e pontos que geraram dúvida." },
+        { title: "Passo 3 - Revise suas favoritas", text: "Retome as questões favoritas e verifique se o raciocínio já está claro." },
+        { title: "Passo 4 - Volte aos erros relevantes", text: "Reveja os erros recorrentes ou estratégicos." },
+        { title: "Passo 5 - Feche a semana com clareza", text: "Identifique o que evoluiu, o que ainda está frágil e o que precisa voltar no próximo ciclo." }
+      ]
+    },
+    mistakes: [],
+    goldenRule: "A revisão semanal não serve para reestudar tudo. Serve para revisitar o que é essencial, consolidar o que foi visto e impedir que os erros se repitam.",
+    checklistKicker: "Checklist da revisão",
+    checklistTitle: "Antes de encerrar a semana",
+    checklist: [
+      "Revisei o OneNote da semana",
+      "Retomei os conceitos que mais geraram dúvida",
+      "Revi minhas questões favoritas",
+      "Voltei aos erros relevantes",
+      "Identifiquei o que precisa reaparecer na próxima semana",
+      "Fechei a revisão sem acumular material desnecessário"
+    ],
+    exercise: {
+      title: "No próximo fim de semana",
+      text: "Faça uma revisão curta, deliberada e suficiente para fechar a semana sem transformar revisão em novo estudo do zero.",
+      steps: [
+        "abra seu OneNote;",
+        "selecione os assuntos estudados na semana;",
+        "revise os pontos centrais;",
+        "abra suas favoritas;",
+        "reveja pelo menos 10 questões importantes;",
+        "anote o que ainda precisa voltar no próximo ciclo."
+      ]
+    },
+    suggestion: {
+      title: "Sugestão do Projeto Posse",
+      text: [
+        "Reserve 1 momento fixo por semana para sua revisão, preferencialmente no sábado ou no domingo.",
+        "A constância dessa revisão vale mais do que revisões longas e irregulares."
+      ]
+    },
+    visual: {
+      type: "flow",
+      title: "Fluxo da revisão semanal",
+      items: ["Semana de estudo", "Registro no OneNote", "Questões favoritas / erros", "Revisão semanal", "Consolidação do conteúdo"]
+    },
+    final: "Quem revisa com método esquece menos, erra menos e evolui com mais consistência."
+  },
+  {
     slug: "discursivas",
     file: "./metodos-de-estudo-discursivas.html",
     prettyPath: "/area-do-aluno/metodos-de-estudo/discursivas",
@@ -1827,13 +1935,42 @@ function renderMethodBullets(items, className = "method-bullet-list") {
   return `<ul class="${className}">${(items || []).map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
 }
 
+function hasMethodContent(value) {
+  if (Array.isArray(value)) return value.length > 0;
+  if (value && typeof value === "object") {
+    if (value.type === "steps") return Boolean(value.items?.length);
+    return Boolean(value.text || value.groups?.length);
+  }
+  return Boolean(value);
+}
+
+function renderMethodSectionContent(content) {
+  if (Array.isArray(content)) return renderMethodBullets(content);
+  if (content && typeof content === "object") {
+    if (content.type === "steps") {
+      return `<ol class="method-step-list">${(content.items || []).map((step, index) => `<li><span>${esc(String(index + 1).padStart(2, "0"))}</span><div><h3>${esc(step.title)}</h3><p>${esc(step.text)}</p></div></li>`).join("")}</ol>`;
+    }
+
+    const text = content.text ? renderTextBlock(content.text) : "";
+    const groups = (content.groups || []).map((group) => `<article class="method-mini-card"><h3>${esc(group.title)}</h3>${group.text ? `<p>${esc(group.text)}</p>` : ""}${renderMethodBullets(group.bullets || [])}</article>`).join("");
+    return `${text}${groups ? `<div class="method-mini-grid">${groups}</div>` : ""}`;
+  }
+  return renderTextBlock(content);
+}
+
 function renderMethodSection(id, title, content) {
-  return `<section id="${esc(id)}" class="lesson-block"><span class="lesson-kicker">Aula</span><h2>${esc(title)}</h2>${Array.isArray(content) ? renderMethodBullets(content) : renderTextBlock(content)}</section>`;
+  if (!hasMethodContent(content)) return "";
+  return `<section id="${esc(id)}" class="lesson-block"><span class="lesson-kicker">Aula</span><h2>${esc(title)}</h2>${renderMethodSectionContent(content)}</section>`;
 }
 
 function renderSubblocks(method) {
   if (!method.subblocks?.length) return "";
   return `<section id="aplicacoes" class="lesson-block lesson-block-accent"><span class="lesson-kicker">Aplicações</span><h2>Blocos práticos</h2><div class="subblock-grid">${method.subblocks.map((block) => `<article class="subblock-card"><h3>${esc(block.title)}</h3><p>${esc(block.text)}</p>${renderMethodBullets(block.bullets || [], "prompt-list")}</article>`).join("")}</div></section>`;
+}
+
+function renderMethodSuggestion(method) {
+  if (!method.suggestion) return "";
+  return `<section id="sugestao" class="suggestion-card"><span class="lesson-kicker">Projeto Posse</span><h2>${esc(method.suggestion.title)}</h2>${renderTextBlock(method.suggestion.text)}</section>`;
 }
 
 function renderMethodIllustration(method) {
@@ -1861,16 +1998,18 @@ function renderStudyMethodDetail(slug) {
     ["introducao", "Introdução"],
     ["o-que-e", "O que é"],
     ["para-que-serve", "Para que serve"],
-    ["como-usar", "Como usar"],
+    ["como-usar", method.howLabel || "Como usar"],
     ["passo-a-passo", "Passo a passo"],
-    ["erros-comuns", "Erros comuns"],
+    ...(method.subblocks?.length ? [["aplicacoes", "Aplicações"]] : []),
+    ...(hasMethodContent(method.mistakes) ? [["erros-comuns", "Erros comuns"]] : []),
     ["regra-de-ouro", "Regra de ouro"],
     ["checklist", "Checklist"],
     ["exercicio", "Exercício"],
+    ...(method.suggestion ? [["sugestao", "Sugestão"]] : []),
     ["visual", "Visual"]
   ];
 
-  appContent.innerHTML = `<div class="method-breadcrumb"><a href="./mentorado.html">Área do aluno</a><span>/</span><a href="./metodos-de-estudo.html">Métodos de Estudo</a><span>/</span><strong>${esc(method.shortTitle)}</strong></div><section class="method-lesson-hero method-tone-${esc(method.tone)}"><div><span class="method-module-label">Módulo ${esc(String(moduleIndex).padStart(2, "0"))} de ${esc(String(STUDY_METHODS.length).padStart(2, "0"))}</span><h1>${esc(method.title)}</h1><p>${esc(method.subtitle)}</p><div class="inline-actions"><a class="button button-secondary" href="./metodos-de-estudo.html">Voltar aos métodos</a><a class="button button-primary" href="#exercicio">Ir para exercício</a></div></div><div class="method-hero-mark" aria-hidden="true">${esc(method.icon)}</div></section><div class="method-detail-layout"><aside class="method-side-nav" aria-label="Navegação interna da aula"><strong>Nesta aula</strong>${sideLinks.map(([id, label]) => `<a href="#${esc(id)}">${esc(label)}</a>`).join("")}<hr><strong>Outros módulos</strong>${STUDY_METHODS.map((item) => `<a href="${esc(item.file)}" class="${item.slug === method.slug ? "is-current" : ""}">${esc(item.shortTitle)}</a>`).join("")}</aside><article class="method-lesson"><section id="objetivo" class="lesson-block lesson-objective"><span class="lesson-kicker">Objetivo da aula</span><h2>Ao final desta aula, você deverá ser capaz de:</h2>${renderMethodBullets(method.objective, "check-list")}</section><section id="introducao" class="lesson-block"><span class="lesson-kicker">Introdução</span><h2>Antes de aplicar</h2>${renderTextBlock(method.intro)}</section>${renderMethodSection("o-que-e", "O que é", method.what)}${renderMethodSection("para-que-serve", "Para que serve", method.purpose)}${renderMethodSection("como-usar", "Como usar", method.howUse)}${renderMethodSection("passo-a-passo", "Passo a passo", method.steps)}${renderSubblocks(method)}${renderMethodSection("erros-comuns", "Erros comuns", method.mistakes)}<section id="regra-de-ouro" class="golden-rule-card"><span>Regra de ouro</span><strong>${esc(method.goldenRule)}</strong></section><section id="checklist" class="lesson-block"><span class="lesson-kicker">Checklist do aluno</span><h2>Antes de considerar o método aplicado</h2>${renderMethodBullets(method.checklist, "check-list")}</section><section id="exercicio" class="exercise-card"><span class="lesson-kicker">Exercício prático</span><h2>${esc(method.exercise.title)}</h2><p>${esc(method.exercise.text)}</p>${renderMethodBullets(method.exercise.steps, "check-list")}</section>${renderMethodIllustration(method)}<section class="lesson-final"><p>${esc(method.final)}</p><a class="button button-secondary" href="./metodos-de-estudo.html">Escolher outro método</a></section></article></div>`;
+  appContent.innerHTML = `<div class="method-breadcrumb"><a href="./mentorado.html">Área do aluno</a><span>/</span><a href="./metodos-de-estudo.html">Métodos de Estudo</a><span>/</span><strong>${esc(method.shortTitle)}</strong></div><section class="method-lesson-hero method-tone-${esc(method.tone)}"><div><span class="method-module-label">Módulo ${esc(String(moduleIndex).padStart(2, "0"))} de ${esc(String(STUDY_METHODS.length).padStart(2, "0"))}</span><h1>${esc(method.title)}</h1><p>${esc(method.subtitle)}</p><div class="inline-actions"><a class="button button-secondary" href="./metodos-de-estudo.html">Voltar aos métodos</a><a class="button button-primary" href="#exercicio">Ir para exercício</a></div></div><div class="method-hero-mark" aria-hidden="true">${esc(method.icon)}</div></section><div class="method-detail-layout"><aside class="method-side-nav" aria-label="Navegação interna da aula"><strong>Nesta aula</strong>${sideLinks.map(([id, label]) => `<a href="#${esc(id)}">${esc(label)}</a>`).join("")}<hr><strong>Outros módulos</strong>${STUDY_METHODS.map((item) => `<a href="${esc(item.file)}" class="${item.slug === method.slug ? "is-current" : ""}">${esc(item.shortTitle)}</a>`).join("")}</aside><article class="method-lesson"><section id="objetivo" class="lesson-block lesson-objective"><span class="lesson-kicker">Objetivo da aula</span><h2>Ao final desta aula, você deverá ser capaz de:</h2>${renderMethodBullets(method.objective, "check-list")}</section><section id="introducao" class="lesson-block"><span class="lesson-kicker">Introdução</span><h2>Antes de aplicar</h2>${renderTextBlock(method.intro)}</section>${renderMethodSection("o-que-e", "O que é", method.what)}${renderMethodSection("para-que-serve", "Para que serve", method.purpose)}${renderMethodSection("como-usar", method.howLabel || "Como usar", method.howUse)}${renderMethodSection("passo-a-passo", "Passo a passo", method.steps)}${renderSubblocks(method)}${renderMethodSection("erros-comuns", "Erros comuns", method.mistakes)}<section id="regra-de-ouro" class="golden-rule-card"><span>Regra de ouro</span><strong>${esc(method.goldenRule)}</strong></section><section id="checklist" class="lesson-block"><span class="lesson-kicker">${esc(method.checklistKicker || "Checklist do aluno")}</span><h2>${esc(method.checklistTitle || "Antes de considerar o método aplicado")}</h2>${renderMethodBullets(method.checklist, "check-list")}</section><section id="exercicio" class="exercise-card"><span class="lesson-kicker">Exercício prático</span><h2>${esc(method.exercise.title)}</h2><p>${esc(method.exercise.text)}</p>${renderMethodBullets(method.exercise.steps, "check-list")}</section>${renderMethodSuggestion(method)}${renderMethodIllustration(method)}<section class="lesson-final"><p>${esc(method.final)}</p><a class="button button-secondary" href="./metodos-de-estudo.html">Escolher outro método</a></section></article></div>`;
 }
 
 function renderMentoradoDashboard(profile, data) {
