@@ -1518,6 +1518,31 @@ function renderPlanFocusQueue(plan) {
   return `<div class="plan-focus-grid">${blocks.map((block) => `<div class="plan-focus-panel"><strong>${esc(block.title)}</strong>${block.items.length ? `<ul>${block.items.map((item) => `<li><span>${esc(item.data_prevista ? shortDateLabel(item.data_prevista) : "Sem data")}</span>${esc(item.titulo)}</li>`).join("")}</ul>` : `<p>${esc(block.empty)}</p>`}</div>`).join("")}</div>`;
 }
 
+function sortPlanItemsBySchedule(items) {
+  return (items || []).slice().sort((a, b) => {
+    const dateDiff = dateSortValue(a.data_prevista) - dateSortValue(b.data_prevista);
+    if (dateDiff !== 0) return dateDiff;
+    return Number(a.ordem || 0) - Number(b.ordem || 0);
+  });
+}
+
+function renderPlanCurrentStep(plan) {
+  const pending = sortPlanItemsBySchedule((plan?.items || []).filter((item) => !item.concluida));
+  if (!pending.length) {
+    return `<div class="plan-current-step is-complete"><span class="badge green">Plano em dia</span><strong>Todas as metas deste plano foram concluídas.</strong><p>O histórico continua disponível abaixo para consulta ou correção.</p></div>`;
+  }
+
+  const current = pending[0];
+  const sameDayPending = pending.filter((item) => item.data_prevista && item.data_prevista === current.data_prevista).length;
+  const status = planItemStatus(current);
+  const dateLabel = current.data_prevista ? fmtDate(current.data_prevista) : "Sem data definida";
+  const helper = sameDayPending > 1
+    ? `${sameDayPending} metas pendentes neste dia.`
+    : "Esta é a próxima meta pendente do plano.";
+
+  return `<div class="plan-current-step"><span class="badge ${status.tone}">${esc(status.label)}</span><div><strong>Meta atual: ${esc(dateLabel)}</strong><p>${esc(current.titulo)}</p><small>${esc(helper)}</small></div></div>`;
+}
+
 function buildPlanDaySummary(rows) {
   const total = rows?.length || 0;
   const done = (rows || []).filter((item) => item.concluida).length;
@@ -1529,10 +1554,26 @@ function buildPlanDaySummary(rows) {
   };
 }
 
-function renderPlanDayGroup(label, rows) {
-  const summary = buildPlanDaySummary(rows);
-  const dateValue = rows.find((item) => item.data_prevista)?.data_prevista || "";
-  return `<div class="plan-group" data-plan-day-group="${esc(dateValue || label)}"><div class="plan-day-head"><div><h3 class="day-title">${esc(label)}</h3><span>${esc(`${summary.done}/${summary.total} metas concluídas`)}</span></div><div class="plan-day-actions"><div class="plan-day-progress" aria-label="Progresso do dia"><span style="width:${esc(String(summary.progress))}%"></span></div><button class="button button-secondary" type="button" data-plan-day-complete="${esc(dateValue)}" ${!dateValue || summary.pending === 0 ? "disabled" : ""}>Concluir dia</button></div></div><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`;
+function renderPlanDayGroup(label, rows, options = {}) {
+  const allRows = options.allRows || rows;
+  const summary = buildPlanDaySummary(allRows);
+  const dateValue = allRows.find((item) => item.data_prevista)?.data_prevista || "";
+  const isPendingView = options.variant === "pending";
+  const summaryText = isPendingView
+    ? `${summary.pending} pendentes de ${summary.total} metas`
+    : `${summary.done}/${summary.total} metas concluídas`;
+
+  return `<div class="plan-group ${options.variant ? `is-${esc(options.variant)}` : ""}" data-plan-day-group="${esc(dateValue || label)}"><div class="plan-day-head"><div><h3 class="day-title">${esc(label)}</h3><span>${esc(summaryText)}</span></div><div class="plan-day-actions"><div class="plan-day-progress" aria-label="Progresso do dia"><span style="width:${esc(String(summary.progress))}%"></span></div>${isPendingView ? `<button class="button button-secondary" type="button" data-plan-day-complete="${esc(dateValue)}" ${!dateValue || summary.pending === 0 ? "disabled" : ""}>Concluir dia</button>` : ""}</div></div><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`;
+}
+
+function renderPlanCompletedHistory(completedItems) {
+  if (!completedItems.length) return "";
+  const groups = groupMonthlyItems(completedItems);
+  const historyHtml = Array.from(groups.entries()).map(([label, rows]) => (
+    renderPlanDayGroup(label, rows, { variant: "completed", allRows: rows })
+  )).join("");
+
+  return `<details class="plan-history"><summary><div><strong>Metas concluídas</strong><span>Histórico recolhido para não atrapalhar a sequência atual.</span></div><span class="badge green">${esc(String(completedItems.length))}</span></summary><div class="plan-day-list">${historyHtml}</div></details>`;
 }
 
 function renderPlanTaskCard(item) {
@@ -2398,16 +2439,22 @@ function renderMaterialsPage(data) {
 
 function renderPlanPage(data) {
   const monthlyHtml = data.monthlyCollection.map((plan) => {
-    const groups = groupMonthlyItems(plan.items);
+    const pendingItems = plan.items.filter((item) => !item.concluida);
+    const completedItems = plan.items.filter((item) => item.concluida);
+    const allGroups = groupMonthlyItems(plan.items);
+    const pendingGroups = groupMonthlyItems(pendingItems);
     const groupHtml = plan.items.length
-      ? Array.from(groups.entries()).map(([label, rows]) => renderPlanDayGroup(label, rows)).join("")
+      ? (pendingItems.length
+        ? Array.from(pendingGroups.entries()).map(([label, rows]) => renderPlanDayGroup(label, rows, { variant: "pending", allRows: allGroups.get(label) || rows })).join("")
+        : `<div class="empty-state">Todas as metas deste plano foram concluídas. O histórico fica recolhido abaixo.</div>`)
       : `<div class="empty-state">Ainda nao existem metas cadastradas para este plano.</div>`;
+    const historyHtml = renderPlanCompletedHistory(completedItems);
 
     const bulkActions = plan.items.length
       ? `<form class="plan-bulk-actions" data-plan-complete-until><label><span class="field-label">Marcar metas feitas até</span><input class="input" name="until_date" type="date"></label><button class="button button-secondary" type="submit">Concluir até a data</button><div class="message" data-plan-bulk-message></div></form>`
       : "";
 
-    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtPlanReference(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}${bulkActions}<div class="plan-day-list" style="margin-top:1rem;">${groupHtml}</div></section>`;
+    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtPlanReference(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}${renderPlanCurrentStep(plan)}${bulkActions}<div class="plan-worklist-head"><div><strong>Metas pendentes</strong><span>A sequência abaixo começa no próximo ponto real do plano.</span></div><span class="badge blue">${esc(String(pendingItems.length))} pendentes</span></div><div class="plan-day-list" style="margin-top:1rem;">${groupHtml}</div>${historyHtml}</section>`;
   }).join("");
 
   const legacyHtml = data.planosLegacy.length
