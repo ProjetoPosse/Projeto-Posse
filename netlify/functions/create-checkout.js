@@ -13,6 +13,12 @@ const PLAN_CATALOG = {
     description: "Direcionamento estrategico, 4 simulados e acesso a plataforma",
     amount: 249.9,
   },
+  plano_trf3_fcc: {
+    code: "plano_trf3_fcc",
+    title: "Plano TRF-3 FCC",
+    description: "Plano de 16 semanas para Analista Judiciario Area Judiciaria",
+    amount: 249.9,
+  },
   mentoria_individual: {
     code: "mentoria_individual",
     title: "Mentoria Individual",

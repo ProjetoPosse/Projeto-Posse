@@ -110,6 +110,7 @@ section{padding:6rem 2rem}
   .pc-btn-outline{border:1px solid var(--border2);color:var(--gold)}
   .pc-btn-outline:hover{background:var(--gold-g)}
   .pcpr-launch{margin-top:3rem;background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(22,22,34,.96));border:1px solid rgba(201,168,76,.32);border-radius:24px;padding:2rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.42fr);gap:2rem;align-items:center;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+  .trf3-launch{background:linear-gradient(135deg,rgba(228,199,107,.12),rgba(16,19,31,.97));border-color:rgba(228,199,107,.28)}
   .pcpr-launch h3{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3vw,2.6rem);line-height:1.05;margin:.6rem 0 .8rem}
   .pcpr-launch p{color:var(--txt2);font-size:.96rem;line-height:1.75;max-width:760px}
   .pcpr-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
@@ -499,6 +500,28 @@ body.checkout-open {
       </div>
     </div>
 
+    <div class="pcpr-launch trf3-launch fade">
+      <div>
+        <div class="pc-kicker">Novo plano TRF-3</div>
+        <h3>TRF-3 FCC: Analista Judiciário — Área Judiciária</h3>
+        <p>Plano de estudos em 16 semanas com roteiro diário, Método REC, questões FCC, revisões D+7 e D+14, simulados semanais e treino de estudo de caso. Uma preparação objetiva para quem quer estudar com direção para o cargo de Analista Judiciário.</p>
+        <div class="pcpr-tags">
+          <span>16 semanas</span>
+          <span>Banca FCC</span>
+          <span>Método REC</span>
+          <span>Estudo de caso</span>
+        </div>
+      </div>
+      <div class="pcpr-price">
+        <strong>R$ 249,90</strong>
+        <span>acesso ao plano TRF-3 FCC para Analista Judiciário</span>
+        <div class="pcpr-actions">
+          <a href="planos/trf-3-analista-judiciaria.html" class="pc-btn pc-btn-gold">Ver detalhes do plano</a>
+          <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('plano_trf3_fcc', this)">Comprar agora</a>
+        </div>
+      </div>
+    </div>
+
     <div class="pricing-grid">
 
       <!-- SIMULADOS -->
@@ -672,7 +695,7 @@ body.checkout-open {
       </div>
       <div class="checkout-error" id="checkoutError"></div>
       <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
-      <p class="checkout-note">Voce sera redirecionado para concluir o pagamento com Pix, cartao ou boleto. O Pos-edital PC-PR e a Preparacao com Metas seguem pelo checkout seguro.</p>
+      <p class="checkout-note">Voce sera redirecionado para concluir o pagamento com Pix, cartao ou boleto. O Pos-edital PC-PR, o Plano TRF-3 e a Preparacao com Metas seguem pelo checkout seguro.</p>
     </form>
   </div>
 </div>
@@ -937,7 +960,7 @@ body.checkout-open {
             <option value="Mentoria Individual (R$ 749,00)" style="background:var(--bg)">Mentoria Individual (R$ 749,00)</option>
             <option value="Preparação com Metas (R$ 249,00)" style="background:var(--bg)">Preparação com Metas (R$ 249,00)</option>
             <option value="Pós-edital PC-PR (R$ 249,90)" style="background:var(--bg)">Pós-edital PC-PR (R$ 249,90)</option>
-            <option value="Plano TRF-3 FCC - Analista Judiciário Área Judiciária" style="background:var(--bg)">Plano TRF-3 FCC - Analista Judiciário Área Judiciária</option>
+            <option value="Plano TRF-3 FCC - Analista Judiciário Área Judiciária (R$ 249,90)" style="background:var(--bg)">Plano TRF-3 FCC - Analista Judiciário Área Judiciária (R$ 249,90)</option>
             <option value="Combo Simulados" style="background:var(--bg)">Combo Simulados (quando houver edital)</option>
             <option value="Quero conhecer todos os serviços" style="background:var(--bg)">Quero conhecer todos os serviços</option>
           </select>
@@ -1035,6 +1058,11 @@ const CHECKOUT_PLANS = {
     title: 'Pos-edital PC-PR',
     price: 'R$ 249,90',
     description: 'Direcionamento estrategico + 4 simulados + plataforma do aluno'
+  },
+  plano_trf3_fcc: {
+    title: 'Plano TRF-3 FCC',
+    price: 'R$ 249,90',
+    description: 'Plano de 16 semanas para Analista Judiciario Area Judiciaria'
   },
   mentoria_individual: {
     title: 'Mentoria Individual',

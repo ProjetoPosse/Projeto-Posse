@@ -32,6 +32,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt);line-height:1.58;-webkit-font-smoothing:antialiased}
+body.checkout-open{overflow:hidden}
 ::selection{background:var(--gold);color:var(--bg)}
 a{color:inherit}
 .container{width:min(1160px,calc(100% - 32px));margin:0 auto}
@@ -61,6 +62,9 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.65rem);line
 .hero-card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(24,27,39,.95),rgba(13,14,21,.95));box-shadow:0 28px 80px rgba(0,0,0,.36);padding:1.45rem}
 .hero-card h2{font-size:1.2rem;margin-bottom:.55rem}
 .hero-card p{color:var(--txt2)}
+.price-line{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:.9rem 1rem;margin:1rem 0 .2rem}
+.price-line strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.15rem;line-height:1}
+.price-line span{display:block;color:var(--txt2);font-size:.82rem;margin-top:.24rem}
 .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin:1rem 0 1.25rem}
 .metric{border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.9rem}
 .metric strong{display:block;color:var(--gold2);font-size:1.35rem;line-height:1}
@@ -109,6 +113,9 @@ h2{font-size:clamp(1.85rem,4vw,3.25rem);line-height:1.02;letter-spacing:0;margin
 .offer-badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:.38rem .7rem;color:var(--gold2);background:rgba(201,168,76,.08);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.11em;margin-bottom:.85rem}
 .offer-card h3{font-size:1.45rem;line-height:1.15;margin-bottom:.6rem}
 .offer-card p{color:var(--txt2)}
+.offer-price{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:1rem;margin:1rem 0 .2rem}
+.offer-price strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.35rem;line-height:1}
+.offer-price span{display:block;color:var(--txt2);font-size:.86rem;margin-top:.25rem}
 .interest-card{border:1px solid rgba(255,255,255,.08);border-radius:20px;background:rgba(255,255,255,.035);padding:1.25rem}
 .faq-list{display:grid;gap:.78rem}
 details{border:1px solid var(--line2);border-radius:16px;background:var(--card);padding:0}
@@ -119,6 +126,23 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
 .cta-final{text-align:center;background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(7,7,11,1))}
 .cta-final .container{max-width:860px}
 .cta-final p{color:var(--txt2);font-size:1.06rem;margin-bottom:1.35rem}
+.checkout-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);z-index:80;display:none;align-items:center;justify-content:center;padding:1rem}
+.checkout-modal.active{display:flex}
+.checkout-dialog{width:min(560px,100%);border:1px solid var(--line);border-radius:24px;background:#10121b;padding:1.35rem;box-shadow:0 35px 90px rgba(0,0,0,.55);position:relative}
+.checkout-close{position:absolute;right:1rem;top:1rem;width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--txt);cursor:pointer;font-size:1rem}
+.checkout-dialog h3{font-size:1.45rem;margin:.25rem 2rem .3rem 0}
+.checkout-dialog p{color:var(--txt2);margin-bottom:1rem}
+.checkout-plan{border:1px solid var(--line);border-radius:16px;background:rgba(201,168,76,.08);padding:.9rem;margin-bottom:1rem}
+.checkout-plan strong{display:block;color:var(--gold2)}
+.checkout-plan span{color:var(--txt2);font-size:.9rem}
+.checkout-form{display:grid;gap:.85rem}
+.checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.checkout-form label{display:block;color:var(--gold2);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
+.checkout-form input{width:100%;border:1px solid var(--line2);background:#1a1d2a;color:var(--txt);border-radius:13px;padding:.85rem .95rem;font:inherit;outline:none}
+.checkout-form input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+.checkout-error{display:none;border:1px solid rgba(255,107,115,.28);background:rgba(255,107,115,.1);color:#ffb4b8;border-radius:14px;padding:.8rem}
+.checkout-submit{border:0;border-radius:999px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#07070b;font-weight:900;padding:1rem;cursor:pointer;font:inherit}
+.checkout-submit:disabled{opacity:.65;cursor:not-allowed}
 .fineprint{color:var(--muted);font-size:.82rem;margin-top:.8rem}
 @media(max-width:980px){
   .nav-links{display:none}
@@ -130,6 +154,7 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
   .container{width:min(100% - 24px,1160px)}
   .nav-inner{height:64px}
   .grid-4,.grid-3,.grid-2,.rec-steps,.timeline,.checklist{grid-template-columns:1fr}
+  .checkout-grid{grid-template-columns:1fr}
   .metric-grid{grid-template-columns:1fr 1fr}
   .hero-actions,.btn{width:100%}
   section{padding:3.45rem 0}
@@ -160,7 +185,7 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
         <p class="hero-lead">Analista Judiciário — Área Judiciária em 16 semanas, com roteiro diário, questões, revisões e treino de estudo de caso.</p>
         <p class="hero-copy">Um plano criado para quem quer estudar com direção, dominar as matérias jurídicas e chegar competitivo à prova do TRF-3.</p>
         <div class="hero-actions">
-          <a class="btn btn-gold js-plan-cta" href="https://wa.me/5567992306627?text=Ol%C3%A1!%20Quero%20meu%20Plano%20de%20Estudos%20TRF-3%20FCC%20para%20Analista%20Judici%C3%A1rio%20%C3%81rea%20Judici%C3%A1ria." target="_blank" rel="noreferrer">Quero meu plano TRF-3</a>
+          <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_fcc', this)">Comprar com Mercado Pago</a>
           <a class="btn btn-outline" href="#estrutura">Ver estrutura do plano</a>
         </div>
         <div class="badge-row" id="heroBadges" aria-label="Características do plano"></div>
@@ -169,13 +194,17 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
         <div class="kicker">Foco único</div>
         <h2>Analista Judiciário — Área Judiciária</h2>
         <p>Roteiro estruturado para a banca FCC, com ciclos progressivos de base jurídica, questões, revisão espaçada, simulados semanais e estudo de caso.</p>
+        <div class="price-line">
+          <strong>R$ 249,90</strong>
+          <span>pagamento único pelo plano TRF-3 FCC</span>
+        </div>
         <div class="metric-grid">
           <div class="metric"><strong>16</strong><span>semanas organizadas</span></div>
           <div class="metric"><strong>REC</strong><span>diagnóstico, prática e revisão</span></div>
           <div class="metric"><strong>D+7</strong><span>revisão programada</span></div>
           <div class="metric"><strong>D+14</strong><span>consolidação no ciclo</span></div>
         </div>
-        <a class="btn btn-gold js-plan-cta" href="https://wa.me/5567992306627?text=Ol%C3%A1!%20Quero%20meu%20Plano%20de%20Estudos%20TRF-3%20FCC%20para%20Analista%20Judici%C3%A1rio%20%C3%81rea%20Judici%C3%A1ria." target="_blank" rel="noreferrer">Entrar no Plano TRF-3</a>
+        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_fcc', this)">Entrar no Plano TRF-3</a>
         <p class="fineprint">Atendimento e liberação do plano via equipe Projeto Posse.</p>
       </aside>
     </div>
@@ -309,8 +338,12 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
         <span class="offer-badge">Plano completo</span>
         <h3>Plano TRF-3 Analista Judiciário — Área Judiciária</h3>
         <p>Para quem quer uma preparação organizada, jurídica e direcionada para a banca FCC.</p>
+        <div class="offer-price">
+          <strong>R$ 249,90</strong>
+          <span>acesso ao plano de 16 semanas</span>
+        </div>
         <ul class="mini-list" id="productItems"></ul>
-        <a class="btn btn-gold js-plan-cta" href="https://wa.me/5567992306627?text=Ol%C3%A1!%20Quero%20meu%20Plano%20de%20Estudos%20TRF-3%20FCC%20para%20Analista%20Judici%C3%A1rio%20%C3%81rea%20Judici%C3%A1ria." target="_blank" rel="noreferrer" style="margin-top:1.2rem">Entrar no Plano TRF-3</a>
+        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_fcc', this)" style="margin-top:1.2rem">Comprar com Mercado Pago</a>
       </article>
     </div>
   </section>
@@ -341,14 +374,52 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
       <div class="eyebrow">Próximo passo</div>
       <h2>Estude para o TRF-3 com direção.</h2>
       <p>O plano não substitui o seu esforço. Ele organiza esse esforço para que cada dia de estudo tenha função, meta e revisão.</p>
-      <a class="btn btn-gold js-plan-cta" href="https://wa.me/5567992306627?text=Ol%C3%A1!%20Quero%20meu%20Plano%20de%20Estudos%20TRF-3%20FCC%20para%20Analista%20Judici%C3%A1rio%20%C3%81rea%20Judici%C3%A1ria." target="_blank" rel="noreferrer">Quero meu plano TRF-3</a>
+      <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_fcc', this)">Quero meu plano TRF-3</a>
     </div>
   </section>
 </main>
 
+<div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+  <div class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button type="button" class="checkout-close" onclick="return closeCheckoutModal()" aria-label="Fechar">x</button>
+    <div class="eyebrow">Pagamento seguro</div>
+    <h3 id="checkoutTitle">Finalize seu acesso</h3>
+    <p>Preencha os dados abaixo para seguir para Pix, cartão ou boleto dentro do Mercado Pago.</p>
+
+    <div class="checkout-plan" id="checkoutPlanSummary">
+      <strong>Plano TRF-3 FCC</strong>
+      <span>R$ 249,90 - plano de 16 semanas para Analista Judiciário Área Judiciária</span>
+    </div>
+
+    <form id="checkoutForm" class="checkout-form">
+      <input type="hidden" id="checkoutPlanCode" value="plano_trf3_fcc">
+      <div>
+        <label for="checkoutName">Nome completo *</label>
+        <input type="text" id="checkoutName" required maxlength="120" placeholder="Seu nome completo">
+      </div>
+      <div class="checkout-grid">
+        <div>
+          <label for="checkoutPhone">WhatsApp *</label>
+          <input type="tel" id="checkoutPhone" required maxlength="16" placeholder="(67) 99999-9999">
+        </div>
+        <div>
+          <label for="checkoutEmail">E-mail</label>
+          <input type="email" id="checkoutEmail" maxlength="160" placeholder="seu@email.com">
+        </div>
+      </div>
+      <div>
+        <label for="checkoutTarget">Concurso-alvo</label>
+        <input type="text" id="checkoutTarget" maxlength="160" value="TRF-3 - Analista Judiciário Área Judiciária">
+      </div>
+      <div class="checkout-error" id="checkoutError"></div>
+      <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
+      <p class="fineprint">Você será redirecionado para concluir o pagamento no ambiente seguro do Mercado Pago.</p>
+    </form>
+  </div>
+</div>
+
 <script>
 const landingData = {
-  planCta: 'https://wa.me/5567992306627?text=Ol%C3%A1!%20Quero%20meu%20Plano%20de%20Estudos%20TRF-3%20FCC%20para%20Analista%20Judici%C3%A1rio%20%C3%81rea%20Judici%C3%A1ria.',
   techCta: 'https://wa.me/5567992306627?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20de%20T%C3%A9cnico%20Judici%C3%A1rio%20do%20TRF-3.',
   badges: ['Analista Judiciário', 'Área Judiciária', 'Banca FCC', '16 semanas', 'Método REC', 'Estudo de Caso', 'Simulados semanais'],
   differences: [
@@ -408,6 +479,166 @@ const landingData = {
     ['O plano garante aprovação?', 'Não. Nenhum plano sério garante aprovação. O objetivo é entregar direção, rotina, método e controle de desempenho para aumentar a qualidade da preparação.']
   ]
 };
+
+const CHECKOUT_PLANS = {
+  plano_trf3_fcc: {
+    title: 'Plano TRF-3 FCC',
+    price: 'R$ 249,90',
+    description: 'Plano de 16 semanas para Analista Judiciário Área Judiciária'
+  }
+};
+
+const checkoutModal = document.getElementById('checkoutModal');
+const checkoutForm = document.getElementById('checkoutForm');
+const checkoutError = document.getElementById('checkoutError');
+const checkoutSubmit = document.getElementById('checkoutSubmit');
+const checkoutPlanInput = document.getElementById('checkoutPlanCode');
+const checkoutPlanSummary = document.getElementById('checkoutPlanSummary');
+const checkoutNameInput = document.getElementById('checkoutName');
+const checkoutPhoneInput = document.getElementById('checkoutPhone');
+let checkoutTrigger = null;
+
+function renderCheckoutSummary(plan) {
+  checkoutPlanSummary.innerHTML = '<strong>' + plan.title + '</strong><span>' + plan.price + ' - ' + plan.description + '</span>';
+}
+
+function showCheckoutError(message) {
+  checkoutError.textContent = message;
+  checkoutError.style.display = 'block';
+}
+
+function hideCheckoutError() {
+  checkoutError.textContent = '';
+  checkoutError.style.display = 'none';
+}
+
+function openCheckoutModal(planCode, trigger) {
+  const plan = CHECKOUT_PLANS[planCode];
+  if (!plan || !checkoutModal) return false;
+  checkoutTrigger = trigger || null;
+  checkoutPlanInput.value = planCode;
+  renderCheckoutSummary(plan);
+  hideCheckoutError();
+  checkoutModal.classList.add('active');
+  checkoutModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('checkout-open');
+  setTimeout(function () { checkoutNameInput.focus(); }, 60);
+  return false;
+}
+
+function closeCheckoutModal() {
+  if (!checkoutModal) return false;
+  checkoutModal.classList.remove('active');
+  checkoutModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('checkout-open');
+  hideCheckoutError();
+  if (checkoutTrigger && typeof checkoutTrigger.focus === 'function') {
+    checkoutTrigger.focus();
+  }
+  return false;
+}
+
+function maskPhone(value) {
+  const digits = value.replace(/\D+/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
+  if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+  return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+if (checkoutPhoneInput) {
+  checkoutPhoneInput.addEventListener('input', function () {
+    checkoutPhoneInput.value = maskPhone(checkoutPhoneInput.value);
+  });
+}
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && checkoutModal && checkoutModal.classList.contains('active')) {
+    closeCheckoutModal();
+  }
+});
+
+if (checkoutModal) {
+  checkoutModal.addEventListener('click', function (event) {
+    if (event.target === checkoutModal) {
+      closeCheckoutModal();
+    }
+  });
+}
+
+async function handleCheckoutSubmit(event) {
+  event.preventDefault();
+  hideCheckoutError();
+
+  const planCode = checkoutPlanInput.value;
+  const customerName = checkoutNameInput.value.trim();
+  const customerPhone = checkoutPhoneInput.value.replace(/\D+/g, '');
+  const customerEmail = document.getElementById('checkoutEmail').value.trim();
+  const concursoTarget = document.getElementById('checkoutTarget').value.trim();
+
+  if (!CHECKOUT_PLANS[planCode]) {
+    showCheckoutError('Selecione um plano válido para continuar.');
+    return;
+  }
+  if (customerName.length < 3) {
+    showCheckoutError('Informe seu nome completo.');
+    checkoutNameInput.focus();
+    return;
+  }
+  if (customerPhone.length < 10) {
+    showCheckoutError('Informe um WhatsApp válido com DDD.');
+    checkoutPhoneInput.focus();
+    return;
+  }
+  if (customerEmail && !isValidEmail(customerEmail)) {
+    showCheckoutError('Informe um e-mail válido ou deixe o campo em branco.');
+    document.getElementById('checkoutEmail').focus();
+    return;
+  }
+
+  checkoutSubmit.disabled = true;
+  checkoutSubmit.textContent = 'Abrindo checkout...';
+
+  try {
+    const response = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        planCode,
+        customerName,
+        customerPhone,
+        customerEmail,
+        concursoTarget
+      })
+    });
+
+    const data = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      throw new Error(data.error || 'Não foi possível iniciar o pagamento agora.');
+    }
+    if (!data.initPoint) {
+      throw new Error('O Mercado Pago não retornou um link de checkout válido.');
+    }
+
+    window.location.href = data.initPoint;
+  } catch (error) {
+    showCheckoutError(error.message || 'Não foi possível iniciar o pagamento agora.');
+  } finally {
+    checkoutSubmit.disabled = false;
+    checkoutSubmit.textContent = 'Ir para o Mercado Pago';
+  }
+}
+
+if (checkoutForm) {
+  checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+}
 
 function renderBadges(target, items) {
   document.getElementById(target).innerHTML = items.map(item => `<span class="badge">${item}</span>`).join('');
@@ -486,7 +717,6 @@ function renderFaq(target, items) {
   `).join('');
 }
 
-document.querySelectorAll('.js-plan-cta').forEach(link => link.href = landingData.planCta);
 document.querySelectorAll('.js-tech-cta').forEach(link => link.href = landingData.techCta);
 renderBadges('heroBadges', landingData.badges);
 renderCards('differenceCards', landingData.differences);
