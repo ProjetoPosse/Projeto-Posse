@@ -1336,6 +1336,208 @@ function groupMonthlyItems(items) {
   return groups;
 }
 
+function dayIndexFromIso(value) {
+  if (!value) return null;
+  const parsed = new Date(`${value}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getDay();
+}
+
+function normalizeImportDate(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return raw;
+
+  const br = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+  if (!br) return null;
+
+  const day = br[1].padStart(2, "0");
+  const month = br[2].padStart(2, "0");
+  const year = br[3].length === 2 ? `20${br[3]}` : br[3];
+  return `${year}-${month}-${day}`;
+}
+
+function splitImportLine(line) {
+  if (line.includes("\t")) return line.split("\t");
+  if (line.includes(";")) return line.split(";");
+  if (line.includes("|")) return line.split("|");
+  return [line];
+}
+
+function normalizePlanItemType(value) {
+  return String(value || "meta")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 40) || "meta";
+}
+
+function parsePlanItemsImport(raw) {
+  return String(raw || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"))
+    .map((line, index) => {
+      const parts = splitImportLine(line).map((part) => part.trim());
+      const firstDate = normalizeImportDate(parts[0]);
+      const secondDate = normalizeImportDate(parts[1]);
+      let data_prevista = firstDate;
+      let ordem = Number(parts[1]);
+      let tipo = parts[2];
+      let titulo = parts[3];
+      let descricao = parts[4];
+      let tec_url = parts[5];
+      let material_url = parts[6];
+
+      if (!firstDate && secondDate) {
+        ordem = Number(parts[0]);
+        data_prevista = secondDate;
+        tipo = parts[2];
+        titulo = parts[3];
+        descricao = parts[4];
+        tec_url = parts[5];
+        material_url = parts[6];
+      }
+
+      if (!firstDate && !secondDate) {
+        ordem = Number(parts[0]);
+        tipo = Number.isFinite(ordem) ? parts[1] : parts[0];
+        titulo = Number.isFinite(ordem) ? parts[2] : parts[1];
+        descricao = Number.isFinite(ordem) ? parts.slice(3).join(" - ") : parts.slice(2).join(" - ");
+      }
+
+      const fallbackTitle = firstDate || secondDate ? parts.filter(Boolean).slice(2).join(" - ") : line;
+      const cleanedTitle = (titulo || fallbackTitle || `Meta ${index + 1}`).trim();
+
+      return {
+        titulo: cleanedTitle,
+        descricao: descricao || null,
+        tipo: normalizePlanItemType(tipo),
+        data_prevista,
+        dia_semana: data_prevista ? dayIndexFromIso(data_prevista) : null,
+        ordem: Number.isFinite(ordem) && ordem > 0 ? ordem : index + 1,
+        tec_url: isAbsoluteUrl(tec_url) ? tec_url : null,
+        material_url: material_url || null
+      };
+    })
+    .filter((item) => item.titulo);
+}
+
+function planItemStatus(item) {
+  const today = isoToday();
+  if (item.concluida) return { label: "Concluída", tone: "green" };
+  if (item.data_prevista && item.data_prevista < today) return { label: "Em atraso", tone: "red" };
+  if (item.data_prevista === today) return { label: "Hoje", tone: "gold" };
+  return { label: "Pendente", tone: "blue" };
+}
+
+function buildPlanInsights(plan) {
+  const items = plan?.items || [];
+  const today = isoToday();
+  const pending = items.filter((item) => !item.concluida);
+  const byType = new Map();
+
+  items.forEach((item) => {
+    const key = item.tipo || "meta";
+    const current = byType.get(key) || { tipo: key, total: 0, done: 0 };
+    current.total += 1;
+    if (item.concluida) current.done += 1;
+    byType.set(key, current);
+  });
+
+  const overdue = pending.filter((item) => item.data_prevista && item.data_prevista < today);
+  const todayItems = pending.filter((item) => item.data_prevista === today);
+  const upcoming = pending
+    .filter((item) => !item.data_prevista || item.data_prevista >= today)
+    .slice()
+    .sort((a, b) => {
+      const dateDiff = dateSortValue(a.data_prevista) - dateSortValue(b.data_prevista);
+      if (dateDiff !== 0) return dateDiff;
+      return Number(a.ordem || 0) - Number(b.ordem || 0);
+    });
+
+  return {
+    total: items.length,
+    done: items.filter((item) => item.concluida).length,
+    pending: pending.length,
+    overdue,
+    todayItems,
+    upcoming,
+    byType: Array.from(byType.values()).sort((a, b) => b.total - a.total)
+  };
+}
+
+function renderPlanOverview(plan) {
+  const insight = buildPlanInsights(plan);
+  const stats = [
+    { label: "Concluídas", value: `${insight.done}/${insight.total || 0}`, tone: "gold" },
+    { label: "Pendentes", value: String(insight.pending), tone: "blue" },
+    { label: "Hoje", value: String(insight.todayItems.length), tone: "green" },
+    { label: "Em atraso", value: String(insight.overdue.length), tone: insight.overdue.length ? "red" : "blue" }
+  ];
+
+  return `<div class="plan-overview-grid">${stats.map((item) => `<div class="plan-mini-stat"><strong class="is-${esc(item.tone)}">${esc(item.value)}</strong><span>${esc(item.label)}</span></div>`).join("")}</div>${renderPlanTypeProgress(insight)}`;
+}
+
+function renderPlanTypeProgress(insight) {
+  if (!insight.byType.length) return "";
+  return `<div class="plan-type-progress" aria-label="Progresso por tipo de meta">${insight.byType.map((item) => {
+    const pct = item.total ? Math.round((item.done / item.total) * 100) : 0;
+    return `<div class="plan-type-row"><div><strong>${esc(item.tipo)}</strong><span>${esc(`${item.done}/${item.total}`)}</span></div><div class="metric-bar"><span style="width:${esc(String(pct))}%"></span></div></div>`;
+  }).join("")}</div>`;
+}
+
+function renderPlanFocusQueue(plan) {
+  const insight = buildPlanInsights(plan);
+  const blocks = [
+    { title: "Em atraso", items: insight.overdue.slice(0, 4), empty: "Nenhuma meta atrasada." },
+    { title: "Hoje", items: insight.todayItems.slice(0, 4), empty: "Nada previsto para hoje." },
+    { title: "Próximas metas", items: insight.upcoming.slice(0, 4), empty: "Sem metas pendentes." }
+  ];
+
+  return `<div class="plan-focus-grid">${blocks.map((block) => `<div class="plan-focus-panel"><strong>${esc(block.title)}</strong>${block.items.length ? `<ul>${block.items.map((item) => `<li><span>${esc(item.data_prevista ? shortDateLabel(item.data_prevista) : "Sem data")}</span>${esc(item.titulo)}</li>`).join("")}</ul>` : `<p>${esc(block.empty)}</p>`}</div>`).join("")}</div>`;
+}
+
+function renderPlanTaskCard(item) {
+  const status = planItemStatus(item);
+  return `<article class="plan-task ${item.concluida ? "done" : ""}"><div class="plan-item"><input class="checkbox" type="checkbox" data-plan-item-toggle="${esc(item.id)}" aria-label="Marcar meta ${esc(item.titulo)} como concluída" ${item.concluida ? "checked" : ""}><div class="plan-task-main"><div class="badge-row"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge ${status.tone}">${esc(status.label)}</span>${item.data_prevista ? `<span class="badge blue">${esc(shortDateLabel(item.data_prevista))}</span>` : ""}</div><strong class="plan-item-title" style="margin-top:.7rem;">${esc(item.titulo)}</strong><p class="plan-item-copy">${esc(item.descricao || "Sem descricao adicional.")}</p><div class="inline-actions">${item.tec_url ? `<a class="button button-secondary" href="${esc(item.tec_url)}" target="_blank" rel="noopener noreferrer">Abrir TEC</a>` : ""}${item.resolved_material_url ? `<a class="button button-secondary" href="${esc(item.resolved_material_url)}" target="_blank" rel="noopener noreferrer">${item.tipo === "meta_mensal" ? "Abrir meta mensal" : "Material complementar"}</a>` : item.material_url ? `<span class="message error">Material privado nao resolvido.</span>` : ""}</div></div></div></article>`;
+}
+
+function renderAdminPlanMonitor(plans, mentoradosMap) {
+  if (!plans.length) return `<section class="card" style="margin-top:1rem;"><div class="empty-state">Crie um plano para acompanhar metas por aluno.</div></section>`;
+
+  return `<section class="card plan-admin-monitor" style="margin-top:1rem;"><div class="card-head"><div><h2 class="card-title">Acompanhamento interativo dos planos</h2><p class="page-copy">Selecione um plano para ver metas concluídas, pendentes, atrasadas e evolução por tipo.</p></div><span class="badge gold">${esc(String(plans.length))} planos</span></div><label class="plan-monitor-select"><span class="field-label">Plano acompanhado</span><select class="select" id="planDetailSelect">${plans.map((plan, index) => `<option value="${esc(plan.id)}" ${index === 0 ? "selected" : ""}>${esc(optionLabel(plan, mentoradosMap))}</option>`).join("")}</select></label><div class="plan-detail-panels">${plans.map((plan, index) => renderAdminPlanDetailPanel(plan, mentoradosMap, index === 0)).join("")}</div></section>`;
+}
+
+function renderAdminPlanDetailPanel(plan, mentoradosMap, isActive) {
+  const insight = buildPlanInsights(plan);
+  const rows = (plan.items || []).map((item) => {
+    const status = planItemStatus(item);
+    return `<tr><td>${esc(item.data_prevista ? fmtDate(item.data_prevista) : "--")}</td><td><strong>${esc(item.titulo)}</strong><span class="table-subcopy">${esc(item.descricao || "")}</span></td><td>${esc(item.tipo || "meta")}</td><td><span class="badge ${status.tone}">${esc(status.label)}</span></td><td>${esc(item.concluida_em ? fmtDateTime(item.concluida_em) : "--")}</td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="empty-state">Nenhuma meta cadastrada neste plano.</td></tr>`;
+
+  return `<div class="plan-detail-panel ${isActive ? "is-active" : ""}" data-plan-detail-panel="${esc(plan.id)}"><div class="plan-detail-head"><div><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} · ${fmtMonth(plan.mes_referencia)}`)}</span></div><div class="plan-progress-row"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="table-wrap plan-detail-table"><table class="table"><thead><tr><th>Data</th><th>Meta</th><th>Tipo</th><th>Status</th><th>Concluída em</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+function wireAdminPlanDetailSelect() {
+  const select = document.getElementById("planDetailSelect");
+  if (!select) return;
+
+  const sync = () => {
+    appContent.querySelectorAll("[data-plan-detail-panel]").forEach((panel) => {
+      panel.classList.toggle("is-active", panel.dataset.planDetailPanel === select.value);
+    });
+  };
+
+  select.addEventListener("change", sync);
+  sync();
+}
+
+
 async function fetchMentoradoData() {
   if (isDemoMode()) {
     const profile = getDemoProfile();
@@ -2165,10 +2367,10 @@ function renderPlanPage(data) {
   const monthlyHtml = data.monthlyCollection.map((plan) => {
     const groups = groupMonthlyItems(plan.items);
     const groupHtml = plan.items.length
-      ? Array.from(groups.entries()).map(([label, rows]) => `<div class="plan-group"><h3 class="day-title">${esc(label)}</h3><div class="list">${rows.map((item) => `<article class="plan-task ${item.concluida ? "done" : ""}"><div class="plan-item"><input class="checkbox" type="checkbox" data-plan-item-toggle="${esc(item.id)}" ${item.concluida ? "checked" : ""}><div class="plan-task-main"><div class="badge-row"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge ${item.concluida ? "green" : "blue"}">${esc(item.concluida ? "Concluida" : "Pendente")}</span></div><strong class="plan-item-title" style="margin-top:.7rem;">${esc(item.titulo)}</strong><p class="plan-item-copy">${esc(item.descricao || "Sem descricao adicional.")}</p><div class="inline-actions">${item.tec_url ? `<a class="button button-secondary" href="${esc(item.tec_url)}" target="_blank" rel="noopener noreferrer">Abrir TEC</a>` : ""}${item.resolved_material_url ? `<a class="button button-secondary" href="${esc(item.resolved_material_url)}" target="_blank" rel="noopener noreferrer">${item.tipo === "meta_mensal" ? "Abrir meta mensal" : "Material complementar"}</a>` : item.material_url ? `<span class="message error">Material privado nao resolvido.</span>` : ""}</div></div></div></article>`).join("")}</div></div>`).join("")
+      ? Array.from(groups.entries()).map(([label, rows]) => `<div class="plan-group"><h3 class="day-title">${esc(label)}</h3><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`).join("")
       : `<div class="empty-state">Ainda nao existem metas cadastradas para este plano.</div>`;
 
-    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtMonth(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="metric-bar" style="margin-top:1rem;"><span style="width:${esc(String(plan.progress))}%"></span></div><div class="list" style="margin-top:1rem;">${groupHtml}</div></section>`;
+    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtMonth(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="list" style="margin-top:1rem;">${groupHtml}</div></section>`;
   }).join("");
 
   const legacyHtml = data.planosLegacy.length
@@ -2233,8 +2435,8 @@ async function fetchAdminData() {
     client.from("profiles").select("id,nome,email,role,ativo,concurso_id,created_at").eq("role", "mentorado").order("created_at", { ascending: false }),
     client.from("concursos").select("id,nome,cargo,orgao,status,created_at").order("created_at", { ascending: false }),
     client.from("materiais").select("id,titulo,tipo,visibilidade,concurso_id,mentorado_id,created_at").order("created_at", { ascending: false }).limit(20),
-    client.from("planos_mensais").select("id,mentorado_id,titulo,descricao,mes_referencia,status,pdf_url,pdf_path").order("mes_referencia", { ascending: false }).limit(24),
-    client.from("plano_itens").select("id,plano_id,mentorado_id,titulo,descricao,tipo,data_prevista,dia_semana,ordem,concluida,concluida_em,tec_url,material_url").order("created_at", { ascending: false }).limit(60),
+    client.from("planos_mensais").select("id,mentorado_id,titulo,descricao,mes_referencia,status,pdf_url,pdf_path").order("mes_referencia", { ascending: false }).limit(80),
+    client.from("plano_itens").select("id,plano_id,mentorado_id,titulo,descricao,tipo,data_prevista,dia_semana,ordem,concluida,concluida_em,tec_url,material_url").order("data_prevista", { ascending: true, nullsFirst: false }).order("ordem", { ascending: true }).limit(1500),
     client.from("simulados").select("id,titulo,data_aplicacao,acertos,total_questoes,mentorado_id,pdf_url,pdf_path").order("created_at", { ascending: false }).limit(20),
     client.from("daily_checkins").select("id,mentorado_id,referencia,horas_estudo,questoes_feitas,questoes_certas,pomodoros,metas_cumpridas,observacao").order("referencia", { ascending: false }).limit(120)
   ]);
@@ -2346,6 +2548,27 @@ async function handleAdminSubmit(event) {
         });
       }
 
+
+      if (type === "plano-items-bulk-import") {
+        const planId = formData.get("plano_id");
+        const plan = data.monthlyPlans.find((item) => item.id === planId);
+        if (!plan) throw new Error("Selecione um plano válido.");
+        const importedItems = parsePlanItemsImport(formData.get("import_text"));
+        if (!importedItems.length) throw new Error("Nenhuma meta válida para importar.");
+        const currentMaxOrder = Math.max(0, ...data.monthlyItems.filter((item) => item.plano_id === planId).map((item) => Number(item.ordem || 0)));
+        importedItems.forEach((item, index) => {
+          data.monthlyItems.push({
+            id: `demo-item-${Date.now()}-${index}`,
+            plano_id: planId,
+            mentorado_id: plan.mentorado_id,
+            ...item,
+            ordem: item.ordem || currentMaxOrder + index + 1,
+            concluida: false,
+            concluida_em: null
+          });
+        });
+      }
+
       if (type === "simulado-create") {
         data.simulados.unshift({
           id: `demo-simulado-${Date.now()}`,
@@ -2435,6 +2658,15 @@ async function handleAdminSubmit(event) {
       if (error) throw error;
     }
 
+    if (type === "plano-items-bulk-import") {
+      const importedItems = parsePlanItemsImport(formData.get("import_text"));
+      if (!importedItems.length) throw new Error("Nenhuma meta válida para importar.");
+      const planId = formData.get("plano_id");
+      const payload = importedItems.map((item) => ({ plano_id: planId, ...item }));
+      const { error } = await client.from("plano_itens").insert(payload);
+      if (error) throw error;
+    }
+
     if (type === "simulado-create") {
       const { error } = await client.from("simulados").insert({
         mentorado_id: formData.get("mentorado_id"),
@@ -2468,6 +2700,7 @@ async function renderAdminPage() {
   const mentorSnapshot = buildMentorDashboardSnapshot(data, mentorKpis);
   const observationRows    = buildObservationRows(data.dailyCheckins, data.mentorados, concursosMap);
   const latestObservations = buildLatestObservationByMentorado(observationRows);
+  const adminPlanMonitorHtml = renderAdminPlanMonitor(plans, mentoradosMap);
 
   // ── Today's check-ins per student ─────────────────────────────
   const todayIso        = isoToday();
@@ -2871,24 +3104,25 @@ async function renderAdminPage() {
             </form>
           </article>
           <article class="card">
-            <div class="card-head">
-              <h2 class="card-title">Metas recentes</h2>
-              <span class="badge gold">${esc(String(data.monthlyItems.length))}</span>
-            </div>
-            <div class="list">
-              ${data.monthlyItems.slice(0, 15).map((item) => `
-                <div class="list-item">
-                  <strong>${esc(item.titulo)}</strong>
-                  <span>${esc(item.tipo || "—")}</span>
-                  <div class="badge-row" style="margin-top:.4rem;">
-                    <span class="badge ${item.concluido ? "green" : "blue"}">${esc(item.concluido ? "Concluída" : "Pendente")}</span>
-                    ${item.data_prevista ? `<span class="badge gold">${esc(fmtDate(item.data_prevista))}</span>` : ""}
-                  </div>
-                </div>
-              `).join("") || `<div class="empty-state">Nenhuma meta ainda.</div>`}
-            </div>
+            <div class="card-head"><h2 class="card-title">Importar metas em lote</h2></div>
+            <form class="form-grid" data-form="plano-items-bulk-import">
+              <label>
+                <span class="field-label">Plano de destino</span>
+                <select class="select" name="plano_id" required>
+                  <option value="">— Selecione o plano —</option>
+                  ${data.monthlyPlans.map((item) => `<option value="${esc(item.id)}">${esc(optionLabel(item, mentoradosMap))}</option>`).join("")}
+                </select>
+              </label>
+              <label>
+                <span class="field-label">Metas</span>
+                <textarea class="textarea" name="import_text" rows="12" placeholder="2026-03-30;1;diagnostico;B1 - Diagnóstico TR;20q TEC — Espécies de tributo"></textarea>
+              </label>
+              <button class="button button-primary" type="submit">Importar lote</button>
+              <div class="message" data-form-message></div>
+            </form>
           </article>
         </section>
+        ${adminPlanMonitorHtml}
       </div>
 
       <\!-- Simulados -->
@@ -3055,6 +3289,7 @@ async function renderAdminPage() {
     form.addEventListener("submit", handleAdminSubmit);
   });
   wireAdminMentoradoForm(data.mentorados);
+  wireAdminPlanDetailSelect();
 }
 
 function wireAdminMentoradoForm(mentorados) {

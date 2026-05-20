@@ -138,3 +138,7 @@ O painel admin atual ainda nao permite:
 - criar usuario no Auth
 - enviar convite
 - fazer upload de arquivo direto pela interface
+
+## Plano interativo
+
+A área do aluno usa `planos_mensais` e `plano_itens` para exibir o plano de estudos como checklist. O aluno marca as metas em `plano.html`; o mentor acompanha progresso, atrasos, metas do dia e evolução por tipo no painel administrativo. Para planos longos, use a importação em lote no formato `data;ordem;tipo;titulo;descricao`.
