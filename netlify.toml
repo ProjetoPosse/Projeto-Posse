@@ -44,6 +44,11 @@
   to = "/pos-edital-pc-pr.html"
   status = 200
 
+[[redirects]]
+  from = "/planos/trf-3-analista-judiciaria"
+  to = "/planos/trf-3-analista-judiciaria.html"
+  status = 200
+
 
 [[redirects]]
   from = "/app/metodos-de-estudo"
