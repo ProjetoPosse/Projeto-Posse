@@ -109,6 +109,15 @@ section{padding:6rem 2rem}
   .pc-btn-gold:hover{background:var(--gold-l);box-shadow:0 8px 30px rgba(201,168,76,.25)}
   .pc-btn-outline{border:1px solid var(--border2);color:var(--gold)}
   .pc-btn-outline:hover{background:var(--gold-g)}
+  .pcpr-launch{margin-top:3rem;background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(22,22,34,.96));border:1px solid rgba(201,168,76,.32);border-radius:24px;padding:2rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.42fr);gap:2rem;align-items:center;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+  .pcpr-launch h3{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3vw,2.6rem);line-height:1.05;margin:.6rem 0 .8rem}
+  .pcpr-launch p{color:var(--txt2);font-size:.96rem;line-height:1.75;max-width:760px}
+  .pcpr-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  .pcpr-tags span{display:inline-flex;padding:.4rem .75rem;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.18);color:var(--txt2);font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .pcpr-price{background:rgba(7,7,11,.38);border:1px solid rgba(201,168,76,.22);border-radius:18px;padding:1.4rem}
+  .pcpr-price strong{display:block;color:var(--gold);font-family:'Playfair Display',serif;font-size:2.5rem;line-height:1}
+  .pcpr-price span{display:block;color:var(--txt2);font-size:.82rem;margin:.45rem 0 1rem}
+  .pcpr-actions{display:grid;gap:.75rem}
   .deliveries-stack{display:grid;gap:1.8rem;margin-top:3rem}
   .delivery-group{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid var(--border);border-radius:24px;padding:2.2rem}
   .delivery-kicker{display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .72rem;border-radius:999px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
@@ -216,6 +225,7 @@ footer a{color:var(--gold);text-decoration:none}
 /* RESPONSIVE */
   @media(max-width:900px){
     .pricing-grid,.method-grid{grid-template-columns:1fr}
+    .pcpr-launch{grid-template-columns:1fr}
     .delivery-grid{grid-template-columns:repeat(2,1fr)}
     .about-grid{grid-template-columns:1fr}
     .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
@@ -467,6 +477,28 @@ body.checkout-open {
       <p class="ssub">Você escolhe o nível de profundidade. Nós entregamos clareza, método e correção de rota para o seu momento atual.</p>
     </div>
 
+    <div class="pcpr-launch fade">
+      <div>
+        <div class="pc-kicker">Novo pós-edital</div>
+        <h3>PC-PR: Agente de Polícia Judiciária e Papiloscopista Policial</h3>
+        <p>Direcionamento estratégico pós-edital com foco nos tópicos mais quentes, leitura prática de prova, combo de 4 simulados e acesso à plataforma do aluno. Não é mentoria individual: é uma preparação coletiva, objetiva e direcionada para a reta de edital aberto.</p>
+        <div class="pcpr-tags">
+          <span>Direcionamento estratégico</span>
+          <span>4 simulados</span>
+          <span>Plataforma inclusa</span>
+          <span>Experiência PC-PR</span>
+        </div>
+      </div>
+      <div class="pcpr-price">
+        <strong>R$ 249,90</strong>
+        <span>acesso ao pacote pós-edital PC-PR</span>
+        <div class="pcpr-actions">
+          <a href="pos-edital-pc-pr.html" class="pc-btn pc-btn-gold">Ver detalhes do pós-edital</a>
+          <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('pos_edital_pcpr', this)">Comprar agora</a>
+        </div>
+      </div>
+    </div>
+
     <div class="pricing-grid">
 
       <!-- SIMULADOS -->
@@ -636,11 +668,11 @@ body.checkout-open {
       </div>
       <div>
         <label for="checkoutTarget">Concurso-alvo</label>
-        <input type="text" id="checkoutTarget" maxlength="160" placeholder="Ex.: TJ-MS Analista, TRF-3, MPU...">
+        <input type="text" id="checkoutTarget" maxlength="160" placeholder="Ex.: PC-PR, TJ-MS Analista, TRF-3, MPU...">
       </div>
       <div class="checkout-error" id="checkoutError"></div>
       <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
-      <p class="checkout-note">Voce sera redirecionado para concluir o pagamento com Pix, cartao ou boleto. O Combo de Simulados continua sob consulta personalizada.</p>
+      <p class="checkout-note">Voce sera redirecionado para concluir o pagamento com Pix, cartao ou boleto. O Pos-edital PC-PR e a Preparacao com Metas seguem pelo checkout seguro.</p>
     </form>
   </div>
 </div>
@@ -896,6 +928,7 @@ body.checkout-open {
             <option value="" style="background:var(--bg)">Selecione...</option>
             <option value="Mentoria Individual (R$ 749,00)" style="background:var(--bg)">Mentoria Individual (R$ 749,00)</option>
             <option value="Preparação com Metas (R$ 249,00)" style="background:var(--bg)">Preparação com Metas (R$ 249,00)</option>
+            <option value="Pós-edital PC-PR (R$ 249,90)" style="background:var(--bg)">Pós-edital PC-PR (R$ 249,90)</option>
             <option value="Combo Simulados" style="background:var(--bg)">Combo Simulados (quando houver edital)</option>
             <option value="Quero conhecer todos os serviços" style="background:var(--bg)">Quero conhecer todos os serviços</option>
           </select>
@@ -988,6 +1021,11 @@ const CHECKOUT_PLANS = {
     title: 'Preparacao com Metas',
     price: 'R$ 249,00',
     description: 'Raio-X inicial + plano com metas + suporte via WhatsApp'
+  },
+  pos_edital_pcpr: {
+    title: 'Pos-edital PC-PR',
+    price: 'R$ 249,90',
+    description: 'Direcionamento estrategico + 4 simulados + plataforma do aluno'
   },
   mentoria_individual: {
     title: 'Mentoria Individual',

@@ -7,6 +7,12 @@ const PLAN_CATALOG = {
     description: "Encontro inicial e direcionamento de estudos",
     amount: 249.0,
   },
+  pos_edital_pcpr: {
+    code: "pos_edital_pcpr",
+    title: "Pos-edital PC-PR",
+    description: "Direcionamento estrategico, 4 simulados e acesso a plataforma",
+    amount: 249.9,
+  },
   mentoria_individual: {
     code: "mentoria_individual",
     title: "Mentoria Individual",

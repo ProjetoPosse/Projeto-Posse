@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pós-edital PC-PR | Projeto Posse</title>
+<meta name="description" content="Direcionamento pós-edital PC-PR para Agente de Polícia Judiciária e Papiloscopista Policial, com estratégia, 4 simulados e acesso à plataforma do aluno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070b;
+  --bg2:#0c0d13;
+  --card:#12141e;
+  --card2:#171a25;
+  --gold:#c9a84c;
+  --gold2:#e4c76b;
+  --txt:#f3efe6;
+  --txt2:#b6ad9e;
+  --muted:#7f7a70;
+  --line:rgba(201,168,76,.18);
+  --line2:rgba(255,255,255,.08);
+  --green:#36d27f;
+  --red:#ff6b73;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt);line-height:1.55;-webkit-font-smoothing:antialiased}
+body.checkout-open{overflow:hidden}
+::selection{background:var(--gold);color:var(--bg)}
+a{color:inherit}
+.container{width:min(1160px,calc(100% - 32px));margin:0 auto}
+.nav{position:sticky;top:0;z-index:30;background:rgba(7,7,11,.84);backdrop-filter:blur(18px);border-bottom:1px solid var(--line2)}
+.nav-inner{height:74px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:800;text-decoration:none}
+.brand span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:1.2rem;font-size:.9rem;color:var(--txt2)}
+.nav-links a{text-decoration:none;transition:.2s;color:var(--txt2)}
+.nav-links a:hover{color:var(--gold2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:999px;border:1px solid var(--line);padding:.86rem 1.15rem;text-decoration:none;font-weight:800;cursor:pointer;transition:.22s;font-family:inherit}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#08080b;border-color:transparent;box-shadow:0 18px 50px rgba(201,168,76,.18)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 24px 60px rgba(201,168,76,.26)}
+.btn-outline{background:rgba(255,255,255,.03);color:var(--txt);border-color:var(--line)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold2);transform:translateY(-2px)}
+.hero{position:relative;overflow:hidden;padding:5.4rem 0 4.4rem;background:radial-gradient(circle at 80% 10%,rgba(201,168,76,.18),transparent 34%),linear-gradient(145deg,#09090d 0%,#11131c 55%,#07070b 100%)}
+.hero::after{content:'';position:absolute;inset:auto -10% -46% -10%;height:360px;background:radial-gradient(circle,rgba(201,168,76,.14),transparent 68%);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.72fr);gap:2rem;align-items:center}
+.kicker{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem .75rem;border:1px solid var(--line);border-radius:999px;background:rgba(201,168,76,.08);color:var(--gold2);font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.7rem);line-height:.92;letter-spacing:0;margin-bottom:1.15rem}
+.hero p{font-size:1.12rem;color:var(--txt2);max-width:690px}
+.hero strong{color:var(--txt);font-weight:800}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.7rem}
+.hero-trust{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.4rem;color:var(--txt2);font-size:.82rem}
+.hero-trust span{border:1px solid var(--line2);border-radius:999px;padding:.42rem .68rem;background:rgba(255,255,255,.035)}
+.offer-card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(23,26,37,.94),rgba(13,14,21,.94));box-shadow:0 28px 80px rgba(0,0,0,.36);padding:1.5rem}
+.offer-card h2{font-size:1.1rem;margin-bottom:.8rem}
+.price{display:flex;align-items:flex-end;gap:.35rem;margin:.6rem 0 1rem}
+.price strong{font-size:2.7rem;line-height:1;color:var(--gold2)}
+.price span{color:var(--txt2);font-size:.86rem;margin-bottom:.28rem}
+.offer-list{display:grid;gap:.7rem;margin:1.05rem 0 1.3rem;list-style:none}
+.offer-list li{display:flex;gap:.6rem;color:var(--txt2)}
+.check{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(54,210,127,.13);color:var(--green);font-size:.82rem;flex:0 0 22px}
+.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-top:1rem}
+.proof-card{border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.85rem}
+.proof-card strong{display:block;color:var(--gold2);font-size:1.12rem}
+.proof-card span{font-size:.75rem;color:var(--txt2)}
+section{padding:4.7rem 0;border-top:1px solid var(--line2)}
+.section-head{max-width:780px;margin-bottom:1.8rem}
+.eyebrow{color:var(--gold2);font-size:.78rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;margin-bottom:.55rem}
+h2{font-size:clamp(1.85rem,4vw,3.2rem);line-height:1.02;letter-spacing:0;margin-bottom:.8rem}
+.section-head p{color:var(--txt2);font-size:1.05rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.card{border:1px solid var(--line2);border-radius:20px;background:linear-gradient(180deg,var(--card),rgba(18,20,30,.76));padding:1.35rem;min-height:100%}
+.card.featured{border-color:var(--line);background:linear-gradient(180deg,rgba(201,168,76,.1),rgba(18,20,30,.9))}
+.icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.1);color:var(--gold2);font-weight:900;margin-bottom:1rem}
+.card h3{font-size:1.05rem;margin-bottom:.45rem}
+.card p,.card li{color:var(--txt2)}
+.card ul{padding-left:1.1rem;display:grid;gap:.35rem}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.step{position:relative;border:1px solid var(--line2);border-radius:18px;background:var(--card);padding:1.1rem}
+.step::before{content:attr(data-step);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(201,168,76,.12);color:var(--gold2);font-weight:900;margin-bottom:.9rem}
+.step h3{font-size:1rem;margin-bottom:.35rem}
+.step p{color:var(--txt2);font-size:.93rem}
+.authority{display:grid;grid-template-columns:.8fr 1.2fr;gap:1rem;align-items:stretch}
+.quote{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(18,20,30,.92));padding:1.6rem}
+.quote p{font-size:1.12rem;color:var(--txt);font-weight:700}
+.quote span{display:block;color:var(--txt2);margin-top:.85rem}
+.hot-list{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+.hot-item{border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.9rem;color:var(--txt2)}
+.hot-item strong{display:block;color:var(--txt);margin-bottom:.2rem}
+.simulados{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center}
+.simulados-flow{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:1.2rem}
+.flow-row{display:flex;align-items:center;gap:.7rem;padding:.85rem;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line2);margin-bottom:.65rem}
+.flow-row:last-child{margin-bottom:0}
+.flow-n{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(201,168,76,.14);color:var(--gold2);font-weight:900;flex:0 0 30px}
+.flow-row span{color:var(--txt2)}
+.comparison{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.comparison .card:first-child{border-color:rgba(255,107,115,.25)}
+.comparison .card:last-child{border-color:rgba(54,210,127,.25)}
+.cta{background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(10,10,15,1));text-align:center}
+.cta .container{max-width:850px}
+.cta p{color:var(--txt2);font-size:1.05rem;margin-bottom:1.4rem}
+.checkout-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);z-index:80;display:none;align-items:center;justify-content:center;padding:1rem}
+.checkout-modal.active{display:flex}
+.checkout-dialog{width:min(560px,100%);border:1px solid var(--line);border-radius:24px;background:#10121b;padding:1.35rem;box-shadow:0 35px 90px rgba(0,0,0,.55);position:relative}
+.checkout-close{position:absolute;right:1rem;top:1rem;width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--txt);cursor:pointer;font-size:1rem}
+.checkout-dialog h3{font-size:1.45rem;margin:.25rem 2rem .3rem 0}
+.checkout-dialog p{color:var(--txt2);margin-bottom:1rem}
+.checkout-plan{border:1px solid var(--line);border-radius:16px;background:rgba(201,168,76,.08);padding:.9rem;margin-bottom:1rem}
+.checkout-plan strong{display:block;color:var(--gold2)}
+.checkout-plan span{color:var(--txt2);font-size:.9rem}
+.checkout-form{display:grid;gap:.85rem}
+.checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+label{display:block;color:var(--gold2);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
+input{width:100%;border:1px solid var(--line2);background:#1a1d2a;color:var(--txt);border-radius:13px;padding:.85rem .95rem;font:inherit;outline:none}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+.checkout-error{display:none;border:1px solid rgba(255,107,115,.28);background:rgba(255,107,115,.1);color:#ffb4b8;border-radius:14px;padding:.8rem}
+.checkout-submit{border:0;border-radius:999px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#07070b;font-weight:900;padding:1rem;cursor:pointer;font:inherit}
+.checkout-submit:disabled{opacity:.65;cursor:not-allowed}
+.fineprint{color:var(--muted);font-size:.8rem;margin-top:.8rem}
+@media(max-width:900px){
+  .nav-links{display:none}
+  .hero{padding:3.6rem 0 3.4rem}
+  .hero-grid,.authority,.simulados,.grid-3,.grid-2,.timeline,.comparison,.hot-list{grid-template-columns:1fr}
+  .proof{grid-template-columns:1fr}
+  .offer-card{padding:1.15rem}
+}
+@media(max-width:560px){
+  .container{width:min(100% - 24px,1160px)}
+  .nav-inner{height:64px}
+  .btn{width:100%;padding:.9rem 1rem}
+  .hero-actions{width:100%}
+  .checkout-grid{grid-template-columns:1fr}
+  .price strong{font-size:2.25rem}
+}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Navegação principal">
+  <div class="container nav-inner">
+    <a class="brand" href="/">Projeto <span>Posse</span></a>
+    <div class="nav-links">
+      <a href="#entrega">O que inclui</a>
+      <a href="#estrategia">Estratégia</a>
+      <a href="#simulados">Simulados</a>
+      <a href="#comprar">Comprar</a>
+    </div>
+    <a class="btn btn-outline" href="/">Voltar ao site</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="kicker">Novo pós-edital PC-PR</div>
+        <h1>Agente e Papiloscopista com direção de reta final</h1>
+        <p>Uma preparação coletiva, objetiva e estratégica para o pós-edital da PC-PR, com foco em <strong>Agente de Polícia Judiciária</strong> e <strong>Papiloscopista Policial</strong>. Você recebe direcionamento dos temas mais relevantes, combo de 4 simulados e acesso à plataforma do aluno.</p>
+        <div class="hero-actions">
+          <a href="#comprar" class="btn btn-gold">Quero entrar no pós-edital</a>
+          <a href="#entrega" class="btn btn-outline">Ver o que está incluso</a>
+        </div>
+        <div class="hero-trust">
+          <span>Com leitura estratégica de edital</span>
+          <span>4 simulados no pacote</span>
+          <span>Plataforma inclusa</span>
+        </div>
+      </div>
+
+      <aside class="offer-card" aria-label="Resumo da oferta">
+        <div class="kicker">Oferta de lançamento</div>
+        <h2>Pós-edital PC-PR</h2>
+        <div class="price"><strong>R$ 249,90</strong><span>pagamento único</span></div>
+        <ul class="offer-list">
+          <li><span class="check">✓</span><span>Direcionamento estratégico para o edital aberto.</span></li>
+          <li><span class="check">✓</span><span>Combo de 4 simulados para testar desempenho.</span></li>
+          <li><span class="check">✓</span><span>Acesso à plataforma do aluno para acompanhar os conteúdos.</span></li>
+          <li><span class="check">✓</span><span>Abordagem coletiva, sem mentoria individual.</span></li>
+        </ul>
+        <a href="#checkout" class="btn btn-gold" onclick="return openCheckoutModal('pos_edital_pcpr', this)">Comprar com Mercado Pago</a>
+        <p class="fineprint">Pix, cartão ou boleto no ambiente seguro do Mercado Pago.</p>
+        <div class="proof">
+          <div class="proof-card"><strong>PC-PR</strong><span>experiência real</span></div>
+          <div class="proof-card"><strong>4</strong><span>simulados</span></div>
+          <div class="proof-card"><strong>249,90</strong><span>pacote único</span></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="entrega">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">O que inclui</div>
+        <h2>Um pacote direto para estudar o que pesa mais.</h2>
+        <p>Não é uma mentoria individual. É um direcionamento pós-edital pensado para dar clareza, ritmo e critérios de prioridade para quem precisa avançar com pouco tempo sobrando.</p>
+      </div>
+      <div class="grid-3">
+        <article class="card featured">
+          <div class="icon">01</div>
+          <h3>Direcionamento estratégico</h3>
+          <p>Leitura prática do edital, seleção de frentes prioritárias e orientação sobre como organizar a reta de estudos.</p>
+        </article>
+        <article class="card">
+          <div class="icon">02</div>
+          <h3>Tópicos mais quentes</h3>
+          <p>Foco nos assuntos com maior chance de cobrança, maior impacto no desempenho e maior custo de erro.</p>
+        </article>
+        <article class="card">
+          <div class="icon">03</div>
+          <h3>Plataforma do aluno</h3>
+          <p>Área para acessar materiais, orientações e acompanhar a evolução do pacote dentro do ambiente do Projeto Posse.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="estrategia">
+    <div class="container authority">
+      <div class="quote">
+        <div class="eyebrow">Por que tem peso</div>
+        <p>Lucas Duarte foi aprovado e nomeado na PC-PR para Agente de Polícia Judiciária. A preparação nasce de quem conhece a prova por dentro da trajetória de aprovação.</p>
+        <span>Ele não assumiu o cargo, mas a aprovação e nomeação dão repertório real para guiar a leitura estratégica do pós-edital.</span>
+      </div>
+      <div>
+        <div class="section-head">
+          <div class="eyebrow">Como vamos direcionar</div>
+          <h2>Estratégia para Agente e Papiloscopista.</h2>
+          <p>O foco é ajudar o aluno a tomar boas decisões de estudo: o que priorizar, o que revisar, onde testar desempenho e como evitar dispersão.</p>
+        </div>
+        <div class="hot-list">
+          <div class="hot-item"><strong>Disciplinas centrais</strong>Prioridade para assuntos que mais estruturam a nota.</div>
+          <div class="hot-item"><strong>Lei seca e detalhes</strong>Revisão orientada para pontos de alta cobrança.</div>
+          <div class="hot-item"><strong>Questões e simulados</strong>Treino para transformar leitura em desempenho.</div>
+          <div class="hot-item"><strong>Correção de rota</strong>Critérios para ajustar o estudo conforme acertos e erros.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="simulados">
+    <div class="container simulados">
+      <div class="section-head">
+        <div class="eyebrow">Combo de simulados</div>
+        <h2>Quatro provas para medir, corrigir e evoluir.</h2>
+        <p>Os simulados entram como ferramenta de decisão. Eles mostram onde o aluno está forte, onde está perdendo ponto e quais revisões precisam entrar no radar da reta final.</p>
+      </div>
+      <div class="simulados-flow" aria-label="Fluxo do combo de simulados">
+        <div class="flow-row"><span class="flow-n">1</span><span>Simulado diagnóstico para mapear o ponto de partida.</span></div>
+        <div class="flow-row"><span class="flow-n">2</span><span>Simulado de consolidação para testar os blocos priorizados.</span></div>
+        <div class="flow-row"><span class="flow-n">3</span><span>Simulado de pressão para calibrar tempo, atenção e resistência.</span></div>
+        <div class="flow-row"><span class="flow-n">4</span><span>Simulado final para revisar estratégia antes da prova.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Experiência do aluno</div>
+        <h2>O caminho dentro do pacote.</h2>
+        <p>A jornada foi pensada para ser simples: entender a direção, executar com foco, testar desempenho e ajustar a rota.</p>
+      </div>
+      <div class="timeline">
+        <div class="step" data-step="1">
+          <h3>Entrar na plataforma</h3>
+          <p>O aluno acessa o ambiente do Projeto Posse e encontra o direcionamento do pós-edital.</p>
+        </div>
+        <div class="step" data-step="2">
+          <h3>Seguir as prioridades</h3>
+          <p>Estuda com base nos tópicos mais relevantes e evita tentar abraçar o edital inteiro sem critério.</p>
+        </div>
+        <div class="step" data-step="3">
+          <h3>Fazer simulados</h3>
+          <p>Usa os quatro simulados para medir evolução, lacunas e resistência de prova.</p>
+        </div>
+        <div class="step" data-step="4">
+          <h3>Ajustar a reta final</h3>
+          <p>Reforça os pontos críticos e chega com mais clareza na semana decisiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Transparência</div>
+        <h2>Para quem é e para quem não é.</h2>
+      </div>
+      <div class="comparison">
+        <article class="card">
+          <div class="icon">!</div>
+          <h3>Não é mentoria individual</h3>
+          <ul>
+            <li>Não inclui sessões individuais recorrentes.</li>
+            <li>Não inclui plano exclusivo para cada aluno.</li>
+            <li>Não substitui acompanhamento personalizado.</li>
+          </ul>
+        </article>
+        <article class="card featured">
+          <div class="icon">✓</div>
+          <h3>É uma preparação coletiva direcionada</h3>
+          <ul>
+            <li>Direção estratégica para o edital aberto da PC-PR.</li>
+            <li>Foco em Agente e Papiloscopista.</li>
+            <li>Plataforma, orientação e 4 simulados em um pacote único.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="comprar" class="cta">
+    <div class="container">
+      <div class="eyebrow">Inscrição</div>
+      <h2>Entre no pós-edital PC-PR por R$ 249,90.</h2>
+      <p>Direcionamento estratégico, temas quentes do edital, combo de 4 simulados e acesso à plataforma do aluno em uma preparação coletiva para a reta de prova.</p>
+      <a href="#checkout" class="btn btn-gold" onclick="return openCheckoutModal('pos_edital_pcpr', this)">Comprar agora</a>
+    </div>
+  </section>
+</main>
+
+<div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+  <div class="checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button type="button" class="checkout-close" onclick="return closeCheckoutModal()" aria-label="Fechar">x</button>
+    <div class="eyebrow">Pagamento seguro</div>
+    <h3 id="checkoutTitle">Finalize seu acesso</h3>
+    <p>Preencha os dados abaixo para seguir para Pix, cartão ou boleto dentro do Mercado Pago.</p>
+
+    <div class="checkout-plan" id="checkoutPlanSummary">
+      <strong>Pós-edital PC-PR</strong>
+      <span>R$ 249,90 - direcionamento + 4 simulados + plataforma</span>
+    </div>
+
+    <form id="checkoutForm" class="checkout-form">
+      <input type="hidden" id="checkoutPlanCode" value="pos_edital_pcpr">
+      <div>
+        <label for="checkoutName">Nome completo *</label>
+        <input type="text" id="checkoutName" required maxlength="120" placeholder="Seu nome completo">
+      </div>
+      <div class="checkout-grid">
+        <div>
+          <label for="checkoutPhone">WhatsApp *</label>
+          <input type="tel" id="checkoutPhone" required maxlength="16" placeholder="(67) 99999-9999">
+        </div>
+        <div>
+          <label for="checkoutEmail">E-mail</label>
+          <input type="email" id="checkoutEmail" maxlength="160" placeholder="seu@email.com">
+        </div>
+      </div>
+      <div>
+        <label for="checkoutTarget">Concurso-alvo</label>
+        <input type="text" id="checkoutTarget" maxlength="160" value="PC-PR - Agente/Papiloscopista">
+      </div>
+      <div class="checkout-error" id="checkoutError"></div>
+      <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
+      <p class="fineprint">Você será redirecionado para concluir o pagamento no ambiente seguro do Mercado Pago.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+const CHECKOUT_PLANS = {
+  pos_edital_pcpr: {
+    title: 'Pós-edital PC-PR',
+    price: 'R$ 249,90',
+    description: 'Direcionamento estratégico + 4 simulados + plataforma do aluno'
+  }
+};
+
+const checkoutModal = document.getElementById('checkoutModal');
+const checkoutForm = document.getElementById('checkoutForm');
+const checkoutError = document.getElementById('checkoutError');
+const checkoutSubmit = document.getElementById('checkoutSubmit');
+const checkoutPlanInput = document.getElementById('checkoutPlanCode');
+const checkoutPlanSummary = document.getElementById('checkoutPlanSummary');
+const checkoutNameInput = document.getElementById('checkoutName');
+const checkoutPhoneInput = document.getElementById('checkoutPhone');
+let checkoutTrigger = null;
+
+function renderCheckoutSummary(plan) {
+  checkoutPlanSummary.innerHTML = '<strong>' + plan.title + '</strong><span>' + plan.price + ' - ' + plan.description + '</span>';
+}
+
+function showCheckoutError(message) {
+  checkoutError.textContent = message;
+  checkoutError.style.display = 'block';
+}
+
+function hideCheckoutError() {
+  checkoutError.textContent = '';
+  checkoutError.style.display = 'none';
+}
+
+function openCheckoutModal(planCode, trigger) {
+  const plan = CHECKOUT_PLANS[planCode];
+  if (!plan || !checkoutModal) return false;
+  checkoutTrigger = trigger || null;
+  checkoutPlanInput.value = planCode;
+  renderCheckoutSummary(plan);
+  hideCheckoutError();
+  checkoutModal.classList.add('active');
+  checkoutModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('checkout-open');
+  setTimeout(function () { checkoutNameInput.focus(); }, 60);
+  return false;
+}
+
+function closeCheckoutModal() {
+  if (!checkoutModal) return false;
+  checkoutModal.classList.remove('active');
+  checkoutModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('checkout-open');
+  hideCheckoutError();
+  if (checkoutTrigger && typeof checkoutTrigger.focus === 'function') {
+    checkoutTrigger.focus();
+  }
+  return false;
+}
+
+function maskPhone(value) {
+  const digits = value.replace(/\D+/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
+  if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
+  return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+if (checkoutPhoneInput) {
+  checkoutPhoneInput.addEventListener('input', function () {
+    checkoutPhoneInput.value = maskPhone(checkoutPhoneInput.value);
+  });
+}
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' && checkoutModal && checkoutModal.classList.contains('active')) {
+    closeCheckoutModal();
+  }
+});
+
+if (checkoutModal) {
+  checkoutModal.addEventListener('click', function (event) {
+    if (event.target === checkoutModal) {
+      closeCheckoutModal();
+    }
+  });
+}
+
+async function handleCheckoutSubmit(event) {
+  event.preventDefault();
+  hideCheckoutError();
+
+  const planCode = checkoutPlanInput.value;
+  const customerName = checkoutNameInput.value.trim();
+  const customerPhone = checkoutPhoneInput.value.replace(/\D+/g, '');
+  const customerEmail = document.getElementById('checkoutEmail').value.trim();
+  const concursoTarget = document.getElementById('checkoutTarget').value.trim();
+
+  if (!CHECKOUT_PLANS[planCode]) {
+    showCheckoutError('Selecione um plano válido para continuar.');
+    return;
+  }
+  if (customerName.length < 3) {
+    showCheckoutError('Informe seu nome completo.');
+    checkoutNameInput.focus();
+    return;
+  }
+  if (customerPhone.length < 10) {
+    showCheckoutError('Informe um WhatsApp válido com DDD.');
+    checkoutPhoneInput.focus();
+    return;
+  }
+  if (customerEmail && !isValidEmail(customerEmail)) {
+    showCheckoutError('Informe um e-mail válido ou deixe o campo em branco.');
+    document.getElementById('checkoutEmail').focus();
+    return;
+  }
+
+  checkoutSubmit.disabled = true;
+  checkoutSubmit.textContent = 'Abrindo checkout...';
+
+  try {
+    const response = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        planCode,
+        customerName,
+        customerPhone,
+        customerEmail,
+        concursoTarget
+      })
+    });
+
+    const data = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      throw new Error(data.error || 'Não foi possível iniciar o pagamento agora.');
+    }
+    if (!data.initPoint) {
+      throw new Error('O Mercado Pago não retornou um link de checkout válido.');
+    }
+
+    window.location.href = data.initPoint;
+  } catch (error) {
+    showCheckoutError(error.message || 'Não foi possível iniciar o pagamento agora.');
+  } finally {
+    checkoutSubmit.disabled = false;
+    checkoutSubmit.textContent = 'Ir para o Mercado Pago';
+  }
+}
+
+if (checkoutForm) {
+  checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+}
+</script>
+</body>
+</html>

@@ -39,6 +39,11 @@
   to = "/app/evolucao.html"
   status = 200
 
+[[redirects]]
+  from = "/pos-edital-pc-pr"
+  to = "/pos-edital-pc-pr.html"
+  status = 200
+
 
 [[redirects]]
   from = "/app/metodos-de-estudo"
