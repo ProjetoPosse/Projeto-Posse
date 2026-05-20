@@ -78,6 +78,7 @@ const esc = (v) => String(v ?? "")
 
 const fmtDate = (v) => (!v ? "--" : new Date(`${v}T00:00:00`).toLocaleDateString("pt-BR"));
 const fmtMonth = (v) => (!v ? "Mes nao informado" : monthFmt.format(new Date(`${v}T00:00:00`)));
+const fmtPlanReference = (v) => (!v ? "Data de inicio nao informada" : `Início ${fmtDate(v)}`);
 const fmtPct = (a, b) => (!b ? "0%" : `${Math.round((Number(a || 0) / Number(b || 0)) * 100)}%`);
 const fmtHours = (v) => `${Number(v || 0).toFixed(1)}h`;
 const badgeClass = (status) => {
@@ -144,7 +145,7 @@ function mentorRhythm(item) {
 }
 
 function describePlanProgress(plan) {
-  if (!plan) return "Nenhum plano mensal cadastrado ainda.";
+  if (!plan) return "Nenhum plano de estudos cadastrado ainda.";
   if (!plan.items.length) return `${plan.titulo} sem metas cadastradas.`;
   return `${plan.titulo}: ${plan.completed}/${plan.items.length} metas concluidas (${plan.progress}%).`;
 }
@@ -1504,7 +1505,7 @@ function renderPlanFocusQueue(plan) {
 
 function renderPlanTaskCard(item) {
   const status = planItemStatus(item);
-  return `<article class="plan-task ${item.concluida ? "done" : ""}"><div class="plan-item"><input class="checkbox" type="checkbox" data-plan-item-toggle="${esc(item.id)}" aria-label="Marcar meta ${esc(item.titulo)} como concluída" ${item.concluida ? "checked" : ""}><div class="plan-task-main"><div class="badge-row"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge ${status.tone}">${esc(status.label)}</span>${item.data_prevista ? `<span class="badge blue">${esc(shortDateLabel(item.data_prevista))}</span>` : ""}</div><strong class="plan-item-title" style="margin-top:.7rem;">${esc(item.titulo)}</strong><p class="plan-item-copy">${esc(item.descricao || "Sem descricao adicional.")}</p><div class="inline-actions">${item.tec_url ? `<a class="button button-secondary" href="${esc(item.tec_url)}" target="_blank" rel="noopener noreferrer">Abrir TEC</a>` : ""}${item.resolved_material_url ? `<a class="button button-secondary" href="${esc(item.resolved_material_url)}" target="_blank" rel="noopener noreferrer">${item.tipo === "meta_mensal" ? "Abrir meta mensal" : "Material complementar"}</a>` : item.material_url ? `<span class="message error">Material privado nao resolvido.</span>` : ""}</div></div></div></article>`;
+  return `<article class="plan-task ${item.concluida ? "done" : ""}"><div class="plan-item"><input class="checkbox" type="checkbox" data-plan-item-toggle="${esc(item.id)}" aria-label="Marcar meta ${esc(item.titulo)} como concluída" ${item.concluida ? "checked" : ""}><div class="plan-task-main"><div class="badge-row"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge ${status.tone}">${esc(status.label)}</span>${item.data_prevista ? `<span class="badge blue">${esc(shortDateLabel(item.data_prevista))}</span>` : ""}</div><strong class="plan-item-title" style="margin-top:.7rem;">${esc(item.titulo)}</strong><p class="plan-item-copy">${esc(item.descricao || "Sem descricao adicional.")}</p><div class="inline-actions">${item.tec_url ? `<a class="button button-secondary" href="${esc(item.tec_url)}" target="_blank" rel="noopener noreferrer">Abrir TEC</a>` : ""}${item.resolved_material_url ? `<a class="button button-secondary" href="${esc(item.resolved_material_url)}" target="_blank" rel="noopener noreferrer">${item.tipo === "meta_plano" ? "Abrir meta do plano" : "Material complementar"}</a>` : item.material_url ? `<span class="message error">Material privado nao resolvido.</span>` : ""}</div></div></div></article>`;
 }
 
 function renderAdminPlanMonitor(plans, mentoradosMap) {
@@ -1520,7 +1521,7 @@ function renderAdminPlanDetailPanel(plan, mentoradosMap, isActive) {
     return `<tr><td>${esc(item.data_prevista ? fmtDate(item.data_prevista) : "--")}</td><td><strong>${esc(item.titulo)}</strong><span class="table-subcopy">${esc(item.descricao || "")}</span></td><td>${esc(item.tipo || "meta")}</td><td><span class="badge ${status.tone}">${esc(status.label)}</span></td><td>${esc(item.concluida_em ? fmtDateTime(item.concluida_em) : "--")}</td></tr>`;
   }).join("") || `<tr><td colspan="5" class="empty-state">Nenhuma meta cadastrada neste plano.</td></tr>`;
 
-  return `<div class="plan-detail-panel ${isActive ? "is-active" : ""}" data-plan-detail-panel="${esc(plan.id)}"><div class="plan-detail-head"><div><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} · ${fmtMonth(plan.mes_referencia)}`)}</span></div><div class="plan-progress-row"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="table-wrap plan-detail-table"><table class="table"><thead><tr><th>Data</th><th>Meta</th><th>Tipo</th><th>Status</th><th>Concluída em</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  return `<div class="plan-detail-panel ${isActive ? "is-active" : ""}" data-plan-detail-panel="${esc(plan.id)}"><div class="plan-detail-head"><div><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} · ${fmtPlanReference(plan.mes_referencia)}`)}</span></div><div class="plan-progress-row"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="table-wrap plan-detail-table"><table class="table"><thead><tr><th>Data</th><th>Meta</th><th>Tipo</th><th>Status</th><th>Concluída em</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 
 function wireAdminPlanDetailSelect() {
@@ -2249,7 +2250,7 @@ function renderMentoradoDashboard(profile, data) {
 
   const planHtml = currentPlan
     ? `<strong>${esc(currentPlan.titulo)}</strong>
-       <p class="page-copy">${esc(fmtMonth(currentPlan.mes_referencia))}</p>
+       <p class="page-copy">${esc(fmtPlanReference(currentPlan.mes_referencia))}</p>
        <div class="plan-progress-row" style="margin-top:1rem;">
          <div class="metric-bar"><span style="width:${esc(String(currentPlan.progress))}%"></span></div>
          <span class="plan-progress-pct">${esc(String(currentPlan.progress))}%</span>
@@ -2262,7 +2263,7 @@ function renderMentoradoDashboard(profile, data) {
          <a class="button button-secondary" href="./plano.html">Ver plano completo</a>
          ${currentPlan.resolved_pdf_url ? `<a class="button button-secondary" href="${esc(currentPlan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">PDF</a>` : ""}
        </div>`
-    : `<div class="empty-state">Nenhum plano mensal ativo ainda.</div>`;
+    : `<div class="empty-state">Nenhum plano de estudos ativo ainda.</div>`;
 
   appContent.innerHTML = `
     <section class="grid-4">
@@ -2313,7 +2314,7 @@ function renderMentoradoDashboard(profile, data) {
     <section class="grid-2" style="margin-top:1rem;">
       <article class="card">
         <div class="card-head">
-          <h2 class="card-title">Plano mensal</h2>
+          <h2 class="card-title">Plano de estudos</h2>
         </div>
         ${planHtml}
       </article>
@@ -2370,14 +2371,14 @@ function renderPlanPage(data) {
       ? Array.from(groups.entries()).map(([label, rows]) => `<div class="plan-group"><h3 class="day-title">${esc(label)}</h3><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`).join("")
       : `<div class="empty-state">Ainda nao existem metas cadastradas para este plano.</div>`;
 
-    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtMonth(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="list" style="margin-top:1rem;">${groupHtml}</div></section>`;
+    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtPlanReference(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="list" style="margin-top:1rem;">${groupHtml}</div></section>`;
   }).join("");
 
   const legacyHtml = data.planosLegacy.length
     ? `<section class="card" style="margin-top:1rem;"><div class="card-head"><h2 class="card-title">Rotina semanal</h2><span class="badge gold">Apoio</span></div><div class="list">${data.planosLegacy.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || dayLabels[Number(item.dia_semana || 0)] || "Sem dia")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge ${badgeClass(item.status)}">${esc(item.status || "pendente")}</span></div></div>`).join("")}</div></section>`
     : "";
 
-  appContent.innerHTML = `${monthlyHtml || `<section class="card"><div class="empty-state">Nenhum plano mensal ativo ainda.</div></section>`}${legacyHtml}`;
+  appContent.innerHTML = `${monthlyHtml || `<section class="card"><div class="empty-state">Nenhum plano de estudos ativo ainda.</div></section>`}${legacyHtml}`;
   appContent.querySelectorAll("[data-plan-item-toggle]").forEach((checkbox) => {
     checkbox.addEventListener("change", handlePlanItemToggle);
   });
@@ -2404,7 +2405,7 @@ function renderEvolutionPage(data) {
     { label: "Erros", value: String(snapshot.totalErros), tone: "red" }
   ];
 
-  appContent.innerHTML = `<section class="card performance-overview"><div class="card-head"><div><h2 class="card-title">Desempenho Geral</h2><p class="page-copy">Painel consolidado para acompanhar volume, aproveitamento e constancia ao longo da preparacao.</p></div><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="performance-grid"><div class="performance-metrics">${performanceMetrics.map((item) => `<article class="performance-stat"><span class="performance-stat-label">${esc(item.label)}</span><strong class="performance-stat-value${item.tone ? ` is-${item.tone}` : ""}">${esc(item.value)}</strong></article>`).join("")}</div><article class="chart-panel"><div class="chart-panel-head"><strong>Aproveitamento geral</strong><span>${esc(`${snapshot.aproveitamento}%`)}</span></div><div class="chart-panel-body donut-panel">${renderAccuracyDonut(snapshot)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-green"></i>${esc(`${snapshot.totalAcertos} acertos`)}</span><span class="legend-item"><i class="legend-dot is-red"></i>${esc(`${snapshot.totalErros} erros`)}</span><span class="legend-item"><i class="legend-dot is-gold"></i>${esc(`${snapshot.diasAtivos} dias ativos`)}</span></div></article><article class="chart-panel chart-panel-wide"><div class="chart-panel-head"><strong>Evolucao recente</strong><span>ultimos 14 dias</span></div><div class="chart-panel-body">${renderRecentPerformanceChart(snapshot.recentSeries)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-gold"></i>Questoes feitas</span><span class="legend-item"><i class="legend-dot is-green"></i>Questoes certas</span><span class="legend-item">${esc(snapshot.bestDay ? `Melhor dia: ${snapshot.bestDay.questoes} questoes em ${shortDateLabel(snapshot.bestDay.referencia)}` : "Sem pico de questoes ainda")}</span><span class="legend-item">${esc(`${snapshot.totalPomodoros} pomodoros acumulados`)}</span></div></article></div></section><section class="grid-4" style="margin-top:1rem;"><article class="card stat-card"><div class="stat-value">${esc(String(sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Questoes 7 dias</div><div class="stat-help">Volume recente resolvido.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtPct(sumBy(last7, "questoes_certas"), sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Acerto 7 dias</div><div class="stat-help">Percentual de aproveitamento.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtHours(sumBy(last7, "horas_estudo")))}</div><div class="stat-label">Horas 7 dias</div><div class="stat-help">Horas declaradas pelo aluno.</div></article><article class="card stat-card"><div class="stat-value">${esc(String(metas7.length))}</div><div class="stat-label">Metas cumpridas</div><div class="stat-help">Ultimos 7 dias.</div></article></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Registro do Dia</h2><span class="badge gold">${esc(fmtDate(isoToday()))}</span></div><form class="form-grid" id="dailyCheckinForm"><label><span class="field-label">Data</span><input class="input" name="referencia" type="date" value="${esc(today?.referencia || isoToday())}" required></label><label><span class="field-label">Horas estudadas</span><input class="input" name="horas_estudo" type="number" step="0.5" min="0" value="${esc(String(today?.horas_estudo ?? today?.horas ?? 0))}"></label><label><span class="field-label">Questoes feitas</span><input class="input" name="questoes_feitas" type="number" min="0" value="${esc(String(today?.questoes_feitas ?? today?.questoes ?? 0))}"></label><label><span class="field-label">Questoes certas</span><input class="input" name="questoes_certas" type="number" min="0" value="${esc(String(today?.questoes_certas ?? today?.acertos ?? 0))}"></label><label><span class="field-label">Pomodoros</span><input class="input" name="pomodoros" type="number" min="0" value="${esc(String(today?.pomodoros ?? 0))}"></label><label><span class="field-label">Metas cumpridas</span><input class="input" name="metas_cumpridas" type="number" min="0" value="${esc(String(today?.metas_cumpridas ?? 0))}"></label><label><span class="field-label">Observacao do dia</span><textarea class="textarea" name="observacao" placeholder="Como foi o dia, onde travou, o que funcionou melhor.">${esc(today?.observacao || "")}</textarea></label><button class="button button-primary" type="submit">Salvar meu dia</button><div class="message" data-checkin-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Metas concluidas recentemente</h2></div><div class="list">${recentGoals.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || "Meta concluida no plano mensal.")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge green">${esc(fmtDateTime(item.concluida_em))}</span></div></div>`).join("") || `<div class="empty-state">Nenhuma meta concluida nos ultimos 7 dias.</div>`}</div></article></section><section class="card" style="margin-top:1rem;"><div class="card-head"><h2 class="card-title">Historico diario</h2><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Horas</th><th>Questoes</th><th>Acertos</th><th>%</th><th>Pomodoros</th><th>Metas</th></tr></thead><tbody>${checkins.map((item) => `<tr><td>${esc(fmtDate(item.referencia))}</td><td>${esc(fmtHours(item.horas_estudo ?? item.horas))}</td><td>${esc(String(item.questoes_feitas ?? item.questoes ?? 0))}</td><td>${esc(String(item.questoes_certas ?? item.acertos ?? 0))}</td><td>${esc(fmtPct(item.questoes_certas ?? item.acertos, item.questoes_feitas ?? item.questoes))}</td><td>${esc(String(item.pomodoros ?? 0))}</td><td>${esc(String(item.metas_cumpridas ?? 0))}</td></tr>`).join("") || `<tr><td colspan="7" class="empty-state">Nenhum registro diario encontrado.</td></tr>`}</tbody></table></div></section>`;
+  appContent.innerHTML = `<section class="card performance-overview"><div class="card-head"><div><h2 class="card-title">Desempenho Geral</h2><p class="page-copy">Painel consolidado para acompanhar volume, aproveitamento e constancia ao longo da preparacao.</p></div><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="performance-grid"><div class="performance-metrics">${performanceMetrics.map((item) => `<article class="performance-stat"><span class="performance-stat-label">${esc(item.label)}</span><strong class="performance-stat-value${item.tone ? ` is-${item.tone}` : ""}">${esc(item.value)}</strong></article>`).join("")}</div><article class="chart-panel"><div class="chart-panel-head"><strong>Aproveitamento geral</strong><span>${esc(`${snapshot.aproveitamento}%`)}</span></div><div class="chart-panel-body donut-panel">${renderAccuracyDonut(snapshot)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-green"></i>${esc(`${snapshot.totalAcertos} acertos`)}</span><span class="legend-item"><i class="legend-dot is-red"></i>${esc(`${snapshot.totalErros} erros`)}</span><span class="legend-item"><i class="legend-dot is-gold"></i>${esc(`${snapshot.diasAtivos} dias ativos`)}</span></div></article><article class="chart-panel chart-panel-wide"><div class="chart-panel-head"><strong>Evolucao recente</strong><span>ultimos 14 dias</span></div><div class="chart-panel-body">${renderRecentPerformanceChart(snapshot.recentSeries)}</div><div class="chart-legend"><span class="legend-item"><i class="legend-dot is-gold"></i>Questoes feitas</span><span class="legend-item"><i class="legend-dot is-green"></i>Questoes certas</span><span class="legend-item">${esc(snapshot.bestDay ? `Melhor dia: ${snapshot.bestDay.questoes} questoes em ${shortDateLabel(snapshot.bestDay.referencia)}` : "Sem pico de questoes ainda")}</span><span class="legend-item">${esc(`${snapshot.totalPomodoros} pomodoros acumulados`)}</span></div></article></div></section><section class="grid-4" style="margin-top:1rem;"><article class="card stat-card"><div class="stat-value">${esc(String(sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Questoes 7 dias</div><div class="stat-help">Volume recente resolvido.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtPct(sumBy(last7, "questoes_certas"), sumBy(last7, "questoes_feitas")))}</div><div class="stat-label">Acerto 7 dias</div><div class="stat-help">Percentual de aproveitamento.</div></article><article class="card stat-card"><div class="stat-value">${esc(fmtHours(sumBy(last7, "horas_estudo")))}</div><div class="stat-label">Horas 7 dias</div><div class="stat-help">Horas declaradas pelo aluno.</div></article><article class="card stat-card"><div class="stat-value">${esc(String(metas7.length))}</div><div class="stat-label">Metas cumpridas</div><div class="stat-help">Ultimos 7 dias.</div></article></section><section class="grid-2" style="margin-top:1rem;"><article class="card"><div class="card-head"><h2 class="card-title">Registro do Dia</h2><span class="badge gold">${esc(fmtDate(isoToday()))}</span></div><form class="form-grid" id="dailyCheckinForm"><label><span class="field-label">Data</span><input class="input" name="referencia" type="date" value="${esc(today?.referencia || isoToday())}" required></label><label><span class="field-label">Horas estudadas</span><input class="input" name="horas_estudo" type="number" step="0.5" min="0" value="${esc(String(today?.horas_estudo ?? today?.horas ?? 0))}"></label><label><span class="field-label">Questoes feitas</span><input class="input" name="questoes_feitas" type="number" min="0" value="${esc(String(today?.questoes_feitas ?? today?.questoes ?? 0))}"></label><label><span class="field-label">Questoes certas</span><input class="input" name="questoes_certas" type="number" min="0" value="${esc(String(today?.questoes_certas ?? today?.acertos ?? 0))}"></label><label><span class="field-label">Pomodoros</span><input class="input" name="pomodoros" type="number" min="0" value="${esc(String(today?.pomodoros ?? 0))}"></label><label><span class="field-label">Metas cumpridas</span><input class="input" name="metas_cumpridas" type="number" min="0" value="${esc(String(today?.metas_cumpridas ?? 0))}"></label><label><span class="field-label">Observacao do dia</span><textarea class="textarea" name="observacao" placeholder="Como foi o dia, onde travou, o que funcionou melhor.">${esc(today?.observacao || "")}</textarea></label><button class="button button-primary" type="submit">Salvar meu dia</button><div class="message" data-checkin-message></div></form></article><article class="card"><div class="card-head"><h2 class="card-title">Metas concluidas recentemente</h2></div><div class="list">${recentGoals.map((item) => `<div class="list-item"><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || "Meta concluida no plano de estudos.")}</span><div class="badge-row" style="margin-top:.8rem;"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge green">${esc(fmtDateTime(item.concluida_em))}</span></div></div>`).join("") || `<div class="empty-state">Nenhuma meta concluida nos ultimos 7 dias.</div>`}</div></article></section><section class="card" style="margin-top:1rem;"><div class="card-head"><h2 class="card-title">Historico diario</h2><span class="badge gold">${esc(String(checkins.length))} registros</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Horas</th><th>Questoes</th><th>Acertos</th><th>%</th><th>Pomodoros</th><th>Metas</th></tr></thead><tbody>${checkins.map((item) => `<tr><td>${esc(fmtDate(item.referencia))}</td><td>${esc(fmtHours(item.horas_estudo ?? item.horas))}</td><td>${esc(String(item.questoes_feitas ?? item.questoes ?? 0))}</td><td>${esc(String(item.questoes_certas ?? item.acertos ?? 0))}</td><td>${esc(fmtPct(item.questoes_certas ?? item.acertos, item.questoes_feitas ?? item.questoes))}</td><td>${esc(String(item.pomodoros ?? 0))}</td><td>${esc(String(item.metas_cumpridas ?? 0))}</td></tr>`).join("") || `<tr><td colspan="7" class="empty-state">Nenhum registro diario encontrado.</td></tr>`}</tbody></table></div></section>`;
 
   document.getElementById("dailyCheckinForm")?.addEventListener("submit", handleDailyCheckinSubmit);
 }
@@ -2460,7 +2461,7 @@ async function fetchAdminData() {
 
 function optionLabel(plan, mentoradosMap) {
   const owner = mentoradosMap.get(plan.mentorado_id)?.nome || mentoradosMap.get(plan.mentorado_id)?.email || "Mentorado";
-  return `${plan.titulo} - ${owner} - ${fmtMonth(plan.mes_referencia)}`;
+  return `${plan.titulo} - ${owner} - ${fmtPlanReference(plan.mes_referencia)}`;
 }
 
 async function handleAdminSubmit(event) {
@@ -2945,7 +2946,7 @@ async function renderAdminPage() {
     <div class="admin-section" data-section="conteudo">
       <div class="admin-subtabs">
         <button class="admin-subtab is-active" data-subtab="materiais">Materiais</button>
-        <button class="admin-subtab" data-subtab="planos">Planos mensais</button>
+        <button class="admin-subtab" data-subtab="planos">Planos de estudo</button>
         <button class="admin-subtab" data-subtab="metas">Metas do plano</button>
         <button class="admin-subtab" data-subtab="simulados">Simulados</button>
       </div>
@@ -3009,11 +3010,11 @@ async function renderAdminPage() {
         </section>
       </div>
 
-      <\!-- Planos Mensais -->
+      <\!-- Planos de estudo -->
       <div class="admin-subsection" data-subsection="planos">
         <section class="grid-2" style="margin-top:1rem;">
           <article class="card">
-            <div class="card-head"><h2 class="card-title">Novo plano mensal</h2></div>
+            <div class="card-head"><h2 class="card-title">Novo plano de estudos</h2></div>
             <form class="form-grid" data-form="plano-mensal-create">
               <label>
                 <span class="field-label">Aluno</span>
@@ -3022,8 +3023,8 @@ async function renderAdminPage() {
                   ${data.mentorados.map((m) => `<option value="${esc(m.id)}">${esc(m.nome || m.email)}</option>`).join("")}
                 </select>
               </label>
-              <label><span class="field-label">Título</span><input class="input" name="titulo" type="text" placeholder="Plano Maio 2026 — TRF-3" required></label>
-              <label><span class="field-label">Mês de referência</span><input class="input" name="mes_referencia" type="date" required></label>
+              <label><span class="field-label">Título</span><input class="input" name="titulo" type="text" placeholder="Plano completo TRF-3 V3" required></label>
+              <label><span class="field-label">Data inicial do plano</span><input class="input" name="mes_referencia" type="date" required></label>
               <label>
                 <span class="field-label">Status</span>
                 <select class="select" name="status">
@@ -3047,7 +3048,7 @@ async function renderAdminPage() {
               ${plans.map((plan) => `
                 <div class="list-item">
                   <strong>${esc(plan.titulo)}</strong>
-                  <span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} — ${fmtMonth(plan.mes_referencia)}`)}</span>
+                  <span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} — ${fmtPlanReference(plan.mes_referencia)}`)}</span>
                   <div class="metric-bar" style="margin-top:.6rem;">
                     <span style="width:${esc(String(plan.progress))}%"></span>
                   </div>
@@ -3057,7 +3058,7 @@ async function renderAdminPage() {
                   </div>
                   ${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-top:.8rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF</a></div>` : ""}
                 </div>
-              `).join("") || `<div class="empty-state">Nenhum plano mensal ainda.</div>`}
+              `).join("") || `<div class="empty-state">Nenhum plano de estudos ainda.</div>`}
             </div>
           </article>
         </section>
@@ -3070,7 +3071,7 @@ async function renderAdminPage() {
             <div class="card-head"><h2 class="card-title">Nova meta do plano</h2></div>
             <form class="form-grid" data-form="plano-item-create">
               <label>
-                <span class="field-label">Plano mensal</span>
+                <span class="field-label">Plano de estudos</span>
                 <select class="select" name="plano_id" required>
                   <option value="">— Selecione o plano —</option>
                   ${data.monthlyPlans.map((item) => `<option value="${esc(item.id)}">${esc(optionLabel(item, mentoradosMap))}</option>`).join("")}
@@ -3085,7 +3086,7 @@ async function renderAdminPage() {
                   <option value="revisao">Revisão</option>
                   <option value="simulado">Simulado</option>
                   <option value="redacao">Redação</option>
-                  <option value="meta_mensal">Meta mensal</option>
+                  <option value="meta_plano">Meta do plano</option>
                 </select>
               </label>
               <label><span class="field-label">Data prevista</span><input class="input" name="data_prevista" type="date"></label>

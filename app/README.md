@@ -44,7 +44,7 @@ Fluxo atual:
 - se o material estiver hospedado fora, informe `externo_url`
 - mentorados recebem URL assinada ao abrir a lista de materiais
 
-Para plano mensal:
+Para plano de estudos:
 
 - use `pdf_url` quando o PDF estiver hospedado externamente
 - use `pdf_path` quando o PDF ja estiver no bucket `materiais`
@@ -129,7 +129,7 @@ O painel admin atual permite:
 - ajustar mentorado existente
 - criar concurso
 - criar material por URL ou por `storage path`
-- criar plano mensal
+- criar plano de estudos
 - criar meta de plano
 - criar simulado
 
@@ -141,4 +141,4 @@ O painel admin atual ainda nao permite:
 
 ## Plano interativo
 
-A área do aluno usa `planos_mensais` e `plano_itens` para exibir o plano de estudos como checklist. O aluno marca as metas em `plano.html`; o mentor acompanha progresso, atrasos, metas do dia e evolução por tipo no painel administrativo. Para planos longos, use a importação em lote no formato `data;ordem;tipo;titulo;descricao`.
+A área do aluno usa `planos_mensais` e `plano_itens` para exibir o plano de estudos como checklist. Apesar do nome legado da tabela, cada registro pode representar o plano completo do aluno. O aluno marca as metas em `plano.html`; o mentor acompanha progresso, atrasos, metas do dia e evolução por tipo no painel administrativo. Para planos longos, use a importação em lote no formato `data;ordem;tipo;titulo;descricao`.
