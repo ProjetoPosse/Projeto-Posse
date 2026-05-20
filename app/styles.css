@@ -989,6 +989,69 @@ body.nav-open { overflow: hidden; }
   display: block;
   text-transform: capitalize;
 }
+
+.plan-day-list {
+  display: grid;
+  gap: 1rem;
+}
+.plan-day-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr);
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: .75rem;
+  padding: .85rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  background: rgba(8, 9, 13, 0.24);
+}
+.plan-day-head span {
+  display: block;
+  margin-top: .3rem;
+  color: var(--muted);
+  font-size: .9rem;
+}
+.plan-day-actions {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  gap: .75rem;
+  align-items: center;
+}
+.plan-day-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.plan-day-progress span {
+  display: block;
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(135deg, #dfc36d 0%, #c9a84c 100%);
+}
+.plan-bulk-actions {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) auto minmax(0, 1fr);
+  gap: .75rem;
+  align-items: end;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  background: rgba(32, 38, 53, 0.34);
+}
+.plan-bulk-actions .message {
+  min-height: 0;
+  margin: 0;
+}
+@media (max-width: 980px) {
+  .plan-day-head,
+  .plan-day-actions,
+  .plan-bulk-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 .plan-focus-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

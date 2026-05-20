@@ -113,6 +113,21 @@ function isWithinDays(value, days) {
   return diffDays >= 0 && diffDays < days;
 }
 
+function chunkArray(items, size = 100) {
+  const chunks = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
+}
+
+async function updatePlanItemRows(client, ids, payload) {
+  for (const chunk of chunkArray(ids)) {
+    const { error } = await client.from("plano_itens").update(payload).in("id", chunk);
+    if (error) throw error;
+  }
+}
+
 function uniqueByDate(rows, dateField = "referencia") {
   return new Set((rows || []).map((row) => row?.[dateField]).filter(Boolean)).size;
 }
@@ -1503,6 +1518,23 @@ function renderPlanFocusQueue(plan) {
   return `<div class="plan-focus-grid">${blocks.map((block) => `<div class="plan-focus-panel"><strong>${esc(block.title)}</strong>${block.items.length ? `<ul>${block.items.map((item) => `<li><span>${esc(item.data_prevista ? shortDateLabel(item.data_prevista) : "Sem data")}</span>${esc(item.titulo)}</li>`).join("")}</ul>` : `<p>${esc(block.empty)}</p>`}</div>`).join("")}</div>`;
 }
 
+function buildPlanDaySummary(rows) {
+  const total = rows?.length || 0;
+  const done = (rows || []).filter((item) => item.concluida).length;
+  return {
+    total,
+    done,
+    pending: Math.max(total - done, 0),
+    progress: total ? Math.round((done / total) * 100) : 0
+  };
+}
+
+function renderPlanDayGroup(label, rows) {
+  const summary = buildPlanDaySummary(rows);
+  const dateValue = rows.find((item) => item.data_prevista)?.data_prevista || "";
+  return `<div class="plan-group" data-plan-day-group="${esc(dateValue || label)}"><div class="plan-day-head"><div><h3 class="day-title">${esc(label)}</h3><span>${esc(`${summary.done}/${summary.total} metas concluídas`)}</span></div><div class="plan-day-actions"><div class="plan-day-progress" aria-label="Progresso do dia"><span style="width:${esc(String(summary.progress))}%"></span></div><button class="button button-secondary" type="button" data-plan-day-complete="${esc(dateValue)}" ${!dateValue || summary.pending === 0 ? "disabled" : ""}>Concluir dia</button></div></div><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`;
+}
+
 function renderPlanTaskCard(item) {
   const status = planItemStatus(item);
   return `<article class="plan-task ${item.concluida ? "done" : ""}"><div class="plan-item"><input class="checkbox" type="checkbox" data-plan-item-toggle="${esc(item.id)}" aria-label="Marcar meta ${esc(item.titulo)} como concluída" ${item.concluida ? "checked" : ""}><div class="plan-task-main"><div class="badge-row"><span class="badge gold">${esc(item.tipo || "meta")}</span><span class="badge ${status.tone}">${esc(status.label)}</span>${item.data_prevista ? `<span class="badge blue">${esc(shortDateLabel(item.data_prevista))}</span>` : ""}</div><strong class="plan-item-title" style="margin-top:.7rem;">${esc(item.titulo)}</strong><p class="plan-item-copy">${esc(item.descricao || "Sem descricao adicional.")}</p><div class="inline-actions">${item.tec_url ? `<a class="button button-secondary" href="${esc(item.tec_url)}" target="_blank" rel="noopener noreferrer">Abrir TEC</a>` : ""}${item.resolved_material_url ? `<a class="button button-secondary" href="${esc(item.resolved_material_url)}" target="_blank" rel="noopener noreferrer">${item.tipo === "meta_plano" ? "Abrir meta do plano" : "Material complementar"}</a>` : item.material_url ? `<span class="message error">Material privado nao resolvido.</span>` : ""}</div></div></div></article>`;
@@ -1518,10 +1550,10 @@ function renderAdminPlanDetailPanel(plan, mentoradosMap, isActive) {
   const insight = buildPlanInsights(plan);
   const rows = (plan.items || []).map((item) => {
     const status = planItemStatus(item);
-    return `<tr><td>${esc(item.data_prevista ? fmtDate(item.data_prevista) : "--")}</td><td><strong>${esc(item.titulo)}</strong><span class="table-subcopy">${esc(item.descricao || "")}</span></td><td>${esc(item.tipo || "meta")}</td><td><span class="badge ${status.tone}">${esc(status.label)}</span></td><td>${esc(item.concluida_em ? fmtDateTime(item.concluida_em) : "--")}</td></tr>`;
+    return `<tr data-admin-plan-item-id="${esc(item.id)}" data-admin-plan-item-date="${esc(item.data_prevista || "")}" data-admin-plan-item-done="${esc(String(Boolean(item.concluida)))}"><td>${esc(item.data_prevista ? fmtDate(item.data_prevista) : "--")}</td><td><strong>${esc(item.titulo)}</strong><span class="table-subcopy">${esc(item.descricao || "")}</span></td><td>${esc(item.tipo || "meta")}</td><td><span class="badge ${status.tone}">${esc(status.label)}</span></td><td>${esc(item.concluida_em ? fmtDateTime(item.concluida_em) : "--")}</td></tr>`;
   }).join("") || `<tr><td colspan="5" class="empty-state">Nenhuma meta cadastrada neste plano.</td></tr>`;
 
-  return `<div class="plan-detail-panel ${isActive ? "is-active" : ""}" data-plan-detail-panel="${esc(plan.id)}"><div class="plan-detail-head"><div><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} · ${fmtPlanReference(plan.mes_referencia)}`)}</span></div><div class="plan-progress-row"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="table-wrap plan-detail-table"><table class="table"><thead><tr><th>Data</th><th>Meta</th><th>Tipo</th><th>Status</th><th>Concluída em</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  return `<div class="plan-detail-panel ${isActive ? "is-active" : ""}" data-plan-detail-panel="${esc(plan.id)}"><div class="plan-detail-head"><div><strong>${esc(plan.titulo)}</strong><span>${esc(`${mentoradosMap.get(plan.mentorado_id)?.nome || "Aluno"} · ${fmtPlanReference(plan.mes_referencia)}`)}</span></div><div class="plan-progress-row"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}${plan.items?.length ? `<form class="plan-bulk-actions" data-admin-plan-complete-until><label><span class="field-label">Marcar feitas até</span><input class="input" name="until_date" type="date"></label><button class="button button-secondary" type="submit">Concluir até a data</button><div class="message" data-admin-plan-bulk-message></div></form>` : ""}<div class="table-wrap plan-detail-table"><table class="table"><thead><tr><th>Data</th><th>Meta</th><th>Tipo</th><th>Status</th><th>Concluída em</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 
 function wireAdminPlanDetailSelect() {
@@ -2368,10 +2400,14 @@ function renderPlanPage(data) {
   const monthlyHtml = data.monthlyCollection.map((plan) => {
     const groups = groupMonthlyItems(plan.items);
     const groupHtml = plan.items.length
-      ? Array.from(groups.entries()).map(([label, rows]) => `<div class="plan-group"><h3 class="day-title">${esc(label)}</h3><div class="list">${rows.map(renderPlanTaskCard).join("")}</div></div>`).join("")
+      ? Array.from(groups.entries()).map(([label, rows]) => renderPlanDayGroup(label, rows)).join("")
       : `<div class="empty-state">Ainda nao existem metas cadastradas para este plano.</div>`;
 
-    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtPlanReference(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}<div class="list" style="margin-top:1rem;">${groupHtml}</div></section>`;
+    const bulkActions = plan.items.length
+      ? `<form class="plan-bulk-actions" data-plan-complete-until><label><span class="field-label">Marcar metas feitas até</span><input class="input" name="until_date" type="date"></label><button class="button button-secondary" type="submit">Concluir até a data</button><div class="message" data-plan-bulk-message></div></form>`
+      : "";
+
+    return `<section class="card"><div class="card-head"><div><h2 class="card-title">${esc(plan.titulo)}</h2><p class="page-copy">${esc(fmtPlanReference(plan.mes_referencia))}</p></div><div class="badge-row"><span class="badge ${badgeClass(plan.status)}">${esc(plan.status)}</span><span class="badge gold">${esc(`${plan.completed}/${plan.items.length} metas`)}</span></div></div>${plan.descricao ? `<p class="page-copy">${esc(plan.descricao)}</p>` : ""}${plan.resolved_pdf_url ? `<div class="inline-actions" style="margin-bottom:1rem;"><a class="button button-secondary" href="${esc(plan.resolved_pdf_url)}" target="_blank" rel="noopener noreferrer">Abrir PDF do plano</a></div>` : plan.pdf_path ? `<div class="message error" style="margin-bottom:1rem;">PDF vinculado, mas a URL assinada nao foi gerada. Verifique o bucket <strong>materiais</strong> e o caminho <strong>${esc(plan.pdf_path)}</strong>.</div>` : ""}<div class="plan-progress-row" style="margin-top:1rem;"><div class="metric-bar"><span style="width:${esc(String(plan.progress))}%"></span></div><span class="plan-progress-pct">${esc(String(plan.progress))}%</span></div>${renderPlanOverview(plan)}${renderPlanFocusQueue(plan)}${bulkActions}<div class="plan-day-list" style="margin-top:1rem;">${groupHtml}</div></section>`;
   }).join("");
 
   const legacyHtml = data.planosLegacy.length
@@ -2381,6 +2417,12 @@ function renderPlanPage(data) {
   appContent.innerHTML = `${monthlyHtml || `<section class="card"><div class="empty-state">Nenhum plano de estudos ativo ainda.</div></section>`}${legacyHtml}`;
   appContent.querySelectorAll("[data-plan-item-toggle]").forEach((checkbox) => {
     checkbox.addEventListener("change", handlePlanItemToggle);
+  });
+  appContent.querySelectorAll("[data-plan-day-complete]").forEach((button) => {
+    button.addEventListener("click", handlePlanDayComplete);
+  });
+  appContent.querySelectorAll("[data-plan-complete-until]").forEach((form) => {
+    form.addEventListener("submit", handlePlanCompleteUntil);
   });
 }
 
@@ -3272,8 +3314,7 @@ async function renderAdminPage() {
   // ── Wire tab switching ────────────────────────────────────────
   appContent.querySelectorAll(".admin-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      appContent.querySelectorAll(".admin-tab").forEach((t) => t.classList.toggle("is-active", t === tab));
-      appContent.querySelectorAll(".admin-section").forEach((s) => s.classList.toggle("is-active", s.dataset.section === tab.dataset.tab));
+      activateAdminSection(tab.dataset.tab);
     });
   });
 
@@ -3281,8 +3322,7 @@ async function renderAdminPage() {
   appContent.querySelectorAll(".admin-subtab").forEach((btn) => {
     btn.addEventListener("click", () => {
       const parent = btn.closest(".admin-section");
-      parent.querySelectorAll(".admin-subtab").forEach((t) => t.classList.toggle("is-active", t === btn));
-      parent.querySelectorAll(".admin-subsection").forEach((s) => s.classList.toggle("is-active", s.dataset.subsection === btn.dataset.subtab));
+      activateAdminSection(parent?.dataset.section, btn.dataset.subtab);
     });
   });
 
@@ -3291,6 +3331,106 @@ async function renderAdminPage() {
   });
   wireAdminMentoradoForm(data.mentorados);
   wireAdminPlanDetailSelect();
+  wireAdminPlanBulkActions();
+}
+
+function activateAdminSection(sectionName, subsectionName) {
+  if (!sectionName) return;
+  appContent.querySelectorAll(".admin-tab").forEach((tab) => {
+    tab.classList.toggle("is-active", tab.dataset.tab === sectionName);
+  });
+  appContent.querySelectorAll(".admin-section").forEach((section) => {
+    section.classList.toggle("is-active", section.dataset.section === sectionName);
+  });
+
+  if (!subsectionName) return;
+  const section = appContent.querySelector(`.admin-section[data-section="${sectionName}"]`);
+  section?.querySelectorAll(".admin-subtab").forEach((tab) => {
+    tab.classList.toggle("is-active", tab.dataset.subtab === subsectionName);
+  });
+  section?.querySelectorAll(".admin-subsection").forEach((subsection) => {
+    subsection.classList.toggle("is-active", subsection.dataset.subsection === subsectionName);
+  });
+}
+
+function wireAdminPlanBulkActions() {
+  appContent.querySelectorAll("[data-admin-plan-complete-until]").forEach((form) => {
+    form.addEventListener("submit", handleAdminPlanCompleteUntil);
+  });
+}
+
+async function updateAdminPlanItemsCompletion(itemIds, checked, options = {}) {
+  const ids = Array.from(new Set((itemIds || []).filter(Boolean)));
+  if (!ids.length) throw new Error("Nenhuma meta encontrada para atualizar.");
+  const timestamp = checked ? new Date().toISOString() : null;
+  const { activePlanId, activeSection = "conteudo", activeSubsection = "metas" } = options;
+
+  if (isDemoMode()) {
+    const demo = loadDemoData();
+    demo.monthlyItems.forEach((item) => {
+      if (ids.includes(item.id)) {
+        item.concluida = checked;
+        item.concluida_em = timestamp;
+      }
+    });
+    saveDemoData(demo);
+    await renderAdminPage();
+    activateAdminSection(activeSection, activeSubsection);
+    if (activePlanId) {
+      const select = document.getElementById("planDetailSelect");
+      if (select) {
+        select.value = activePlanId;
+        select.dispatchEvent(new Event("change"));
+      }
+    }
+    return;
+  }
+
+  const { ensureSupabase } = await loadSupabaseModule();
+  const client = ensureSupabase();
+  await updatePlanItemRows(client, ids, { concluida: checked, concluida_em: timestamp });
+  await renderAdminPage();
+  activateAdminSection(activeSection, activeSubsection);
+  if (activePlanId) {
+    const select = document.getElementById("planDetailSelect");
+    if (select) {
+      select.value = activePlanId;
+      select.dispatchEvent(new Event("change"));
+    }
+  }
+}
+
+async function handleAdminPlanCompleteUntil(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const untilDate = new FormData(form).get("until_date");
+  const messageNode = form.querySelector("[data-admin-plan-bulk-message]");
+
+  if (!untilDate) {
+    setMessage(messageNode, "Escolha uma data para concluir.", "error");
+    return;
+  }
+
+  const panel = form.closest("[data-plan-detail-panel]");
+  const activePlanId = panel?.dataset.planDetailPanel;
+  const ids = Array.from(panel?.querySelectorAll("[data-admin-plan-item-id]") || [])
+    .filter((row) => {
+      const itemDate = row.dataset.adminPlanItemDate;
+      return row.dataset.adminPlanItemDone !== "true" && itemDate && itemDate <= untilDate;
+    })
+    .map((row) => row.dataset.adminPlanItemId);
+
+  if (!ids.length) {
+    setMessage(messageNode, "Nenhuma meta pendente encontrada até essa data.", "success");
+    return;
+  }
+
+  try {
+    setMessage(messageNode, "Atualizando metas do aluno...", "");
+    await updateAdminPlanItemsCompletion(ids, true, { activePlanId });
+  } catch (error) {
+    setMessage(messageNode, error?.message || "Nao foi possivel concluir as metas.", "error");
+  }
 }
 
 function wireAdminMentoradoForm(mentorados) {
@@ -3316,6 +3456,84 @@ function wireAdminMentoradoForm(mentorados) {
   if (select.value) applySelection();
 }
 
+async function updatePlanItemsCompletion(itemIds, checked, loadingMessage = "Atualizando plano...") {
+  const ids = Array.from(new Set((itemIds || []).filter(Boolean)));
+  if (!ids.length) throw new Error("Nenhuma meta encontrada para atualizar.");
+  const timestamp = checked ? new Date().toISOString() : null;
+
+  if (isDemoMode()) {
+    const demo = loadDemoData();
+    demo.monthlyItems.forEach((item) => {
+      if (ids.includes(item.id)) {
+        item.concluida = checked;
+        item.concluida_em = timestamp;
+      }
+    });
+    saveDemoData(demo);
+    showLoading(loadingMessage);
+    const data = await fetchMentoradoData();
+    renderPlanPage(data);
+    return;
+  }
+
+  const { ensureSupabase } = await loadSupabaseModule();
+  const client = ensureSupabase();
+  await updatePlanItemRows(client, ids, { concluida: checked, concluida_em: timestamp });
+
+  showLoading(loadingMessage);
+  const data = await fetchMentoradoData();
+  renderPlanPage(data);
+}
+
+async function handlePlanDayComplete(event) {
+  const button = event.currentTarget;
+  const dateValue = button.dataset.planDayComplete;
+  const group = button.closest("[data-plan-day-group]");
+  const ids = Array.from(group?.querySelectorAll("[data-plan-item-toggle]") || [])
+    .filter((checkbox) => !checkbox.checked)
+    .map((checkbox) => checkbox.dataset.planItemToggle);
+
+  button.disabled = true;
+
+  try {
+    await updatePlanItemsCompletion(ids, true, "Concluindo dia...");
+  } catch (error) {
+    window.alert(error?.message || `Nao foi possivel concluir o dia ${dateValue || ""}.`);
+    button.disabled = false;
+  }
+}
+
+async function handlePlanCompleteUntil(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const untilDate = new FormData(form).get("until_date");
+  const messageNode = form.querySelector("[data-plan-bulk-message]");
+  if (!untilDate) {
+    setMessage(messageNode, "Escolha uma data para concluir.", "error");
+    return;
+  }
+
+  const planSection = form.closest(".card");
+  const ids = Array.from(planSection?.querySelectorAll("[data-plan-item-toggle]") || [])
+    .filter((checkbox) => {
+      const itemDate = checkbox.closest("[data-plan-day-group]")?.dataset.planDayGroup;
+      return !checkbox.checked && itemDate && /^\d{4}-\d{2}-\d{2}$/.test(itemDate) && itemDate <= untilDate;
+    })
+    .map((checkbox) => checkbox.dataset.planItemToggle);
+
+  if (!ids.length) {
+    setMessage(messageNode, "Nenhuma meta pendente encontrada até essa data.", "success");
+    return;
+  }
+
+  try {
+    setMessage(messageNode, "Atualizando metas...", "");
+    await updatePlanItemsCompletion(ids, true, "Concluindo metas...");
+  } catch (error) {
+    setMessage(messageNode, error?.message || "Nao foi possivel concluir as metas.", "error");
+  }
+}
+
 async function handlePlanItemToggle(event) {
   const checkbox = event.currentTarget;
   const itemId = checkbox.dataset.planItemToggle;
@@ -3323,27 +3541,7 @@ async function handlePlanItemToggle(event) {
   checkbox.disabled = true;
 
   try {
-    if (isDemoMode()) {
-      const demo = loadDemoData();
-      const item = demo.monthlyItems.find((row) => row.id === itemId);
-      if (!item) throw new Error("Meta demo nao encontrada.");
-      item.concluida = checked;
-      item.concluida_em = checked ? new Date().toISOString() : null;
-      saveDemoData(demo);
-      showLoading("Atualizando plano demo...");
-      const data = await fetchMentoradoData();
-      renderPlanPage(data);
-      return;
-    }
-
-    const { ensureSupabase } = await loadSupabaseModule();
-    const client = ensureSupabase();
-    const { error } = await client.from("plano_itens").update({ concluida: checked, concluida_em: checked ? new Date().toISOString() : null }).eq("id", itemId);
-    if (error) throw error;
-
-    showLoading("Atualizando plano...");
-    const data = await fetchMentoradoData();
-    renderPlanPage(data);
+    await updatePlanItemsCompletion([itemId], checked, "Atualizando plano...");
   } catch (error) {
     checkbox.checked = !checked;
     window.alert(error?.message || "Nao foi possivel atualizar a meta.");
