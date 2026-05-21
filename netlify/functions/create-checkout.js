@@ -1,4 +1,4 @@
-const { randomUUID } = require("crypto");
+﻿const { randomUUID } = require("crypto");
 
 const PLAN_CATALOG = {
   preparacao_metas: {
@@ -13,9 +13,9 @@ const PLAN_CATALOG = {
     description: "Direcionamento estrategico, 4 simulados e acesso a plataforma",
     amount: 249.9,
   },
-  plano_trf3_fcc: {
-    code: "plano_trf3_fcc",
-    title: "Plano TRF-3 FCC",
+  plano_trf3_pre_edital: {
+    code: "plano_trf3_pre_edital",
+    title: "Plano TRF-3 Pre-edital",
     description: "Plano de 16 semanas para Analista Judiciario Area Judiciaria",
     amount: 249.9,
   },
