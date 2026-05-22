@@ -1,19 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plano TRF-3 Pré-edital | Analista Judiciário Área Judiciária | Projeto Posse</title>
-<meta name="description" content="Plano pré-edital de 16 semanas para Analista Judiciário Área Judiciária do TRF-3, baseado no último edital, com Método REC, questões direcionadas, revisões, 4 simulados e estudo de caso.">
-<meta name="keywords" content="TRF-3, concurso TRF3, Analista Judiciário Área Judiciária, plano de estudos TRF-3, pré-edital TRF-3, estudo de caso, Projeto Posse, concurso tribunal federal, cronograma de estudos">
-<meta property="og:title" content="Plano TRF-3 Pré-edital — Analista Judiciário Área Judiciária">
-<meta property="og:description" content="Roteiro de 16 semanas baseado no último edital, com Método REC, questões direcionadas, revisões, 4 simulados e treino de estudo de caso.">
+<title>Plano TRF-3 AJAJ FCC | 16 semanas | Projeto Posse</title>
+<meta name="description" content="Plano competitivo de estudos para Analista Judiciário Área Judiciária do TRF-3, com agenda diária de 16 semanas, 4 simulados, discursivas, guia TEC e diagnóstico inicial individual.">
+<meta name="keywords" content="TRF-3, TRF3, Analista Judiciário Área Judiciária, AJAJ, FCC, plano de estudos TRF-3, Projeto Posse, simulado TRF-3, discursiva TRF-3, estudo de caso FCC">
+<meta property="og:title" content="Plano Competitivo TRF-3 AJAJ — Projeto Posse">
+<meta property="og:description" content="16 semanas de preparação com agenda diária, simulados, discursivas, revisão e diagnóstico inicial individual.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projetoposse.com.br/planos/trf-3-analista-judiciaria">
 <link rel="canonical" href="https://projetoposse.com.br/planos/trf-3-analista-judiciaria">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#07070b;
@@ -28,6 +28,7 @@
   --line:rgba(201,168,76,.18);
   --line2:rgba(255,255,255,.08);
   --green:#36d27f;
+  --red:#ff7077;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -36,64 +37,82 @@ body.checkout-open{overflow:hidden}
 ::selection{background:var(--gold);color:var(--bg)}
 a{color:inherit}
 .container{width:min(1160px,calc(100% - 32px));margin:0 auto}
-.nav{position:sticky;top:0;z-index:50;background:rgba(7,7,11,.84);backdrop-filter:blur(18px);border-bottom:1px solid var(--line2)}
+.nav{position:sticky;top:0;z-index:50;background:rgba(7,7,11,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--line2)}
 .nav-inner{height:74px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.brand{font-family:'Playfair Display',serif;font-weight:800;font-size:1.36rem;text-decoration:none}
+.brand{font-family:'Playfair Display',serif;font-weight:800;font-size:1.34rem;text-decoration:none}
 .brand span{color:var(--gold)}
-.nav-links{display:flex;gap:1.05rem;align-items:center;font-size:.9rem;color:var(--txt2)}
+.nav-links{display:flex;gap:1rem;align-items:center;font-size:.9rem;color:var(--txt2)}
 .nav-links a{text-decoration:none;color:var(--txt2);transition:.2s}
 .nav-links a:hover,.nav-links a:focus{color:var(--gold2)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:999px;border:1px solid var(--line);padding:.88rem 1.18rem;text-decoration:none;font-weight:800;font-family:inherit;transition:.22s;cursor:pointer}
-.btn:focus-visible{outline:3px solid rgba(228,199,107,.34);outline-offset:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:999px;border:1px solid var(--line);padding:.9rem 1.18rem;text-decoration:none;font-weight:900;font-family:inherit;transition:.22s;cursor:pointer}
+.btn:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid rgba(228,199,107,.34);outline-offset:3px}
 .btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#08080b;border-color:transparent;box-shadow:0 18px 48px rgba(201,168,76,.2)}
 .btn-gold:hover{transform:translateY(-2px);box-shadow:0 24px 62px rgba(201,168,76,.26)}
 .btn-outline{background:rgba(255,255,255,.03);color:var(--txt);border-color:var(--line)}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold2);transform:translateY(-2px)}
-.hero{position:relative;overflow:hidden;padding:5.6rem 0 4.6rem;background:radial-gradient(circle at 82% 9%,rgba(201,168,76,.18),transparent 34%),linear-gradient(145deg,#09090d 0%,#11131b 58%,#07070b 100%)}
-.hero::after{content:'';position:absolute;inset:auto -12% -48% -12%;height:360px;background:radial-gradient(circle,rgba(201,168,76,.13),transparent 68%);pointer-events:none}
-.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.72fr);gap:2rem;align-items:center}
-.kicker{display:inline-flex;align-items:center;gap:.45rem;padding:.44rem .76rem;border:1px solid var(--line);border-radius:999px;background:rgba(201,168,76,.08);color:var(--gold2);font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
-h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.65rem);line-height:.92;letter-spacing:0;margin-bottom:1rem}
-.hero-lead{font-size:clamp(1.22rem,2.4vw,1.65rem);line-height:1.2;color:var(--txt);font-weight:800;max-width:790px;margin-bottom:.85rem}
-.hero-copy{font-size:1.08rem;color:var(--txt2);max-width:700px}
+.hero{position:relative;overflow:hidden;padding:5.8rem 0 4.7rem;background:radial-gradient(circle at 82% 12%,rgba(201,168,76,.2),transparent 34%),linear-gradient(145deg,#09090d 0%,#11131b 58%,#07070b 100%)}
+.hero::after{content:'';position:absolute;inset:auto -14% -46% -14%;height:370px;background:radial-gradient(circle,rgba(201,168,76,.12),transparent 68%);pointer-events:none}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(330px,.72fr);gap:2rem;align-items:center}
+.kicker,.eyebrow,.badge,.offer-badge{letter-spacing:.12em;text-transform:uppercase}
+.kicker{display:inline-flex;align-items:center;gap:.45rem;padding:.44rem .76rem;border:1px solid var(--line);border-radius:999px;background:rgba(201,168,76,.08);color:var(--gold2);font-size:.75rem;font-weight:900;margin-bottom:1rem}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,5.45rem);line-height:.94;letter-spacing:0;margin-bottom:1rem}
+.hero-lead{font-size:clamp(1.18rem,2.3vw,1.58rem);line-height:1.25;color:var(--txt);font-weight:900;max-width:800px;margin-bottom:.9rem}
+.hero-copy{font-size:1.08rem;color:var(--txt2);max-width:730px}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.7rem}
 .badge-row{display:flex;flex-wrap:wrap;gap:.58rem;margin-top:1.45rem}
-.badge{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px;padding:.4rem .66rem;background:rgba(255,255,255,.035);color:var(--txt2);font-size:.82rem;font-weight:700}
-.hero-card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(24,27,39,.95),rgba(13,14,21,.95));box-shadow:0 28px 80px rgba(0,0,0,.36);padding:1.45rem}
-.hero-card h2{font-size:1.2rem;margin-bottom:.55rem}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px;padding:.4rem .66rem;background:rgba(255,255,255,.035);color:var(--txt2);font-size:.82rem;font-weight:800}
+.hero-card,.card,.offer-card,.diagnostic-card,.value-card,.authority-card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(24,27,39,.96),rgba(12,13,20,.96));box-shadow:0 26px 74px rgba(0,0,0,.3)}
+.hero-card{border-radius:24px;padding:1.45rem}
+.hero-card h2{font-size:1.22rem;margin-bottom:.55rem}
 .hero-card p{color:var(--txt2)}
-.price-line{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:.9rem 1rem;margin:1rem 0 .2rem}
-.price-line strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.15rem;line-height:1}
-.price-line span{display:block;color:var(--txt2);font-size:.82rem;margin-top:.24rem}
+.price-line{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:1rem;margin:1rem 0 .2rem}
+.price-line strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.35rem;line-height:1}
+.price-line span{display:block;color:var(--txt2);font-size:.84rem;margin-top:.24rem}
 .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin:1rem 0 1.25rem}
 .metric{border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.9rem}
 .metric strong{display:block;color:var(--gold2);font-size:1.35rem;line-height:1}
 .metric span{display:block;color:var(--txt2);font-size:.78rem;margin-top:.25rem}
-.mini-list{display:grid;gap:.62rem;list-style:none;margin-top:1rem}
-.mini-list li{display:flex;gap:.55rem;color:var(--txt2)}
-.check{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(54,210,127,.13);color:var(--green);font-size:.8rem;font-weight:900;flex:0 0 22px}
 section{padding:4.8rem 0;border-top:1px solid var(--line2)}
 .section-alt{background:var(--bg2)}
-.section-head{max-width:820px;margin-bottom:1.85rem}
-.eyebrow{color:var(--gold2);font-size:.78rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;margin-bottom:.55rem}
+.section-head{max-width:840px;margin-bottom:1.85rem}
+.eyebrow{color:var(--gold2);font-size:.78rem;font-weight:900;margin-bottom:.55rem}
 h2{font-size:clamp(1.85rem,4vw,3.25rem);line-height:1.02;letter-spacing:0;margin-bottom:.78rem}
 .section-head p{font-size:1.04rem;color:var(--txt2)}
 .grid{display:grid;gap:1rem}
 .grid-2{grid-template-columns:repeat(2,1fr)}
 .grid-3{grid-template-columns:repeat(3,1fr)}
 .grid-4{grid-template-columns:repeat(4,1fr)}
-.card{border:1px solid var(--line2);border-radius:20px;background:linear-gradient(180deg,var(--card),rgba(18,20,30,.78));padding:1.28rem;min-height:100%}
+.card{border-color:var(--line2);border-radius:20px;padding:1.28rem;min-height:100%}
 .card.featured{border-color:var(--line);background:linear-gradient(180deg,rgba(201,168,76,.11),rgba(18,20,30,.92))}
-.card h3{font-size:1.06rem;margin-bottom:.45rem}
+.card h3{font-size:1.08rem;margin-bottom:.45rem}
 .card p,.card li{color:var(--txt2)}
 .card ul{padding-left:1.1rem;display:grid;gap:.34rem}
-.icon{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.1);color:var(--gold2);font-weight:900;margin-bottom:.95rem}
-.authority-wrap{display:grid;grid-template-columns:.82fr 1.18fr;gap:1rem;align-items:stretch}
-.authority-card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(18,20,30,.93));padding:1.55rem}
-.authority-card strong{display:block;color:var(--gold2);font-size:1.12rem;margin-bottom:.5rem}
-.authority-card p{color:var(--txt)}
+.icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,.1);color:var(--gold2);font-weight:900;margin-bottom:.95rem}
 .checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:.72rem}
-.check-item{display:flex;gap:.7rem;align-items:flex-start;border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.85rem;color:var(--txt2)}
+.check-item{display:flex;gap:.7rem;align-items:flex-start;border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.86rem;color:var(--txt2)}
+.check{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(54,210,127,.13);color:var(--green);font-size:.8rem;font-weight:900;flex:0 0 22px}
+.notice{margin-top:1.2rem;border:1px solid rgba(228,199,107,.22);border-radius:18px;background:rgba(201,168,76,.07);padding:1rem;color:var(--txt2)}
+.notice strong{color:var(--gold2)}
+.offer{display:grid;grid-template-columns:1fr .72fr;gap:1rem;align-items:stretch}
+.offer-card{border-radius:24px;padding:1.55rem}
+.offer-badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:.38rem .7rem;color:var(--gold2);background:rgba(201,168,76,.08);font-size:.78rem;font-weight:900;margin-bottom:.85rem}
+.offer-card h3{font-size:1.48rem;line-height:1.15;margin-bottom:.6rem}
+.offer-card p{color:var(--txt2)}
+.offer-price{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:1rem;margin:1rem 0}
+.offer-price strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.45rem;line-height:1}
+.offer-price span{display:block;color:var(--txt2);font-size:.86rem;margin-top:.25rem}
+.mini-list{display:grid;gap:.62rem;list-style:none;margin-top:1rem}
+.mini-list li{display:flex;gap:.55rem;color:var(--txt2)}
+.diagnostic-card{border-radius:24px;padding:1.55rem}
+.diagnostic-list{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-top:1.2rem}
+.diagnostic-pill{border:1px solid var(--line2);border-radius:16px;background:rgba(255,255,255,.035);padding:.95rem;color:var(--txt2)}
+.diagnostic-pill strong{display:block;color:var(--txt);margin-bottom:.2rem}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem}
+.phase{border:1px solid var(--line2);border-radius:20px;background:var(--card);padding:1.15rem}
+.phase small{display:block;color:var(--gold2);font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.phase h3{margin-bottom:.4rem}
+.phase p{color:var(--txt2)}
+.phase .goal{display:inline-flex;margin-top:.8rem;border:1px solid rgba(54,210,127,.2);border-radius:999px;padding:.35rem .62rem;color:var(--green);background:rgba(54,210,127,.08);font-size:.82rem;font-weight:900}
 .rec-steps{counter-reset:rec;display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem}
 .rec-card{position:relative;border:1px solid var(--line2);border-radius:20px;background:var(--card);padding:1.1rem}
 .rec-card::before{counter-increment:rec;content:counter(rec);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(201,168,76,.12);color:var(--gold2);font-weight:900;margin-bottom:.9rem}
@@ -103,25 +122,24 @@ h2{font-size:clamp(1.85rem,4vw,3.25rem);line-height:1.02;letter-spacing:0;margin
 .discipline-column h3{color:var(--gold2);margin-bottom:.8rem}
 .discipline-list{display:flex;flex-wrap:wrap;gap:.5rem}
 .pill{border:1px solid var(--line2);border-radius:999px;background:rgba(255,255,255,.035);color:var(--txt2);padding:.43rem .68rem;font-size:.85rem}
-.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem}
-.phase{border:1px solid var(--line2);border-radius:20px;background:var(--card);padding:1.15rem}
-.phase small{display:block;color:var(--gold2);font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
-.method-box{border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(201,168,76,.13),rgba(18,20,30,.95));padding:1.35rem;margin:1.2rem 0}
-.method-box strong{display:block;color:var(--gold2);font-size:1.1rem;margin-bottom:.35rem}
-.offer{display:grid;grid-template-columns:1fr .72fr;gap:1rem;align-items:stretch}
-.offer-card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(24,27,39,.96),rgba(12,13,20,.96));padding:1.5rem;box-shadow:0 26px 74px rgba(0,0,0,.32)}
-.offer-badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:.38rem .7rem;color:var(--gold2);background:rgba(201,168,76,.08);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.11em;margin-bottom:.85rem}
-.offer-card h3{font-size:1.45rem;line-height:1.15;margin-bottom:.6rem}
-.offer-card p{color:var(--txt2)}
-.offer-price{border:1px solid var(--line);border-radius:18px;background:rgba(201,168,76,.08);padding:1rem;margin:1rem 0 .2rem}
-.offer-price strong{display:block;color:var(--gold2);font-family:'Playfair Display',serif;font-size:2.35rem;line-height:1}
-.offer-price span{display:block;color:var(--txt2);font-size:.86rem;margin-top:.25rem}
-.interest-card{border:1px solid rgba(255,255,255,.08);border-radius:20px;background:rgba(255,255,255,.035);padding:1.25rem}
+.authority-wrap{display:grid;grid-template-columns:.82fr 1.18fr;gap:1rem;align-items:stretch}
+.authority-card{border-radius:22px;background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(18,20,30,.93));padding:1.55rem}
+.authority-card strong{display:block;color:var(--gold2);font-size:1.12rem;margin-bottom:.5rem}
+.authority-card p{color:var(--txt)}
+.value-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:1rem;align-items:start}
+.value-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:18px;border:1px solid var(--line2);background:var(--card)}
+.value-table th,.value-table td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--line2)}
+.value-table th{color:var(--gold2);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;background:rgba(201,168,76,.08)}
+.value-table td:last-child{text-align:right;font-weight:900;color:var(--txt)}
+.value-table tr:last-child td{border-bottom:0}
+.value-card{border-radius:22px;padding:1.4rem}
+.value-card small{display:block;color:var(--txt2);text-transform:uppercase;letter-spacing:.12em;font-weight:900}
+.value-card strong{display:block;font-family:'Playfair Display',serif;color:var(--gold2);font-size:2.5rem;line-height:1;margin:.4rem 0}
+.value-card p{color:var(--txt2)}
 .faq-list{display:grid;gap:.78rem}
 details{border:1px solid var(--line2);border-radius:16px;background:var(--card);padding:0}
-summary{cursor:pointer;list-style:none;padding:1rem 1.05rem;font-weight:800;color:var(--txt)}
+summary{cursor:pointer;list-style:none;padding:1rem 1.05rem;font-weight:900;color:var(--txt)}
 summary::-webkit-details-marker{display:none}
-summary:focus-visible{outline:3px solid rgba(228,199,107,.34);outline-offset:3px;border-radius:14px}
 details p{color:var(--txt2);padding:0 1.05rem 1rem}
 .cta-final{text-align:center;background:linear-gradient(145deg,rgba(201,168,76,.14),rgba(7,7,11,1))}
 .cta-final .container{max-width:860px}
@@ -137,7 +155,7 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
 .checkout-plan span{color:var(--txt2);font-size:.9rem}
 .checkout-form{display:grid;gap:.85rem}
 .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
-.checkout-form label{display:block;color:var(--gold2);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
+.checkout-form label{display:block;color:var(--gold2);font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
 .checkout-form input{width:100%;border:1px solid var(--line2);background:#1a1d2a;color:var(--txt);border-radius:13px;padding:.85rem .95rem;font:inherit;outline:none}
 .checkout-form input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
 .checkout-error{display:none;border:1px solid rgba(255,107,115,.28);background:rgba(255,107,115,.1);color:#ffb4b8;border-radius:14px;padding:.8rem}
@@ -147,17 +165,17 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
 @media(max-width:980px){
   .nav-links{display:none}
   .hero{padding:3.8rem 0 3.4rem}
-  .hero-grid,.authority-wrap,.offer{grid-template-columns:1fr}
-  .grid-4,.grid-3,.rec-steps,.timeline{grid-template-columns:repeat(2,1fr)}
+  .hero-grid,.offer,.authority-wrap,.value-wrap{grid-template-columns:1fr}
+  .grid-4,.grid-3,.rec-steps,.timeline,.diagnostic-list{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:640px){
   .container{width:min(100% - 24px,1160px)}
   .nav-inner{height:64px}
-  .grid-4,.grid-3,.grid-2,.rec-steps,.timeline,.checklist{grid-template-columns:1fr}
-  .checkout-grid{grid-template-columns:1fr}
-  .metric-grid{grid-template-columns:1fr 1fr}
+  .grid-4,.grid-3,.grid-2,.rec-steps,.timeline,.checklist,.diagnostic-list{grid-template-columns:1fr}
+  .metric-grid,.checkout-grid{grid-template-columns:1fr}
   .hero-actions,.btn{width:100%}
   section{padding:3.45rem 0}
+  .value-table th,.value-table td{padding:.78rem .65rem;font-size:.9rem}
 }
 </style>
 </head>
@@ -166,13 +184,11 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
   <div class="container nav-inner">
     <a class="brand" href="/">Projeto <span>Posse</span></a>
     <div class="nav-links">
-      <a href="#diferenciais">Diferenciais</a>
-      <a href="#metodo-rec">Método REC</a>
-      <a href="#estrutura">Estrutura</a>
-      <a href="#produto">Produto</a>
+      <a href="#incluso">Incluso</a>
+      <a href="#oferta">Oferta</a>
+      <a href="#fases">Fases</a>
       <a href="#faq">FAQ</a>
     </div>
-    <a class="btn btn-outline" href="/">Voltar ao site</a>
   </div>
 </nav>
 
@@ -180,182 +196,167 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <div class="kicker">Plano pré-edital TRF-3</div>
-        <h1>Plano de Estudos TRF-3</h1>
-        <p class="hero-lead">Analista Judiciário — Área Judiciária em 16 semanas, com roteiro diário, questões direcionadas, revisões e treino de estudo de caso.</p>
-        <p class="hero-copy">Um plano pré-edital criado com base no último edital para quem quer estudar com direção, organizar as matérias jurídicas e chegar competitivo ao próximo concurso do TRF-3.</p>
+        <div class="kicker">TRF-3 | AJAJ | FCC</div>
+        <h1>Plano Competitivo TRF-3 AJAJ</h1>
+        <p class="hero-lead">16 semanas de preparação para Analista Judiciário — Área Judiciária, com agenda diária, simulados, discursivas, revisões e diagnóstico inicial individual.</p>
+        <p class="hero-copy">Um plano criado para quem quer parar de estudar no improviso e seguir uma rota objetiva até se tornar competitivo para o TRF-3.</p>
         <div class="hero-actions">
-          <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_pre_edital', this)">Comprar com Mercado Pago</a>
-          <a class="btn btn-outline" href="#estrutura">Ver estrutura do plano</a>
+          <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_competitivo', this)">Quero entrar no Plano TRF-3</a>
+          <a class="btn btn-outline" href="#incluso">Ver o que está incluso</a>
         </div>
         <div class="badge-row" id="heroBadges" aria-label="Características do plano"></div>
       </div>
+
       <aside class="hero-card" aria-label="Resumo do plano">
-        <div class="kicker">Foco único</div>
-        <h2>Analista Judiciário — Área Judiciária</h2>
-        <p>Roteiro estruturado com base no último edital, com ciclos progressivos de base jurídica, questões direcionadas, revisão espaçada, 4 simulados e estudo de caso.</p>
+        <div class="kicker">Oferta única</div>
+        <h2>Não é só um cronograma.</h2>
+        <p>É um plano de execução de 16 semanas para transformar estudo solto em preparação competitiva.</p>
         <div class="price-line">
           <strong>R$ 249,90</strong>
-          <span>pagamento único pelo plano pré-edital TRF-3</span>
+          <span>pagamento único pelo plano completo</span>
         </div>
         <div class="metric-grid">
-          <div class="metric"><strong>16</strong><span>semanas organizadas</span></div>
-          <div class="metric"><strong>REC</strong><span>diagnóstico, prática e revisão</span></div>
-          <div class="metric"><strong>D+7</strong><span>revisão programada</span></div>
-          <div class="metric"><strong>D+14</strong><span>consolidação no ciclo</span></div>
+          <div class="metric"><strong>16</strong><span>semanas com agenda diária</span></div>
+          <div class="metric"><strong>4</strong><span>simulados oficiais</span></div>
+          <div class="metric"><strong>20min</strong><span>diagnóstico inicial</span></div>
+          <div class="metric"><strong>70%+</strong><span>meta de competitividade</span></div>
         </div>
-        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_pre_edital', this)">Entrar no Plano TRF-3</a>
-        <p class="fineprint">Atendimento e liberação do plano via equipe Projeto Posse.</p>
+        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_competitivo', this)">Comprar agora</a>
+        <p class="fineprint">Objetivo do ciclo: deixar o aluno competitivo em 4 meses, buscando evolução progressiva até superar 70% de acertos nos simulados.</p>
       </aside>
     </div>
   </section>
 
-  <section id="autoridade" class="section-alt">
-    <div class="container authority-wrap">
-      <div class="authority-card">
-        <strong>Autoridade institucional</strong>
-        <p>Entre os mentores do Projeto Posse está uma aprovada em 2º lugar no concurso do TRF-3 para Oficial de Justiça Avaliador Federal. A equipe também conta com aprovado no concurso da ALMS para Analista Legislativo — Engenheiro Civil, Edital 2025.</p>
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Posicionamento</div>
+        <h2>Por que este plano não é apenas um cronograma?</h2>
+        <p>O aluno não recebe apenas uma lista de matérias. Ele recebe uma rota completa de execução: o que estudar, quando revisar, quando resolver questões, quando fazer simulados e como acompanhar a evolução.</p>
       </div>
+      <div class="grid grid-4" id="positioningCards"></div>
+    </div>
+  </section>
+
+  <section id="incluso" class="section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Oferta única</div>
+        <h2>O que você recebe no Plano Competitivo TRF-3 AJAJ</h2>
+        <p>Uma estrutura fechada para executar o ciclo de 16 semanas com clareza, medição de desempenho e treino objetivo para a banca FCC.</p>
+      </div>
+      <div class="checklist" id="offerChecklist"></div>
+      <div class="notice">
+        <strong>Observação importante:</strong> o plano orienta o uso de plataformas de questões e materiais teóricos, mas eventuais assinaturas externas, como TEC ou outras plataformas, são de responsabilidade do aluno.
+      </div>
+    </div>
+  </section>
+
+  <section id="oferta">
+    <div class="container offer">
       <div>
         <div class="section-head">
-          <div class="eyebrow">Experiência aplicada</div>
-          <h2>Plano criado por quem entende o caminho da aprovação.</h2>
-          <p>O Projeto Posse reúne a experiência de aprovados em concursos públicos e transforma essa vivência em planos objetivos, organizados e executáveis.</p>
+          <div class="eyebrow">Preço</div>
+          <h2>Um único plano. Um único preço.</h2>
+          <p>A oferta comercial desta página é exclusivamente o Plano Competitivo TRF-3 AJAJ. Não há versões alternativas nem comparação entre pacotes.</p>
         </div>
-        <p style="color:var(--txt2);max-width:760px">Essa experiência prática ajuda a construir um plano com foco no que realmente importa: rotina, revisão, questões, discursiva e análise de desempenho.</p>
       </div>
+      <article class="offer-card">
+        <span class="offer-badge">Oferta principal</span>
+        <h3>Plano Competitivo TRF-3 AJAJ</h3>
+        <p>Pagamento único. Acesso ao plano completo de 16 semanas, materiais de apoio, simulados e diagnóstico inicial individual.</p>
+        <div class="offer-price">
+          <strong>R$ 249,90</strong>
+          <span>plano único, sem mensalidade</span>
+        </div>
+        <ul class="mini-list" id="priceItems"></ul>
+        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_competitivo', this)" style="margin-top:1.2rem">Comprar agora</a>
+      </article>
     </div>
   </section>
 
-  <section id="diferenciais">
-    <div class="container">
+  <section class="section-alt">
+    <div class="container diagnostic-card">
       <div class="section-head">
-        <div class="eyebrow">Diferenciais</div>
-        <h2>Por que este plano é diferente?</h2>
-        <p>Estudar para Analista Judiciário Área Judiciária exige muito mais do que assistir aulas. É preciso organizar a base jurídica, revisar no tempo certo, resolver questões da banca e treinar a discursiva com método.</p>
+        <div class="eyebrow">Acompanhamento inicial</div>
+        <h2>Diagnóstico inicial individual</h2>
+        <p>Após a compra, o aluno poderá agendar uma conversa inicial para alinhar a execução do plano. O objetivo é entender a rotina, o tempo disponível, o nível atual e as maiores dificuldades.</p>
       </div>
-      <div class="grid grid-4" id="differenceCards"></div>
-    </div>
-  </section>
-
-  <section id="para-quem" class="section-alt">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Perfil ideal</div>
-        <h2>Para quem é este plano?</h2>
+      <div class="diagnostic-list" id="diagnosticItems"></div>
+      <div class="notice">
+        O diagnóstico inicial não é mentoria contínua individual. É uma orientação inicial para que o aluno comece o plano com clareza.
       </div>
-      <div class="checklist" id="audienceChecklist"></div>
-    </div>
-  </section>
-
-  <section id="metodo-rec">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Método REC</div>
-        <h2>Método REC: estudo com diagnóstico, prática e revisão.</h2>
-      </div>
-      <div class="rec-steps" id="recSteps"></div>
-    </div>
-  </section>
-
-  <section id="estrutura" class="section-alt">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Estrutura</div>
-        <h2>16 semanas de preparação organizada.</h2>
-      </div>
-      <div class="grid grid-4" id="structureCards"></div>
-      <div style="height:1rem"></div>
-      <div class="grid grid-3" id="includedCards"></div>
-    </div>
-  </section>
-
-  <section id="disciplinas">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Conteúdo</div>
-        <h2>Disciplinas trabalhadas.</h2>
-      </div>
-      <div class="grid grid-3" id="disciplineGrid"></div>
-    </div>
-  </section>
-
-  <section id="rotina" class="section-alt">
-    <div class="container">
-      <div class="section-head">
-        <div class="eyebrow">Rotina semanal</div>
-        <h2>Como funciona a rotina semanal.</h2>
-      </div>
-      <div class="grid grid-3" id="weeklyRoutine"></div>
     </div>
   </section>
 
   <section id="fases">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">Fases</div>
-        <h2>Quatro fases para ganhar base, volume e controle.</h2>
+        <div class="eyebrow">Evolução mensurável</div>
+        <h2>4 meses para construir competitividade</h2>
+        <p>O plano é dividido em quatro fases, cada uma com objetivo, meta de acertos e simulado oficial ao final do ciclo.</p>
       </div>
       <div class="timeline" id="phaseTimeline"></div>
     </div>
   </section>
 
-  <section id="discursiva" class="section-alt">
+  <section class="section-alt">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">Discursiva</div>
-        <h2>Treino de estudo de caso para Analista Judiciário.</h2>
-        <p>A prova de Analista Judiciário Área Judiciária exige capacidade de aplicar o conteúdo jurídico a situações concretas. Por isso, o plano inclui treino discursivo com método próprio.</p>
+        <div class="eyebrow">Método</div>
+        <h2>Método REC: estudo com direção</h2>
+        <p>O REC organiza o estudo para evitar leitura passiva e transformar teoria em desempenho medido.</p>
       </div>
-      <div class="method-box">
-        <strong>Método de resposta</strong>
-        <p>Conceito → Fundamento legal → Aplicação ao caso → Conclusão</p>
-      </div>
-      <div class="checklist" id="discursiveChecklist"></div>
+      <div class="rec-steps" id="recSteps"></div>
     </div>
   </section>
 
-  <section id="recebe">
+  <section>
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">Entrega</div>
-        <h2>O que o aluno recebe.</h2>
+        <div class="eyebrow">Conteúdo</div>
+        <h2>Disciplinas trabalhadas no plano</h2>
+        <p>O roteiro foi pensado para o cargo de Analista Judiciário — Área Judiciária do TRF-3, com foco nas disciplinas do edital e no padrão FCC.</p>
       </div>
-      <div class="checklist" id="deliverablesChecklist"></div>
+      <div class="grid grid-3" id="disciplineGrid"></div>
     </div>
   </section>
 
-  <section id="produto" class="section-alt">
-    <div class="container offer">
+  <section class="section-alt">
+    <div class="container authority-wrap">
+      <div class="authority-card">
+        <strong>Autoridade institucional</strong>
+        <p>Entre os mentores do Projeto Posse está uma aprovada em 2º lugar no concurso do TRF-3 para Oficial de Justiça Avaliador Federal.</p>
+      </div>
       <div>
         <div class="section-head">
-          <div class="eyebrow">Produto disponível</div>
-          <h2>Um plano comercial, um foco: Analista Judiciário Área Judiciária.</h2>
-          <p>A oferta desta página é dedicada ao plano jurídico pré-edital do TRF-3, com preparação específica para Analista Judiciário Área Judiciária baseada no último edital.</p>
+          <div class="eyebrow">Experiência aplicada</div>
+          <h2>Plano criado por quem entende o caminho da aprovação</h2>
+          <p>O Projeto Posse reúne a experiência de aprovados em concursos públicos e transforma essa vivência em planos organizados, objetivos e executáveis.</p>
         </div>
       </div>
-      <article class="offer-card">
-        <span class="offer-badge">Plano completo</span>
-        <h3>Plano TRF-3 Analista Judiciário — Área Judiciária</h3>
-        <p>Para quem quer uma preparação organizada, jurídica e direcionada para o próximo edital do TRF-3.</p>
-        <div class="offer-price">
-          <strong>R$ 249,90</strong>
-          <span>acesso ao plano de 16 semanas</span>
-        </div>
-        <ul class="mini-list" id="productItems"></ul>
-        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_pre_edital', this)" style="margin-top:1.2rem">Comprar com Mercado Pago</a>
-      </article>
     </div>
   </section>
 
-  <section id="tecnico">
-    <div class="container">
-      <div class="interest-card">
-        <div class="eyebrow">Lista de interesse</div>
-        <h2 style="font-size:clamp(1.5rem,3vw,2.25rem)">Está buscando Técnico Judiciário?</h2>
-        <p style="color:var(--txt2);max-width:820px;margin-bottom:1rem">No momento, o foco do Projeto Posse para o TRF-3 é o plano de Analista Judiciário — Área Judiciária. O plano de Técnico Judiciário Área Administrativa poderá ser lançado separadamente, com estrutura própria.</p>
-        <a class="btn btn-outline js-tech-cta" href="https://wa.me/5567992306627?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20de%20T%C3%A9cnico%20Judici%C3%A1rio%20do%20TRF-3." target="_blank" rel="noreferrer">Tenho interesse no plano de Técnico</a>
+  <section>
+    <div class="container value-wrap">
+      <div>
+        <div class="section-head">
+          <div class="eyebrow">Valor</div>
+          <h2>O que justifica o investimento?</h2>
+          <p>O objetivo é entregar mais do que um cronograma: o aluno recebe um sistema de execução para estudar com clareza, medir evolução e corrigir erros.</p>
+        </div>
+        <table class="value-table">
+          <thead><tr><th>Item</th><th>Valor percebido</th></tr></thead>
+          <tbody id="valueRows"></tbody>
+        </table>
       </div>
+      <aside class="value-card">
+        <small>Valor percebido total</small>
+        <strong>R$ 517</strong>
+        <p>Preço do Plano Competitivo: <b>R$ 249,90</b>.</p>
+        <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_competitivo', this)" style="margin-top:1.2rem">Entrar no plano</a>
+      </aside>
     </div>
   </section>
 
@@ -363,7 +364,7 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
     <div class="container">
       <div class="section-head">
         <div class="eyebrow">FAQ</div>
-        <h2>Perguntas frequentes.</h2>
+        <h2>Perguntas frequentes</h2>
       </div>
       <div class="faq-list" id="faqList"></div>
     </div>
@@ -374,7 +375,7 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
       <div class="eyebrow">Próximo passo</div>
       <h2>Estude para o TRF-3 com direção.</h2>
       <p>O plano não substitui o seu esforço. Ele organiza esse esforço para que cada dia de estudo tenha função, meta e revisão.</p>
-      <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_pre_edital', this)">Quero meu plano TRF-3</a>
+      <a class="btn btn-gold" href="#checkout" onclick="return openCheckoutModal('plano_trf3_competitivo', this)">Entrar no Plano Competitivo TRF-3</a>
     </div>
   </section>
 </main>
@@ -384,15 +385,15 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
     <button type="button" class="checkout-close" onclick="return closeCheckoutModal()" aria-label="Fechar">x</button>
     <div class="eyebrow">Pagamento seguro</div>
     <h3 id="checkoutTitle">Finalize seu acesso</h3>
-    <p>Preencha os dados abaixo para seguir para Pix, cartão ou boleto dentro do Mercado Pago.</p>
+    <p>Preencha os dados abaixo para seguir para Pix, cartão ou boleto no checkout do Projeto Posse.</p>
 
     <div class="checkout-plan" id="checkoutPlanSummary">
-      <strong>Plano TRF-3 Pré-edital</strong>
-      <span>R$ 249,90 - plano de 16 semanas para Analista Judiciário Área Judiciária</span>
+      <strong>Plano Competitivo TRF-3 AJAJ</strong>
+      <span>R$ 249,90 - plano completo de 16 semanas</span>
     </div>
 
     <form id="checkoutForm" class="checkout-form">
-      <input type="hidden" id="checkoutPlanCode" value="plano_trf3_pre_edital">
+      <input type="hidden" id="checkoutPlanCode" value="plano_trf3_competitivo">
       <div>
         <label for="checkoutName">Nome completo *</label>
         <input type="text" id="checkoutName" required maxlength="120" placeholder="Seu nome completo">
@@ -409,82 +410,76 @@ details p{color:var(--txt2);padding:0 1.05rem 1rem}
       </div>
       <div>
         <label for="checkoutTarget">Concurso-alvo</label>
-        <input type="text" id="checkoutTarget" maxlength="160" value="TRF-3 - Analista Judiciário Área Judiciária">
+        <input type="text" id="checkoutTarget" maxlength="160" value="TRF-3 AJAJ - Analista Judiciário Área Judiciária">
       </div>
       <div class="checkout-error" id="checkoutError"></div>
-      <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o Mercado Pago</button>
-      <p class="fineprint">Você será redirecionado para concluir o pagamento no ambiente seguro do Mercado Pago.</p>
+      <button type="submit" class="checkout-submit" id="checkoutSubmit">Ir para o checkout</button>
+      <p class="fineprint">Você será redirecionado para concluir o pagamento no ambiente seguro já utilizado pelo Projeto Posse.</p>
     </form>
   </div>
 </div>
 
 <script>
 const landingData = {
-  techCta: 'https://wa.me/5567992306627?text=Ol%C3%A1!%20Tenho%20interesse%20no%20plano%20de%20T%C3%A9cnico%20Judici%C3%A1rio%20do%20TRF-3.',
-  badges: ['Analista Judiciário', 'Área Judiciária', 'Pré-edital', 'Último edital', '16 semanas', 'Método REC', 'Estudo de Caso', '4 simulados'],
-  differences: [
-    ['Roteiro diário', 'O aluno sabe exatamente o que estudar em cada dia, sem perder tempo decidindo a próxima matéria.'],
-    ['Base no último edital', 'O plano parte da estrutura do último edital do TRF-3 e organiza teoria, lei seca, questões, revisões e estudo de caso com lógica de pré-edital.'],
-    ['Jurídicas com profundidade', 'Direito Constitucional, Administrativo, Civil, Processo Civil, Penal, Processo Penal, Tributário e Previdenciário organizados em ciclos progressivos.'],
-    ['Discursiva desde a preparação', 'Treino de estudo de caso para desenvolver raciocínio jurídico, estrutura de resposta e segurança na escrita.']
+  badges: ['TRF-3', 'Analista Judiciário', 'Área Judiciária', 'Banca FCC', '16 semanas', '4 simulados', 'Estudos de caso', 'Diagnóstico inicial'],
+  positioning: [
+    ['Agenda diária editalizada', '16 semanas com dias de teoria, dias de questões, revisões programadas e sprints de correção de erros.'],
+    ['Diagnóstico inicial individual', 'Uma conversa inicial por videochamada para entender a rotina do aluno, seu nível atual e como adaptar o plano à realidade dele.'],
+    ['4 simulados oficiais', 'Um simulado ao final de cada fase da preparação, permitindo medir evolução real e ajustar os estudos.'],
+    ['Discursivas no padrão FCC', 'Treino de estudo de caso com enunciado, espelho de resposta e critérios de correção.']
   ],
-  audience: [
-    'Candidatos ao cargo de Analista Judiciário — Área Judiciária do TRF-3',
-    'Bacharéis em Direito que querem uma preparação organizada',
-    'Alunos que estudam para tribunais, mas precisam de direção diária',
-    'Candidatos que têm dificuldade em revisar',
-    'Candidatos que precisam sair da leitura passiva',
-    'Quem quer treinar questões e discursiva desde o começo',
-    'Quem deseja estudar com foco no padrão do último edital'
-  ],
-  rec: [
-    ['Diagnóstico', 'O aluno começa o tópico resolvendo questões antes da teoria, identificando lacunas reais e evitando estudo passivo.'],
-    ['Embasamento', 'Depois do diagnóstico, vem o estudo direcionado por PDF, lei seca, videoaula ou material base, com foco nos pontos de maior incidência.'],
-    ['Fixação', 'A teoria é transformada em desempenho por meio de blocos de questões, retorno aos artigos e registro dos erros.'],
-    ['Revisão Espaçada', 'O plano usa revisões D+7, D+14 e 4 simulados para consolidar o conteúdo e medir evolução.']
-  ],
-  structure: [
-    ['Duração', '16 semanas'],
-    ['Rotina', 'Dias de teoria, dias de questões e simulados aos sábados'],
-    ['Carga sugerida', '2h30 a 4h por dia, com possibilidade de adaptação'],
-    ['Formato', 'Cronograma diário dividido em blocos']
-  ],
-  included: ['Diagnóstico por matéria', 'Teoria direcionada', 'Questões direcionadas', 'Revisão D+7', 'Revisão D+14', '4 simulados', 'Caderno de erros', 'Treino discursivo', 'Análise pós-simulado', 'Ajustes de rota'],
-  disciplines: [
-    ['Conhecimentos Gerais', ['Língua Portuguesa', 'Matemática e Raciocínio Lógico', 'Noções sobre Direitos das Pessoas com Deficiência', 'Redação Oficial', 'Legislação dos Tribunais Federais']],
-    ['Conhecimentos Específicos', ['Direito Constitucional', 'Direito Administrativo', 'Direito Civil', 'Direito Processual Civil', 'Direito Penal', 'Direito Processual Penal', 'Direito Tributário', 'Direito Previdenciário', 'Legislação Penal Especial', 'Administração Geral e Pública']],
-    ['Discursiva', ['Estudo de Caso', 'Estrutura de resposta jurídica', 'Fundamentação legal', 'Organização em linhas', 'Treino de raciocínio aplicado']]
-  ],
-  weekly: [
-    ['Dia T — Teoria + questões', ['Diagnóstico inicial', 'Estudo direcionado', 'Lei seca e material base', 'Fixação por questões', 'Revisão curta', 'Registro de erros']],
-    ['Dia Q — Questões', ['Rodadas por disciplina', 'Revisão D+7 integrada', 'Reforço das matérias fracas', 'Questões direcionadas e similares', 'Correção ativa']],
-    ['Sábado — Simulado', ['Simulado cronometrado', 'Correção completa', 'Análise por disciplina', 'Identificação dos pontos fracos', 'Ajuste da semana seguinte']]
+  offerChecklist: ['Agenda diária de 16 semanas', 'Plano organizado por fases', 'Método REC: Diagnóstico, Embasamento, Fixação e Revisão', 'Guia de uso do TEC Concursos', 'Links-base por disciplina no TEC', 'Instrução para filtrar questões por relevância', '4 simulados oficiais', '2 estudos de caso no padrão FCC no Simulado 01', 'Caderno de discursivas', 'Espelhos de resposta', 'Critérios de autocorreção', 'Planilha de acompanhamento de desempenho', 'Metas de acerto por fase', 'Diagnóstico inicial individual por videochamada', 'Orientação para adaptação da rotina de estudos'],
+  priceItems: ['16 semanas de agenda diária', '4 simulados oficiais', 'Discursivas com espelho', 'Guia TEC', 'Planilha de evolução', 'Diagnóstico inicial por videochamada', 'Foco em 70%+ de acertos'],
+  diagnosticItems: [
+    ['Duração', 'até 20 minutos'],
+    ['Formato', 'videochamada'],
+    ['Objetivo', 'orientar a execução do plano'],
+    ['Rotina', 'análise do tempo disponível'],
+    ['Prioridades', 'indicação da primeira fase']
   ],
   phases: [
-    ['Fase 1 — Nivelamento', 'Semanas 1 a 4', 'Construção da base, diagnóstico inicial, primeiros ciclos de questões e revisão dos fundamentos.'],
-    ['Fase 2 — Consolidação', 'Semanas 5 a 8', 'Aumento do volume de questões, reforço das disciplinas jurídicas e início de maior controle de desempenho.'],
-    ['Fase 3 — Aprofundamento', 'Semanas 9 a 12', 'Rotação completa das disciplinas, foco nos temas mais cobrados e intensificação dos simulados.'],
-    ['Fase 4 — Reta final', 'Semanas 13 a 16', 'Revisão forte, simulados completos, questões recentes de tribunais e correção dos pontos fracos.']
+    ['Fase 1 — Nivelamento', 'Semanas 1 a 4', 'Sair da desorganização e construir base inicial.', '50% a 58%', 'Simulado Oficial 1 ao final da fase.'],
+    ['Fase 2 — Consolidação', 'Semanas 5 a 8', 'Aumentar volume de questões e fortalecer matérias centrais.', '58% a 64%', 'Simulado Oficial 2 ao final da fase.'],
+    ['Fase 3 — Tópicos TRF-3', 'Semanas 9 a 12', 'Atacar temas de maior incidência e recorte FCC/TRF.', '64% a 70%', 'Simulado Oficial 3 ao final da fase.'],
+    ['Fase 4 — Reta final e desempenho', 'Semanas 13 a 16', 'Lapidar erros, treinar velocidade e buscar estabilidade acima de 70%.', '70%+', 'Simulado Oficial 4 ao final da fase.']
   ],
-  discursive: ['Leitura do enunciado', 'Identificação do problema jurídico', 'Seleção dos artigos aplicáveis', 'Resposta objetiva e fundamentada', 'Controle de linhas', 'Clareza e organização'],
-  deliverables: ['Plano de 16 semanas', 'Agenda diária de estudos', 'Blocos por matéria', 'Metas de questões', 'Revisões programadas', '4 simulados', 'Treinos discursivos', 'Método REC explicado', 'Caderno de erros', 'Orientação de análise pós-simulado', 'Organização por fases', 'Atualizações futuras do plano, se necessário'],
-  productItems: ['16 semanas de estudo', 'Foco em Analista Judiciário Área Judiciária', 'Método REC', 'Questões direcionadas', 'Revisões D+7 e D+14', '4 simulados', 'Treino de estudo de caso', 'Caderno de erros', 'Análise de desempenho'],
+  rec: [
+    ['Diagnóstico', 'Antes de iniciar um tópico, o aluno resolve questões para identificar lacunas reais.'],
+    ['Embasamento', 'Depois do diagnóstico, estuda o material teórico com foco nos pontos de erro.'],
+    ['Fixação', 'Resolve blocos de questões para transformar teoria em desempenho.'],
+    ['Revisão', 'Revisões programadas e simulados por fase para medir evolução e corrigir rota.']
+  ],
+  disciplines: [
+    ['Conhecimentos Gerais', ['Língua Portuguesa', 'Matemática e Raciocínio Lógico', 'Noções sobre Direitos das Pessoas com Deficiência']],
+    ['Conhecimentos Específicos', ['Direito Civil', 'Direito Processual Civil', 'Direito Constitucional', 'Direito Administrativo', 'Administração Pública', 'Direito Penal', 'Direito Processual Penal', 'Direito Tributário', 'Direito Previdenciário']],
+    ['Discursiva', ['Estudo de caso em Direito Civil', 'Estudo de caso em Direito Previdenciário', 'Treinos de resposta jurídica estruturada', 'Espelho de resposta', 'Critérios de autocorreção']]
+  ],
+  values: [
+    ['Agenda diária de 16 semanas', 'R$ 97'],
+    ['4 simulados oficiais', 'R$ 120'],
+    ['Caderno de discursivas', 'R$ 80'],
+    ['Guia TEC + links por disciplina', 'R$ 40'],
+    ['Diagnóstico inicial individual', 'R$ 150'],
+    ['Planilha de evolução', 'R$ 30']
+  ],
   faq: [
-    ['Esse plano é para qual cargo?', 'Este plano é exclusivo para Analista Judiciário — Área Judiciária do TRF-3.'],
-    ['O plano serve para Técnico Judiciário?', 'Não é o foco deste produto. Técnico Judiciário exige uma estrutura própria, especialmente pela diferença de conteúdo e de discursiva. O Projeto Posse poderá lançar um plano separado para Técnico.'],
-    ['O plano já considera uma banca definida?', 'Não. Este é um plano pré-edital baseado no último edital do TRF-3. A parte de questões trabalha o perfil do último certame e questões compatíveis, sem depender de uma banca oficialmente definida.'],
-    ['Tem discursiva?', 'Sim. O plano inclui treino de estudo de caso, com foco em resposta jurídica estruturada.'],
-    ['Sou iniciante. Consigo acompanhar?', 'Sim. O método começa com diagnóstico, depois embasamento, fixação e revisão. Isso permite evolução progressiva.'],
-    ['Já estudo para tribunais. Esse plano serve para mim?', 'Sim. O plano também ajuda alunos intermediários a organizar revisão, aumentar volume de questões e corrigir pontos fracos.'],
-    ['O plano garante aprovação?', 'Não. Nenhum plano sério garante aprovação. O objetivo é entregar direção, rotina, método e controle de desempenho para aumentar a qualidade da preparação.']
+    ['Esse plano é para qual cargo?', 'Este plano é focado no cargo de Analista Judiciário — Área Judiciária do TRF-3, com base no padrão FCC.'],
+    ['O plano garante aprovação?', 'Não. Nenhum plano sério garante aprovação. O objetivo é entregar direção, rotina, simulados, revisões e método para aumentar a qualidade da preparação.'],
+    ['O que é o diagnóstico inicial?', 'É uma videochamada inicial de até 20 minutos para entender sua rotina, seu nível atual e orientar a execução do plano.'],
+    ['O diagnóstico é uma mentoria contínua?', 'Não. O diagnóstico é uma orientação inicial. A mentoria contínua, caso exista futuramente, será um serviço separado.'],
+    ['Quantos simulados estão inclusos?', 'O plano inclui 4 simulados oficiais, um ao final de cada fase da preparação.'],
+    ['Tem discursiva?', 'Sim. O plano inclui treino de estudo de caso, com enunciado, espelho de resposta e critérios de autocorreção.'],
+    ['Preciso ter TEC Concursos?', 'O plano ensina o aluno a usar o TEC e traz links-base por disciplina. A assinatura do TEC ou de qualquer outra plataforma externa não está inclusa.'],
+    ['Sou iniciante. Consigo acompanhar?', 'Sim. O plano foi organizado em fases, começando pelo nivelamento e avançando até a fase de simulados e desempenho.'],
+    ['Já estudo há algum tempo. Esse plano serve para mim?', 'Sim. O plano também ajuda alunos intermediários a organizar rotina, revisar melhor, aumentar volume de questões e acompanhar desempenho.']
   ]
 };
 
 const CHECKOUT_PLANS = {
-  plano_trf3_pre_edital: {
-    title: 'Plano TRF-3 Pré-edital',
+  plano_trf3_competitivo: {
+    title: 'Plano Competitivo TRF-3 AJAJ',
     price: 'R$ 249,90',
-    description: 'Plano de 16 semanas para Analista Judiciário Área Judiciária'
+    description: '16 semanas + 4 simulados + discursivas + diagnostico inicial'
   }
 };
 
@@ -624,7 +619,7 @@ async function handleCheckoutSubmit(event) {
       throw new Error(data.error || 'Não foi possível iniciar o pagamento agora.');
     }
     if (!data.initPoint) {
-      throw new Error('O Mercado Pago não retornou um link de checkout válido.');
+      throw new Error('O checkout não retornou um link de pagamento válido.');
     }
 
     window.location.href = data.initPoint;
@@ -632,7 +627,7 @@ async function handleCheckoutSubmit(event) {
     showCheckoutError(error.message || 'Não foi possível iniciar o pagamento agora.');
   } finally {
     checkoutSubmit.disabled = false;
-    checkoutSubmit.textContent = 'Ir para o Mercado Pago';
+    checkoutSubmit.textContent = 'Ir para o checkout';
   }
 }
 
@@ -660,21 +655,33 @@ function renderChecklist(target, items) {
   `).join('');
 }
 
+function renderMiniList(target, items) {
+  document.getElementById(target).innerHTML = items.map(item => `
+    <li><span class="check">✓</span><span>${item}</span></li>
+  `).join('');
+}
+
+function renderDiagnostic(target, items) {
+  document.getElementById(target).innerHTML = items.map(item => `
+    <div class="diagnostic-pill"><strong>${item[0]}</strong><span>${item[1]}</span></div>
+  `).join('');
+}
+
+function renderPhases(target, phases) {
+  document.getElementById(target).innerHTML = phases.map(phase => `
+    <article class="phase">
+      <small>${phase[1]}</small>
+      <h3>${phase[0]}</h3>
+      <p>${phase[2]}</p>
+      <span class="goal">Meta: ${phase[3]}</span>
+      <p style="margin-top:.7rem">${phase[4]}</p>
+    </article>
+  `).join('');
+}
+
 function renderRec(target, items) {
   document.getElementById(target).innerHTML = items.map(item => `
     <article class="rec-card"><h3>${item[0]}</h3><p>${item[1]}</p></article>
-  `).join('');
-}
-
-function renderSimpleCards(target, items) {
-  document.getElementById(target).innerHTML = items.map(item => `
-    <article class="card"><h3>${item[0]}</h3><p>${item[1]}</p></article>
-  `).join('');
-}
-
-function renderIncluded(target, items) {
-  document.getElementById(target).innerHTML = items.map(item => `
-    <article class="card"><div class="icon">✓</div><h3>${item}</h3><p>Item integrado ao roteiro do plano de 16 semanas.</p></article>
   `).join('');
 }
 
@@ -687,24 +694,9 @@ function renderDisciplines(target, groups) {
   `).join('');
 }
 
-function renderListCards(target, groups) {
-  document.getElementById(target).innerHTML = groups.map((group, index) => `
-    <article class="card ${index === 0 ? 'featured' : ''}">
-      <h3>${group[0]}</h3>
-      <ul>${group[1].map(item => `<li>${item}</li>`).join('')}</ul>
-    </article>
-  `).join('');
-}
-
-function renderPhases(target, phases) {
-  document.getElementById(target).innerHTML = phases.map(phase => `
-    <article class="phase"><small>${phase[1]}</small><h3>${phase[0]}</h3><p>${phase[2]}</p></article>
-  `).join('');
-}
-
-function renderMiniList(target, items) {
-  document.getElementById(target).innerHTML = items.map(item => `
-    <li><span class="check">✓</span><span>${item}</span></li>
+function renderValues(target, rows) {
+  document.getElementById(target).innerHTML = rows.map(row => `
+    <tr><td>${row[0]}</td><td>${row[1]}</td></tr>
   `).join('');
 }
 
@@ -717,19 +709,15 @@ function renderFaq(target, items) {
   `).join('');
 }
 
-document.querySelectorAll('.js-tech-cta').forEach(link => link.href = landingData.techCta);
 renderBadges('heroBadges', landingData.badges);
-renderCards('differenceCards', landingData.differences);
-renderChecklist('audienceChecklist', landingData.audience);
-renderRec('recSteps', landingData.rec);
-renderSimpleCards('structureCards', landingData.structure);
-renderIncluded('includedCards', landingData.included);
-renderDisciplines('disciplineGrid', landingData.disciplines);
-renderListCards('weeklyRoutine', landingData.weekly);
+renderCards('positioningCards', landingData.positioning);
+renderChecklist('offerChecklist', landingData.offerChecklist);
+renderMiniList('priceItems', landingData.priceItems);
+renderDiagnostic('diagnosticItems', landingData.diagnosticItems);
 renderPhases('phaseTimeline', landingData.phases);
-renderChecklist('discursiveChecklist', landingData.discursive);
-renderChecklist('deliverablesChecklist', landingData.deliverables);
-renderMiniList('productItems', landingData.productItems);
+renderRec('recSteps', landingData.rec);
+renderDisciplines('disciplineGrid', landingData.disciplines);
+renderValues('valueRows', landingData.values);
 renderFaq('faqList', landingData.faq);
 </script>
 </body>

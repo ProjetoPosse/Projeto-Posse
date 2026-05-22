@@ -15,8 +15,14 @@ const PLAN_CATALOG = {
   },
   plano_trf3_pre_edital: {
     code: "plano_trf3_pre_edital",
-    title: "Plano TRF-3 Pre-edital",
-    description: "Plano de 16 semanas para Analista Judiciario Area Judiciaria",
+    title: "Plano Competitivo TRF-3 AJAJ",
+    description: "16 semanas, 4 simulados, discursivas e diagnostico inicial",
+    amount: 249.9,
+  },
+  plano_trf3_competitivo: {
+    code: "plano_trf3_competitivo",
+    title: "Plano Competitivo TRF-3 AJAJ",
+    description: "16 semanas, 4 simulados, discursivas e diagnostico inicial",
     amount: 249.9,
   },
   mentoria_individual: {
