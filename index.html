@@ -478,6 +478,30 @@ body.checkout-open {
       <p class="ssub">Você escolhe o nível de profundidade. Nós entregamos clareza, método e correção de rota para o seu momento atual.</p>
     </div>
 
+    <div class="pcpr-launch trf3-launch fade">
+      <div>
+        <div class="pc-kicker">Produto principal</div>
+        <h3>Plano Competitivo TRF-3 AJAJ</h3>
+        <p>Plano pré-edital em 16 semanas, baseado no último edital do TRF-3, com roteiro diário, Método REC, questões direcionadas, revisões D+7 e D+14, 4 simulados e treino de estudo de caso.</p>
+        <div class="pcpr-tags">
+          <span>16 semanas</span>
+          <span>Pré-edital</span>
+          <span>Último edital</span>
+          <span>Método REC</span>
+          <span>Estudo de caso</span>
+          <span>4 simulados</span>
+        </div>
+      </div>
+      <div class="pcpr-price">
+        <strong>R$ 249,90</strong>
+        <span>acesso ao Plano Competitivo TRF-3 AJAJ</span>
+        <div class="pcpr-actions">
+          <a href="planos/trf-3-analista-judiciaria.html" class="pc-btn pc-btn-gold">Ver detalhes do plano</a>
+          <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('plano_trf3_competitivo', this)">Comprar agora</a>
+        </div>
+      </div>
+    </div>
+
     <div class="pcpr-launch fade">
       <div>
         <div class="pc-kicker">Novo pós-edital</div>
@@ -496,30 +520,6 @@ body.checkout-open {
         <div class="pcpr-actions">
           <a href="pos-edital-pc-pr.html" class="pc-btn pc-btn-gold">Ver detalhes do pós-edital</a>
           <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('pos_edital_pcpr', this)">Comprar agora</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="pcpr-launch trf3-launch fade">
-      <div>
-        <div class="pc-kicker">Novo plano TRF-3</div>
-        <h3>TRF-3 Pré-edital: Analista Judiciário — Área Judiciária</h3>
-        <p>Plano pré-edital em 16 semanas, baseado no último edital do TRF-3, com roteiro diário, Método REC, questões direcionadas, revisões D+7 e D+14, 4 simulados e treino de estudo de caso.</p>
-        <div class="pcpr-tags">
-          <span>16 semanas</span>
-          <span>Pré-edital</span>
-          <span>Último edital</span>
-          <span>Método REC</span>
-          <span>Estudo de caso</span>
-          <span>4 simulados</span>
-        </div>
-      </div>
-      <div class="pcpr-price">
-        <strong>R$ 249,90</strong>
-        <span>acesso ao plano pré-edital TRF-3 para Analista Judiciário</span>
-        <div class="pcpr-actions">
-          <a href="planos/trf-3-analista-judiciaria.html" class="pc-btn pc-btn-gold">Ver detalhes do plano</a>
-          <a href="#checkout" class="pc-btn pc-btn-outline" onclick="return openCheckoutModal('plano_trf3_pre_edital', this)">Comprar agora</a>
         </div>
       </div>
     </div>
@@ -961,8 +961,8 @@ body.checkout-open {
             <option value="" style="background:var(--bg)">Selecione...</option>
             <option value="Mentoria Individual (R$ 749,00)" style="background:var(--bg)">Mentoria Individual (R$ 749,00)</option>
             <option value="Preparação com Metas (R$ 249,00)" style="background:var(--bg)">Preparação com Metas (R$ 249,00)</option>
+            <option value="Plano Competitivo TRF-3 AJAJ (R$ 249,90)" style="background:var(--bg)">Plano Competitivo TRF-3 AJAJ (R$ 249,90)</option>
             <option value="Pós-edital PC-PR (R$ 249,90)" style="background:var(--bg)">Pós-edital PC-PR (R$ 249,90)</option>
-            <option value="Plano TRF-3 Pré-edital - Analista Judiciário Área Judiciária (R$ 249,90)" style="background:var(--bg)">Plano TRF-3 Pré-edital - Analista Judiciário Área Judiciária (R$ 249,90)</option>
             <option value="Combo Simulados" style="background:var(--bg)">Combo Simulados (quando houver edital)</option>
             <option value="Quero conhecer todos os serviços" style="background:var(--bg)">Quero conhecer todos os serviços</option>
           </select>
@@ -1056,15 +1056,20 @@ const CHECKOUT_PLANS = {
     price: 'R$ 249,00',
     description: 'Raio-X inicial + plano com metas + suporte via WhatsApp'
   },
+  plano_trf3_competitivo: {
+    title: 'Plano Competitivo TRF-3 AJAJ',
+    price: 'R$ 249,90',
+    description: 'Plano de 16 semanas para Analista Judiciario Area Judiciaria'
+  },
+  plano_trf3_pre_edital: {
+    title: 'Plano Competitivo TRF-3 AJAJ',
+    price: 'R$ 249,90',
+    description: 'Plano de 16 semanas para Analista Judiciario Area Judiciaria'
+  },
   pos_edital_pcpr: {
     title: 'Pos-edital PC-PR',
     price: 'R$ 249,90',
     description: 'Direcionamento estrategico + 4 simulados + plataforma do aluno'
-  },
-  plano_trf3_pre_edital: {
-    title: 'Plano TRF-3 Pre-edital',
-    price: 'R$ 249,90',
-    description: 'Plano de 16 semanas para Analista Judiciario Area Judiciaria'
   },
   mentoria_individual: {
     title: 'Mentoria Individual',
